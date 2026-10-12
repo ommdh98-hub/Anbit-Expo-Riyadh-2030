@@ -218,3 +218,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Anbit local artifacts
+node_modules/
+.next/
+*.tsbuildinfo
+*.db
+*.db-shm
+*.db-wal
+.DS_Store
+.pytest_cache/

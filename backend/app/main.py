@@ -1,0 +1,279 @@
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone, timedelta
+import json
+from uuid import uuid4
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
+from sqlmodel import SQLModel, Session, select, delete
+from .database import engine
+from .models import Site, Zone, Plant, SoilProfile, ReferenceSource, MeasurementPoint, SoilMeasurement, Recommendation, IrrigationEvent, Inspection
+from .schemas import ReadingInput, ActionInput, EventInput, InspectionInput, EstimateInput
+from .engine import decide, coverage
+from .seed import seed_demo
+
+
+@asynccontextmanager
+async def lifespan(app):
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as session:
+        seed_demo(session)
+    yield
+
+
+app = FastAPI(title='Anbit API', version='0.1.0', lifespan=lifespan)
+
+
+@app.exception_handler(IntegrityError)
+async def integrity_error(request: Request, exc: IntegrityError):
+    return JSONResponse(status_code=409,content={'detail':'عملية مكررة أو مرجع غير صالح؛ حدّث البيانات وأعد المحاولة.'})
+
+
+def get_zone(session, zone_id):
+    zone=session.get(Zone,zone_id)
+    if not zone:
+        raise HTTPException(404,'المنطقة غير موجودة')
+    return zone
+
+
+def zone_data(session, zone):
+    points=session.exec(select(MeasurementPoint).where(MeasurementPoint.zone_id==zone.id)).all()
+    readings=session.exec(select(SoilMeasurement).where(SoilMeasurement.zone_id==zone.id).order_by(SoilMeasurement.measured_at.desc())).all()
+    soil=session.get(SoilProfile,zone.soil_id)
+    return points, readings, soil
+
+
+def zone_view(session, zone):
+    points,readings,soil=zone_data(session,zone)
+    return {**zone.model_dump(),'plant':session.get(Plant,zone.plant_id),'soil':soil,'points':points,
+            'measurements':readings,'decision':decide(zone,soil,points,readings)}
+
+
+@app.get('/api/health')
+def health():
+    with Session(engine) as session:
+        session.exec(select(Site)).first()
+    return {'status':'ok','database':'connected'}
+
+
+@app.get('/api/sites')
+def sites():
+    with Session(engine) as session:
+        return session.exec(select(Site)).all()
+
+
+@app.get('/api/zones')
+def zones(site_id: str='demo'):
+    with Session(engine) as session:
+        return [zone_view(session,z) for z in session.exec(select(Zone).where(Zone.site_id==site_id)).all()]
+
+
+@app.get('/api/zones/{zone_id}')
+def zone_detail(zone_id:str):
+    with Session(engine) as session:
+        return zone_view(session,get_zone(session,zone_id))
+
+
+@app.get('/api/zones/{zone_id}/measurements')
+def readings(zone_id:str):
+    with Session(engine) as session:
+        return zone_data(session,get_zone(session,zone_id))[1]
+
+
+@app.post('/api/zones/{zone_id}/measurements',status_code=201)
+def add_reading(zone_id:str, payload:ReadingInput):
+    with Session(engine) as session:
+        zone=get_zone(session,zone_id)
+        if payload.origin != zone.origin:
+            raise HTTPException(422,'لا يمكن خلط المحاكاة والبيانات التشغيلية في المنطقة نفسها')
+        if session.get(SoilMeasurement,payload.id):
+            raise HTTPException(409,'تم تسجيل هذه العملية مسبقًا')
+        if payload.point_id:
+            point=session.get(MeasurementPoint,payload.point_id)
+            if not point or point.zone_id != zone.id:
+                raise HTTPException(422,'نقطة القياس لا تنتمي لهذه المنطقة')
+        else:
+            if not (zone.x <= payload.x <= zone.x+zone.width and zone.y <= payload.y <= zone.y+zone.height):
+                raise HTTPException(422,'نقطة القياس خارج حدود المنطقة')
+            point=MeasurementPoint(id=str(uuid4()),zone_id=zone.id,x=payload.x,y=payload.y,name='نقطة فحص إضافية')
+            session.add(point)
+            session.flush()
+        data=payload.model_dump(exclude={'x','y','point_id'})
+        data['measured_at']=payload.measured_at.astimezone(timezone.utc).isoformat()
+        reading=SoilMeasurement(**data,zone_id=zone.id,point_id=point.id)
+        session.add(reading)
+        zone.revision+=1
+        session.add(zone)
+        session.commit()
+        return zone_view(session,zone)
+
+
+@app.get('/api/zones/{zone_id}/coverage')
+@app.get('/api/zones/{zone_id}/next-measurement')
+def zone_coverage(zone_id:str):
+    with Session(engine) as session:
+        zone=get_zone(session,zone_id)
+        points,readings,_=zone_data(session,zone)
+        return coverage(zone,points,readings)
+
+
+@app.post('/api/zones/{zone_id}/estimate')
+def estimate(zone_id:str,payload:EstimateInput):
+    with Session(engine) as session:
+        zone=get_zone(session,zone_id)
+        if zone.origin != 'simulation':
+            raise HTTPException(422,'تعديل الافتراضات متاح للمحاكاة فقط')
+        if payload.irrigated_area_m2 > zone.area_m2:
+            raise HTTPException(422,'مساحة الري تتجاوز مساحة المنطقة')
+        zone=zone.model_copy(update=payload.model_dump())
+        points,readings,soil=zone_data(session,zone)
+        return decide(zone,soil,points,readings)
+
+
+def recommendation_view(rec):
+    return {**rec.model_dump(exclude={'result_json'}),'result':json.loads(rec.result_json)}
+
+
+@app.post('/api/zones/{zone_id}/recommendations')
+def recommend(zone_id:str):
+    with Session(engine) as session:
+        zone=get_zone(session,zone_id)
+        points,readings,soil=zone_data(session,zone)
+        result=decide(zone,soil,points,readings)
+        # Reuse a still-current open recommendation; no duplicate on repeated clicks.
+        for rec in session.exec(select(Recommendation).where(Recommendation.zone_id==zone.id,Recommendation.revision==zone.revision)).all():
+            old=json.loads(rec.result_json)
+            if rec.status in ['suggested','approved'] and old['code']==result['code'] and old['readings_used']==result['readings_used']:
+                return recommendation_view(rec)
+        rec=Recommendation(id=str(uuid4()),zone_id=zone.id,revision=zone.revision,result_json=json.dumps(result,ensure_ascii=False))
+        session.add(rec)
+        session.commit()
+        session.refresh(rec)
+        return recommendation_view(rec)
+
+
+@app.get('/api/recommendations')
+def recommendations():
+    with Session(engine) as session:
+        return [recommendation_view(r) for r in session.exec(select(Recommendation).order_by(Recommendation.created_at.desc())).all()]
+
+
+def ensure_current(session,rec):
+    zone=get_zone(session,rec.zone_id)
+    p,m,s=zone_data(session,zone)
+    current=decide(zone,s,p,m)
+    previous=json.loads(rec.result_json)
+    if zone.revision!=rec.revision or current['code']!=previous['code'] or current['readings_used']!=previous['readings_used']:
+        raise HTTPException(409,'تغيرت البيانات أو صلاحيتها؛ اطلب توصية جديدة')
+    return zone,current
+
+
+@app.patch('/api/recommendations/{rec_id}')
+def action(rec_id:str,payload:ActionInput):
+    with Session(engine) as session:
+        rec=session.get(Recommendation,rec_id)
+        if not rec:
+            raise HTTPException(404,'التوصية غير موجودة')
+        if rec.status not in ['suggested','approved']:
+            raise HTTPException(409,'هذه التوصية مغلقة')
+        zone,current=ensure_current(session,rec)
+        if payload.status=='approved' and current['code']!='review':
+            raise HTTPException(422,'لا يمكن اعتماد الري مع هذه الحالة')
+        rec.status=payload.status
+        rec.operator=payload.operator
+        session.add(rec)
+        session.commit()
+        session.refresh(rec)
+        return recommendation_view(rec)
+
+
+@app.post('/api/irrigation-events',status_code=201)
+def execute(payload:EventInput):
+    with Session(engine) as session:
+        rec=session.get(Recommendation,payload.recommendation_id)
+        if not rec:
+            raise HTTPException(404,'التوصية غير موجودة')
+        if rec.status!='approved':
+            raise HTTPException(409,'يجب اعتماد التوصية أولًا، ولا يمكن تنفيذها مرتين')
+        zone,current=ensure_current(session,rec)
+        if current['code']!='review':
+            raise HTTPException(422,'حالة المنطقة لا تسمح بتسجيل تنفيذ هذه التوصية')
+        if payload.executed_at < datetime.fromisoformat(rec.created_at):
+            raise HTTPException(422,'وقت التنفيذ أسبق من التوصية')
+        event=IrrigationEvent(id=payload.id,recommendation_id=rec.id,zone_id=zone.id,volume_l=payload.volume*(1000 if payload.unit=='m3' else 1),volume_kind=payload.volume_kind,executed_at=payload.executed_at.astimezone(timezone.utc).isoformat(),operator=payload.operator,notes=payload.notes,origin=zone.origin)
+        rec.status='executed'
+        zone.last_irrigated_at=event.executed_at
+        # Execution invalidates pre-irrigation readings until new measurements arrive.
+        zone.revision+=1
+        session.add(event)
+        session.add(rec)
+        session.add(zone)
+        session.commit()
+        session.refresh(event)
+        return event
+
+
+@app.get('/api/irrigation-events')
+def events(origin:str='simulation'):
+    with Session(engine) as session:
+        return session.exec(select(IrrigationEvent).where(IrrigationEvent.origin==origin).order_by(IrrigationEvent.executed_at.desc())).all()
+
+
+@app.get('/api/reports/water')
+def water_report(origin:str=Query('simulation',pattern='^(simulation|manual|field|estimated)$'),days:int=Query(7,ge=1,le=365)):
+    start=datetime.now(timezone.utc)-timedelta(days=days)
+    with Session(engine) as session:
+        rows=session.exec(select(IrrigationEvent).where(IrrigationEvent.origin==origin,IrrigationEvent.executed_at>=start.isoformat())).all()
+        by_zone=[]
+        for z in session.exec(select(Zone).where(Zone.origin==origin)).all():
+            used=[r for r in rows if r.zone_id==z.id]
+            total=sum(r.volume_l for r in used)
+            by_zone.append({'id':z.id,'name':z.name,'litres':total,'litres_per_m2':total/z.area_m2,'events':len(used)})
+        daily={}
+        for r in rows:
+            day=(datetime.fromisoformat(r.executed_at)+timedelta(hours=3)).date().isoformat()
+            daily[day]=daily.get(day,0)+r.volume_l
+        return {'origin':origin,'days':days,'total_l':sum(r.volume_l for r in rows),'events_count':len(rows),'measured_l':sum(r.volume_l for r in rows if r.volume_kind=='measured'),'estimated_l':sum(r.volume_l for r in rows if r.volume_kind=='estimated'),'by_zone':by_zone,'daily':[{'date':d,'litres':v} for d,v in sorted(daily.items())],'events':rows,'limitations':'سجلات المحاكاة منفصلة. لا توجد مقارنة بخط أساس تثبت توفير المياه.'}
+
+
+@app.post('/api/zones/{zone_id}/inspections',status_code=201)
+def inspect(zone_id:str,payload:InspectionInput):
+    with Session(engine) as session:
+        z=get_zone(session,zone_id)
+        if session.get(Inspection,payload.id):
+            raise HTTPException(409,'الفحص مسجل مسبقًا')
+        row=Inspection(**payload.model_dump(),zone_id=z.id,origin=z.origin)
+        session.add(row)
+        session.commit()
+        session.refresh(row)
+        return row
+
+
+@app.get('/api/zones/{zone_id}/inspections')
+def inspections(zone_id:str):
+    with Session(engine) as session:
+        get_zone(session,zone_id)
+        return session.exec(select(Inspection).where(Inspection.zone_id==zone_id)).all()
+
+
+@app.get('/api/plants')
+def plants():
+    with Session(engine) as session:
+        return [{**p.model_dump(),'source':session.get(ReferenceSource,p.source_id)} for p in session.exec(select(Plant)).all()]
+
+
+@app.post('/api/demo/reset')
+def reset_demo():
+    with Session(engine) as session:
+        ids=[z.id for z in session.exec(select(Zone).where(Zone.site_id=='demo',Zone.origin=='simulation')).all()]
+        # Delete only the simulation site's dependent records, never operational sites.
+        for cls in [IrrigationEvent,Inspection,Recommendation,SoilMeasurement,MeasurementPoint]:
+            session.exec(delete(cls).where(cls.zone_id.in_(ids)))
+        session.exec(delete(Zone).where(Zone.id.in_(ids)))
+        site=session.get(Site,'demo')
+        if site:
+            session.delete(site)
+        session.commit()
+        # Shared reference entities remain; seed only simulation zone data.
+        seed_demo(session)
+    return {'status':'reset'}
