@@ -228,3 +228,8 @@ node_modules/
 *.db-wal
 .DS_Store
 .pytest_cache/
+
+# Keep frontend source named lib (Python template ignores lib/).
+!frontend/lib/
+!frontend/lib/**
+backups/

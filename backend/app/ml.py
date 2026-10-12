@@ -1,4 +1,5 @@
 """Future ML boundary: no trained or synthetic-accuracy model is shipped."""
+
 from typing import Protocol
 from pydantic import BaseModel
 
@@ -18,11 +19,12 @@ class MoisturePrediction(BaseModel):
     training_data_reference: str
     lower_vwc: float | None = None
     upper_vwc: float | None = None
-    origin: str = 'estimated'
+    origin: str = "estimated"
 
 
 class MoisturePredictor(Protocol):
     def predict(self, features: MoistureFeatures) -> MoisturePrediction: ...
+
 
 # A future prediction must remain separate from field observations. Integration
 # needs temporal/site holdouts, MAE/RMSE, a persistence baseline, and calibration.
