@@ -272,3 +272,14 @@ playwright-report/
 test-results/
 .turbo/
 .eslintcache
+
+# Anbit 3.0: explicit exclusions (several are already covered above)
+frontend/.next/
+*.pyc
+.env
+backend/anbit.db
+backend/*.db-journal
+backups/**/*.db
+research/**/raw/
+research/**/archive/
+research/**/*.zip
