@@ -25,20 +25,29 @@ from .schemas import (
     EventInput,
     InspectionInput,
     EstimateInput,
+    SimulationInput,
 )
 from .engine import decide, coverage
 from .seed import seed_demo
+from .simulation import water_balance
+from .auth import router as auth_router, auth_middleware
+from .planning import PlanInput, plan, spatial_estimate
+from .executive import executive_report, research_summary
+from .presentation import public_source, public_plant
 
 
 @asynccontextmanager
 async def lifespan(app):
     SQLModel.metadata.create_all(engine)
+    app.state.auth_engine = engine
     with Session(engine) as session:
         seed_demo(session)
     yield
 
 
-app = FastAPI(title="Anbit API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="أنبت | ANBIT API", version="0.1.0", lifespan=lifespan)
+app.include_router(auth_router)
+app.middleware("http")(auth_middleware)
 
 
 @app.exception_handler(IntegrityError)
@@ -75,7 +84,7 @@ def zone_view(session, zone):
     points, readings, soil = zone_data(session, zone)
     return {
         **zone.model_dump(),
-        "plant": session.get(Plant, zone.plant_id),
+        "plant": public_plant(session.get(Plant, zone.plant_id)),
         "soil": soil,
         "points": points,
         "measurements": readings,
@@ -88,6 +97,38 @@ def health():
     with Session(engine) as session:
         session.exec(select(Site)).first()
     return {"status": "ok", "database": "connected"}
+
+
+@app.post("/api/zones/{zone_id}/plan")
+def predictive_plan(zone_id: str, payload: PlanInput):
+    # No schema additions, flushes or writes. Existing decision gates remain authoritative.
+    with Session(engine) as session:
+        z = get_zone(session, zone_id)
+        points, readings, soil = zone_data(session, z)
+        try:
+            return plan(z, decide(z, soil, points, readings), payload,
+                        datetime.now(timezone(timedelta(hours=3))))
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
+
+@app.get("/api/zones/{zone_id}/spatial")
+def spatial_outlook(zone_id: str):
+    with Session(engine) as session:
+        z = get_zone(session, zone_id)
+        points, readings, soil = zone_data(session, z)
+        return spatial_estimate(z, points, readings, decide(z, soil, points, readings))
+
+
+@app.get("/api/reports/executive")
+def executive(days: int = Query(7, ge=1, le=365)):
+    with Session(engine) as session:
+        return executive_report(session, days, zone_view)
+
+
+@app.get("/api/research/forecast")
+def forecast_research():
+    return research_summary()
 
 
 @app.get("/api/sites")
@@ -118,7 +159,7 @@ def readings(zone_id: str):
 
 
 @app.post("/api/zones/{zone_id}/measurements", status_code=201)
-def add_reading(zone_id: str, payload: ReadingInput):
+def add_reading(zone_id: str, payload: ReadingInput, request: Request):
     with Session(engine) as session:
         zone = get_zone(session, zone_id)
         if payload.origin != zone.origin:
@@ -148,6 +189,7 @@ def add_reading(zone_id: str, payload: ReadingInput):
             session.flush()
         data = payload.model_dump(exclude={"x", "y", "point_id"})
         data["measured_at"] = payload.measured_at.astimezone(timezone.utc).isoformat()
+        data["operator"] = request.state.actor["name"]
         reading = SoilMeasurement(**data, zone_id=zone.id, point_id=point.id)
         session.add(reading)
         zone.revision += 1
@@ -243,7 +285,7 @@ def ensure_current(session, rec):
 
 
 @app.patch("/api/recommendations/{rec_id}")
-def action(rec_id: str, payload: ActionInput):
+def action(rec_id: str, payload: ActionInput, request: Request):
     with Session(engine) as session:
         rec = session.get(Recommendation, rec_id)
         if not rec:
@@ -254,7 +296,7 @@ def action(rec_id: str, payload: ActionInput):
         if payload.status == "approved" and current["code"] != "review":
             raise HTTPException(422, "لا يمكن اعتماد الري مع هذه الحالة")
         rec.status = payload.status
-        rec.operator = payload.operator
+        rec.operator = request.state.actor["name"]
         session.add(rec)
         session.commit()
         session.refresh(rec)
@@ -262,7 +304,7 @@ def action(rec_id: str, payload: ActionInput):
 
 
 @app.post("/api/irrigation-events", status_code=201)
-def execute(payload: EventInput):
+def execute(payload: EventInput, request: Request):
     with Session(engine) as session:
         rec = session.get(Recommendation, payload.recommendation_id)
         if not rec:
@@ -281,7 +323,7 @@ def execute(payload: EventInput):
             volume_l=payload.volume * (1000 if payload.unit == "m3" else 1),
             volume_kind=payload.volume_kind,
             executed_at=payload.executed_at.astimezone(timezone.utc).isoformat(),
-            operator=payload.operator,
+            operator=request.state.actor["name"],
             notes=payload.notes,
             origin=zone.origin,
         )
@@ -358,12 +400,12 @@ def water_report(
 
 
 @app.post("/api/zones/{zone_id}/inspections", status_code=201)
-def inspect(zone_id: str, payload: InspectionInput):
+def inspect(zone_id: str, payload: InspectionInput, request: Request):
     with Session(engine) as session:
         z = get_zone(session, zone_id)
         if session.get(Inspection, payload.id):
             raise HTTPException(409, "الفحص مسجل مسبقًا")
-        row = Inspection(**payload.model_dump(), zone_id=z.id, origin=z.origin)
+        row = Inspection(**(payload.model_dump() | {"operator": request.state.actor["name"]}), zone_id=z.id, origin=z.origin)
         session.add(row)
         session.commit()
         session.refresh(row)
@@ -383,7 +425,7 @@ def inspections(zone_id: str):
 def plants():
     with Session(engine) as session:
         return [
-            {**p.model_dump(), "source": session.get(ReferenceSource, p.source_id)}
+            {**public_plant(p), "source": public_source(session.get(ReferenceSource, p.source_id))}
             for p in session.exec(select(Plant)).all()
         ]
 
@@ -414,3 +456,52 @@ def reset_demo():
         # Shared reference entities remain; seed only simulation zone data.
         seed_demo(session)
     return {"status": "reset"}
+
+
+@app.post("/api/zones/{zone_id}/simulate")
+def simulate(zone_id: str, payload: SimulationInput):
+    # Read-only session: no add, flush, commit, revision change, or saved output.
+    with Session(engine) as session:
+        zone = get_zone(session, zone_id)
+        points, readings, soil = zone_data(session, zone)
+        decision = decide(zone, soil, points, readings)
+        if payload.irrigated_area_m2 > zone.area_m2:
+            raise HTTPException(422, "مساحة السيناريو تتجاوز مساحة المنطقة")
+        stored = payload.baseline_mode == "stored"
+        if stored and (
+            decision["code"] not in {"review", "high", "defer"}
+            or not zone.root_representative
+        ):
+            raise HTTPException(
+                422,
+                "القراءات لا تمثل خط بداية كافيًا؛ أكمل القياس والتحقق أو اختر بداية افتراضية معلنة",
+            )
+        baseline = decision["mean_vwc"] if stored else payload.starting_vwc
+        try:
+            result = water_balance(
+                baseline,
+                payload.volume_l,
+                payload.irrigated_area_m2,
+                payload.root_depth_m,
+                payload.efficiency,
+            )
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        used = (
+            [r for r in readings if r.id in decision["readings_used"]] if stored else []
+        )
+        return {
+            "zone_id": zone.id,
+            "revision": zone.revision,
+            "kind": "hypothetical_only",
+            "baseline_vwc": baseline,
+            "baseline_origin": zone.origin if stored else "user_hypothesis",
+            "baseline_reading_ids": [r.id for r in used],
+            "baseline_sources": sorted({r.source for r in used}),
+            "baseline_timestamps": [r.measured_at for r in used],
+            "inputs": payload.model_dump(),
+            **result,
+            "thresholds": soil.model_dump() if soil else None,
+            "formula": "ΔVWC = (L / m² × efficiency) / (root_depth_m × 1000)",
+            "limitations": "موازنة نظرية فورية بافتراض توزيع منتظم واحتفاظ كامل بالماء الفعال داخل عمق الجذور. لا تحسب التبخر أو الصرف أو الجريان أو التسرب أو إعادة التوزيع أو امتصاص النبات أو التباين المكاني. ليست تنبؤًا ولا إذن ري؛ مسامية التربة غير متوفرة، وحدود الإدارة ليست حدود تشبع.",
+        }

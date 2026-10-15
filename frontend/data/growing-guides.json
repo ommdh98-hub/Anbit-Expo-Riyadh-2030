@@ -1,0 +1,898 @@
+{
+  "reviewed_on": "2026-10-15",
+  "scope": "General horticultural summaries, not Saudi city calendars or irrigation prescriptions",
+  "sources": {
+    "date-propagation": {
+      "title": "FAO · Date Palm Cultivation, Chapter V",
+      "url": "https://www.fao.org/4/Y4360E/y4360e09.htm",
+      "context": "International",
+      "verified_on": "2026-10-15"
+    },
+    "date-climate": {
+      "title": "FAO · Date Palm Cultivation, Chapter IV",
+      "url": "https://www.fao.org/4/Y4360E/y4360e08.htm",
+      "context": "International",
+      "verified_on": "2026-10-15"
+    },
+    "date-planting": {
+      "title": "FAO · Date Palm Cultivation, Chapter VI",
+      "url": "https://www.fao.org/4/Y4360E/y4360e0a.htm",
+      "context": "International",
+      "verified_on": "2026-10-15"
+    },
+    "mango": {
+      "title": "UF/IFAS · Mango in the Home Landscape",
+      "url": "https://edis.ifas.ufl.edu/publication/MG216",
+      "context": "Florida, USA",
+      "verified_on": "2026-10-15"
+    },
+    "guava": {
+      "title": "UF/IFAS · Guava in the Home Landscape",
+      "url": "https://edis.ifas.ufl.edu/publication/MG045",
+      "context": "Florida, USA",
+      "verified_on": "2026-10-15"
+    },
+    "papaya": {
+      "title": "UF/IFAS · Papaya in the Home Landscape",
+      "url": "https://edis.ifas.ufl.edu/publication/MG054",
+      "context": "Florida, USA",
+      "verified_on": "2026-10-15"
+    },
+    "pomegranate": {
+      "title": "UGA Extension · Pomegranate Production C997",
+      "url": "https://fieldreport.caes.uga.edu/publications/C997/pomegranate-production/",
+      "context": "Georgia, USA",
+      "verified_on": "2026-10-15"
+    },
+    "prickly-pear": {
+      "title": "RHS · Opuntia ficus-indica",
+      "url": "https://www.rhs.org.uk/plants/11871/opuntia-ficus-indica/details",
+      "context": "UK; species-specific",
+      "verified_on": "2026-10-15"
+    },
+    "olive": {
+      "title": "RHS · Olive",
+      "url": "https://www.rhs.org.uk/fruit/olives/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "grape": {
+      "title": "RHS · Grape",
+      "url": "https://www.rhs.org.uk/fruit/grapes/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "citrus": {
+      "title": "RHS · Citrus",
+      "url": "https://www.rhs.org.uk/fruit/citrus/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "melon": {
+      "title": "RHS · Melon",
+      "url": "https://www.rhs.org.uk/fruit/melons/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "tomato": {
+      "title": "RHS · Tomato",
+      "url": "https://www.rhs.org.uk/vegetables/tomatoes/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "cucumber": {
+      "title": "RHS · Cucumber",
+      "url": "https://www.rhs.org.uk/vegetables/cucumbers/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "pepper": {
+      "title": "RHS · Pepper",
+      "url": "https://www.rhs.org.uk/vegetables/peppers/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "eggplant": {
+      "title": "RHS · Eggplant",
+      "url": "https://www.rhs.org.uk/vegetables/aubergines/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "onion": {
+      "title": "RHS · Onion",
+      "url": "https://www.rhs.org.uk/vegetables/onions/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "potato": {
+      "title": "RHS · Potato",
+      "url": "https://www.rhs.org.uk/vegetables/potatoes/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "rosemary": {
+      "title": "RHS · Rosemary",
+      "url": "https://www.rhs.org.uk/herbs/rosemary/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "basil": {
+      "title": "RHS · Basil",
+      "url": "https://www.rhs.org.uk/herbs/basil/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "mint": {
+      "title": "RHS · Mint",
+      "url": "https://www.rhs.org.uk/herbs/mint/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "thyme": {
+      "title": "RHS · Thyme",
+      "url": "https://www.rhs.org.uk/herbs/thyme/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    },
+    "parsley": {
+      "title": "RHS · Parsley",
+      "url": "https://www.rhs.org.uk/herbs/parsley/grow-your-own",
+      "context": "UK",
+      "verified_on": "2026-10-15"
+    }
+  },
+  "guides": {
+    "date-palm": {
+      "source_ids": [
+        "date-propagation",
+        "date-climate",
+        "date-planting"
+      ],
+      "description": {
+        "ar": "نخلة مثمرة تحتاج مساحة خارجية.",
+        "en": "A fruiting palm needing outdoor space."
+      },
+      "season": {
+        "ar": "يحتاج نضج الثمار صيفًا حارًا طويلًا؛ توقيت الغرس يتبع المناخ المحلي.",
+        "en": "Fruit ripening needs a long, hot summer; planting time depends on local climate."
+      },
+      "place": {
+        "ar": "مكان خارجي مكشوف للضوء وتربة تسمح بالصرف؛ افحص جودة التربة وماء الري قبل الغرس.",
+        "en": "Use an open outdoor site with drainage; assess soil and irrigation-water quality first."
+      },
+      "steps": [
+        {
+          "ar": "اختر فسيلة مجذّرة من مشتل؛ لا تفصل فسيلة بنفسك دون خبرة.",
+          "en": "Choose a nursery-rooted offshoot; removal requires skilled handling."
+        },
+        {
+          "ar": "أبقِ قواعد الأوراق فوق سطح التربة عند الغرس.",
+          "en": "Keep leaf bases above soil level when planting."
+        }
+      ],
+      "care": {
+        "ar": "راقب رطوبة التربة حول الفسيلة باستمرار أثناء التأسيس؛ احتياجها يتغير مع التربة.",
+        "en": "Monitor soil moisture around establishing offshoots; watering depends on soil."
+      },
+      "tips": {
+        "ar": "الإكثار بالبذرة لا يحافظ على الصنف؛ لا يعني تحمل الجفاف الاستغناء عن الري.",
+        "en": "Seed propagation does not preserve the cultivar; drought tolerance does not eliminate irrigation needs."
+      }
+    },
+    "mango": {
+      "source_ids": [
+        "mango"
+      ],
+      "description": {
+        "ar": "شجرة فاكهة للمواقع الدافئة الواسعة.",
+        "en": "A fruit tree for warm, spacious sites."
+      },
+      "season": {
+        "ar": "نبات مداري أو شبه مداري حساس للتجمد؛ لم يُثبت شهر غرس محلي هنا.",
+        "en": "Tropical or subtropical; sensitive to freezing. No local planting month is established here."
+      },
+      "place": {
+        "ar": "خارج المنزل، في شمس كاملة وتربة جيدة الصرف، بعيدًا عن المباني وخطوط الكهرباء.",
+        "en": "Outdoors in full sun and well-drained soil, away from buildings and power lines."
+      },
+      "steps": [
+        {
+          "ar": "اختر شتلة مشتل سليمة، ولا تختَر جذورًا ملتفة في أصيص صغير.",
+          "en": "Choose a healthy nursery tree without circling, pot-bound roots."
+        },
+        {
+          "ar": "ضع سطح كتلة الجذور بمستوى الأرض أو أعلى قليلًا، ثم اسقِ حولها.",
+          "en": "Set the root-ball surface level with or slightly above the ground, then water around it."
+        }
+      ],
+      "care": {
+        "ar": "اهتم بري الشتلات؛ تجنب الإفراط في ري الشجرة البالغة وبلل الأزهار والأوراق.",
+        "en": "Attend to young-tree watering; avoid overwatering mature trees and wetting flowers or leaves."
+      },
+      "tips": {
+        "ar": "أصناف المانجو المختلفة تتفاوت في الحجم؛ لا تستخدم جدول ري ثابتًا لكل الأعمار.",
+        "en": "Cultivars vary in size; one fixed watering schedule does not suit all ages."
+      }
+    },
+    "pomegranate": {
+      "source_ids": [
+        "pomegranate"
+      ],
+      "description": {
+        "ar": "شجيرة مثمرة يمكن تربيتها كشجرة صغيرة.",
+        "en": "A fruiting shrub that can be trained as a small tree."
+      },
+      "season": {
+        "ar": "يفضل صيفًا حارًا جافًا؛ الإكثار بالعقل الخشبية في موسم السكون بحسب المرجع.",
+        "en": "Prefers hot, dry summers; hardwood cuttings are propagated during dormancy in the source."
+      },
+      "place": {
+        "ar": "موقع خارجي مشمس وتربة جيدة الصرف؛ تجنب المواضع التي تغمرها المياه.",
+        "en": "Use a sunny outdoor site and well-drained soil; avoid waterlogged locations."
+      },
+      "steps": [
+        {
+          "ar": "ابدأ بشتلة صنف معروف أو عقلة مجذّرة.",
+          "en": "Start with a known-cultivar nursery plant or rooted cutting."
+        },
+        {
+          "ar": "أزل الحشائش المنافسة حول موضع الغرس واسقِ للتأسيس.",
+          "en": "Remove competing weeds around the planting site and water for establishment."
+        }
+      ],
+      "care": {
+        "ar": "حافظ على انتظام إمداد الماء وتجنب الري بالرش على الأزهار.",
+        "en": "Maintain a consistent water supply; avoid overhead watering of flowers."
+      },
+      "tips": {
+        "ar": "تقلب رطوبة التربة قد يشقق الثمار؛ تحمل الجفاف لا يضمن محصولًا جيدًا.",
+        "en": "Fluctuating soil moisture can split fruit; drought tolerance does not ensure a good crop."
+      }
+    },
+    "guava": {
+      "source_ids": [
+        "guava"
+      ],
+      "description": {
+        "ar": "شجرة مدارية مثمرة تحتاج موقعًا دافئًا.",
+        "en": "A tropical fruit tree needing a warm site."
+      },
+      "season": {
+        "ar": "تحتاج جوًا دافئًا؛ الأشجار الصغيرة حساسة للبرد. لا يوجد تقويم سعودي موثق هنا.",
+        "en": "Needs warmth; young trees are cold-sensitive. No verified Saudi calendar is provided."
+      },
+      "place": {
+        "ar": "مكان خارجي مشمس لا يحتجز الماء، مع مساحة تسمح بنمو الشجرة.",
+        "en": "Use a sunny outdoor site without standing water and allow space for the tree."
+      },
+      "steps": [
+        {
+          "ar": "اختر شتلة سليمة بلا جذور ملتفة أو إصابات.",
+          "en": "Choose a healthy nursery tree without circling roots or damage."
+        },
+        {
+          "ar": "اجعل سطح كتلة الجذور بمستوى الأرض أو أعلى قليلًا، ثم اسقِ.",
+          "en": "Set the root-ball surface level with or slightly above the ground, then water."
+        }
+      ],
+      "care": {
+        "ar": "راقب ري الشتلات أثناء التأسيس وفترات الجفاف، مع تجنب التغدق.",
+        "en": "Monitor young-tree watering during establishment and dry periods; avoid waterlogging."
+      },
+      "tips": {
+        "ar": "افحص الثمار للآفات؛ اجمع الناضج بانتظام.",
+        "en": "Inspect fruit for pests and harvest ripe fruit regularly."
+      }
+    },
+    "grape": {
+      "source_ids": [
+        "grape"
+      ],
+      "description": {
+        "ar": "نبات متسلق يحتاج دعامة قوية.",
+        "en": "A climbing fruit plant needing a strong support."
+      },
+      "season": {
+        "ar": "الغرس أثناء السكون؛ يذكر المرجع الربيع المبكر للمواقع الخارجية.",
+        "en": "Plant during dormancy; the source suggests early spring for outdoor planting."
+      },
+      "place": {
+        "ar": "خارج المنزل في موقع مشمس محمي، وتربة تصرف الماء جيدًا.",
+        "en": "Outdoors in a sunny, sheltered site with free-draining soil."
+      },
+      "steps": [
+        {
+          "ar": "جهز التعريشة أو الأسلاك قبل الغرس.",
+          "en": "Install a trellis or supporting wires before planting."
+        },
+        {
+          "ar": "ازرع الشتلة الأصيصية بالعمق الذي كانت تنمو عليه.",
+          "en": "Plant a container-grown vine at its previous depth."
+        }
+      ],
+      "care": {
+        "ar": "اسقِ لتأسيس الجذور، ووجّه النمو على الدعامة؛ التقليم يتبع نظام التربية.",
+        "en": "Water during establishment and train growth onto the support; pruning depends on the training system."
+      },
+      "tips": {
+        "ar": "تجنب ركود الماء والصقيع المتأخر الذي قد يضر البراعم الحديثة.",
+        "en": "Avoid waterlogging and late frosts that can damage new shoots."
+      }
+    },
+    "olive": {
+      "source_ids": [
+        "olive"
+      ],
+      "description": {
+        "ar": "شجرة دائمة الخضرة تصلح لحديقة أو وعاء كبير.",
+        "en": "An evergreen tree for a garden or large container."
+      },
+      "season": {
+        "ar": "الربيع وقت الغرس المقترح في المرجع البريطاني؛ يحتاج موعدًا محليًا مناسبًا.",
+        "en": "Spring is suggested by the UK source; choose a locally appropriate planting time."
+      },
+      "place": {
+        "ar": "مكان خارجي مشمس ومحمي، وتربة شديدة الصرف؛ يصلح لوعاء ذي فتحات تصريف.",
+        "en": "Use a sunny, sheltered outdoor site with sharp drainage, or a pot with drainage holes."
+      },
+      "steps": [
+        {
+          "ar": "اختر شتلة ووعاءً يتسعان للجذور دون ضغط.",
+          "en": "Choose a nursery plant and a container with adequate root space."
+        },
+        {
+          "ar": "للوعاء، استخدم خليطًا طمييًا مضافًا إليه حبيبات لتحسين الصرف.",
+          "en": "For containers, use a loam-based mix with grit for drainage."
+        }
+      ],
+      "care": {
+        "ar": "راقب رطوبة خليط الأصيص أثناء النمو؛ قلّم الفروع الميتة أو المريضة.",
+        "en": "Monitor container moisture during growth and remove dead or diseased branches."
+      },
+      "tips": {
+        "ar": "لا تترك الأصيص في الماء؛ الثمار تحتاج معالجة قبل الأكل.",
+        "en": "Do not leave pots standing in water; olives need processing before eating."
+      }
+    },
+    "citrus": {
+      "source_ids": [
+        "citrus"
+      ],
+      "description": {
+        "ar": "حمضيات يمكن زراعتها في أوعية مناسبة.",
+        "en": "Citrus can be grown in suitable containers."
+      },
+      "season": {
+        "ar": "تحتاج دفئًا وحماية من البرد؛ لا ننقل أشهر التقويم البريطاني إلى مدينتك.",
+        "en": "Needs warmth and cold protection; UK calendar months are not a local schedule."
+      },
+      "place": {
+        "ar": "موقع مضيء وخلطة أصص جيدة الصرف؛ نقلها لمكان محمي يتبع شدة البرد.",
+        "en": "Use a bright position and well-drained potting mix; shelter depends on local cold."
+      },
+      "steps": [
+        {
+          "ar": "ابدأ بنبات مشتل معروف الصنف؛ إنبات بذرة الثمرة لا يضمن الصنف.",
+          "en": "Start with a known-cultivar nursery plant; fruit seeds do not ensure the same cultivar."
+        },
+        {
+          "ar": "عوّد النبات تدريجيًا عند نقله من مكان محمي إلى الخارج.",
+          "en": "Acclimatise gradually when moving a protected plant outdoors."
+        }
+      ],
+      "care": {
+        "ar": "اسقِ بحسب رطوبة خليط الأصيص مع تصريف الفائض، وتجنب تشبع الجذور.",
+        "en": "Water according to potting-mix moisture, allowing excess to drain; avoid saturation."
+      },
+      "tips": {
+        "ar": "تختلف الاحتياجات بين الليمون واللايم والبرتقال واليوسفي؛ هذا دليل حمضيات عام.",
+        "en": "Lemon, lime, orange and mandarin needs differ; this is a general citrus guide."
+      }
+    },
+    "melon": {
+      "source_ids": [
+        "melon"
+      ],
+      "description": {
+        "ar": "نبات ممتد أو متسلق بثمار تحتاج مكانًا دافئًا.",
+        "en": "A trailing or climbing crop needing warmth."
+      },
+      "season": {
+        "ar": "يحتاج دفئًا ثابتًا؛ يذكر المرجع حرارة ليلية لا تقل عن 12–15°م قبل النقل للخارج.",
+        "en": "Needs steady warmth; the source requires nights above 12–15°C before planting outdoors."
+      },
+      "place": {
+        "ar": "موقع مشمس محمي وتربة خصبة جيدة الصرف؛ يمكن تربيته تحت غطاء مناسب.",
+        "en": "Use a sunny, sheltered site with fertile, free-draining soil, or suitable protected growing space."
+      },
+      "steps": [
+        {
+          "ar": "ابدأ ببذور في أوعية أو اشترِ شتلات صغيرة.",
+          "en": "Start seeds in pots or buy young plants."
+        },
+        {
+          "ar": "عوّد الشتلات تدريجيًا للخارج؛ جهز دعامة إذا اخترت التربية الرأسية.",
+          "en": "Acclimatise seedlings before moving outside; install supports for vertical growing."
+        }
+      ],
+      "care": {
+        "ar": "أبقِ التربة رطبة دون تشبع، واسقِ التربة دون بلل الأوراق.",
+        "en": "Keep soil moist without saturation; water the soil rather than leaves."
+      },
+      "tips": {
+        "ar": "هوّ البيوت المحمية في الحر، وادعم الثمار عند تربيتها رأسيًا.",
+        "en": "Ventilate protected spaces in hot weather and support vertically grown fruit."
+      }
+    },
+    "papaya": {
+      "source_ids": [
+        "papaya"
+      ],
+      "description": {
+        "ar": "نبات فاكهة مداري سريع النمو.",
+        "en": "A fast-growing tropical fruit plant."
+      },
+      "season": {
+        "ar": "تحتاج دفئًا مستمرًا؛ البرودة تعوق النمو والإثمار.",
+        "en": "Needs sustained warmth; cold limits growth and fruiting."
+      },
+      "place": {
+        "ar": "موقع خارجي مشمس ودافئ، بعيد عن ركود الماء.",
+        "en": "Use a warm, sunny outdoor site without standing water."
+      },
+      "steps": [
+        {
+          "ar": "اختر شتلة سليمة صغيرة لا تلتف جذورها داخل الوعاء.",
+          "en": "Choose a healthy young nursery plant without pot-bound roots."
+        },
+        {
+          "ar": "اجعل سطح كتلة الجذور بمستوى الأرض أو أعلى قليلًا واسقِ بعد الغرس.",
+          "en": "Set the root-ball surface level with or slightly above ground and water after planting."
+        }
+      ],
+      "care": {
+        "ar": "وازن بين إمداد الماء وتصريفه؛ أزل الأوراق الميتة.",
+        "en": "Balance water supply with drainage and remove dead leaves."
+      },
+      "tips": {
+        "ar": "تختلف النباتات في نوع أزهارها؛ لا تضمن الشتلة المفردة إثمارًا.",
+        "en": "Plants differ in flower sex; a single seedling does not ensure fruiting."
+      }
+    },
+    "prickly-pear": {
+      "source_ids": [
+        "prickly-pear"
+      ],
+      "description": {
+        "ar": "دليل للتين الشوكي من نوع Opuntia ficus-indica؛ تحقق من النوع.",
+        "en": "Guide for Opuntia ficus-indica; verify your species."
+      },
+      "season": {
+        "ar": "يذكر المرجع تجذير ألواح الساق في الصيف والبذور في الربيع ضمن ظروفه.",
+        "en": "The source roots stem pads in summer and sows in spring under its conditions."
+      },
+      "place": {
+        "ar": "ضوء كامل وخليط صبارات شديد الصرف؛ يمكن زراعته في وعاء بمكان محمي.",
+        "en": "Provide full light and sharply draining cactus mix; containers can be grown under cover."
+      },
+      "steps": [
+        {
+          "ar": "يمكن الإكثار بألواح الساق؛ استخدم ورقًا مطويًا لتجنب لمس الأشواك.",
+          "en": "Stem pads can be rooted; use folded newspaper to avoid touching spines."
+        }
+      ],
+      "care": {
+        "ar": "دع الخليط يجف قبل الري أثناء النمو، ولا تتركه في تربة مبتلة.",
+        "en": "Allow the mix to dry before watering during growth; avoid persistently wet soil."
+      },
+      "tips": {
+        "ar": "الأشواك والشعيرات الدقيقة تؤذي الجلد؛ سوء الصرف قد يسبب تعفن الجذور.",
+        "en": "Spines and fine bristles can injure skin; poor drainage may cause root rot."
+      }
+    },
+    "tomato": {
+      "source_ids": [
+        "tomato"
+      ],
+      "description": {
+        "ar": "ثمرة منزلية؛ الأصناف القصيرة تلائم الأوعية.",
+        "en": "A home crop; compact varieties suit containers."
+      },
+      "season": {
+        "ar": "تحتاج دفئًا؛ انقل الشتلات للخارج بعد زوال خطر الصقيع.",
+        "en": "Needs warmth; move seedlings outdoors after frost risk has passed."
+      },
+      "place": {
+        "ar": "موقع مشمس محمي وتربة خصبة جيدة الصرف؛ داخل بيت محمي أو خارجه بحسب الصنف.",
+        "en": "Use a sunny, sheltered site and fertile, well-drained soil; grow protected or outdoors as appropriate."
+      },
+      "steps": [
+        {
+          "ar": "ابدأ ببذور أو شتلة سليمة، وعوّد الشتلة تدريجيًا للخارج.",
+          "en": "Start from seed or a healthy young plant; acclimatise before moving outdoors."
+        },
+        {
+          "ar": "وفّر دعامة للأصناف الطويلة؛ اتبع تعليمات الصنف للأفرع الجانبية.",
+          "en": "Support tall cordon varieties; side-shoot management depends on the variety."
+        }
+      ],
+      "care": {
+        "ar": "حافظ على انتظام رطوبة التربة مع الصرف؛ تجنب الجفاف ثم الإغراق.",
+        "en": "Maintain consistent soil moisture with drainage; avoid alternating drought and flooding."
+      },
+      "tips": {
+        "ar": "لا تعامل الأصناف الشجيرية مثل الأصناف الطويلة عند إزالة الأفرع.",
+        "en": "Do not remove bush-variety shoots as if they were cordon tomatoes."
+      }
+    },
+    "cucumber": {
+      "source_ids": [
+        "cucumber"
+      ],
+      "description": {
+        "ar": "نبات متسلق يمكن توجيهه لأعلى لتوفير المساحة.",
+        "en": "A climbing crop that can be trained upwards to save space."
+      },
+      "season": {
+        "ar": "اختر فترة دافئة خالية من الصقيع؛ نوع البيت المحمي يختلف عن النوع الخارجي.",
+        "en": "Choose a warm, frost-free growing period; greenhouse and outdoor varieties differ."
+      },
+      "place": {
+        "ar": "مكان دافئ مشمس وتربة غنية جيدة الصرف؛ وعاء أو أرض أو بيت محمي مناسب.",
+        "en": "Provide a warm, sunny site and rich, well-drained soil in a container, bed or suitable greenhouse."
+      },
+      "steps": [
+        {
+          "ar": "ابدأ بالبذور في أوعية أو اشترِ شتلة للصنف المناسب لمكانك.",
+          "en": "Sow in pots or buy a young plant suited to your growing space."
+        },
+        {
+          "ar": "جهز تعريشة ووجّه الساق عليها بلطف إن اخترت التربية الرأسية.",
+          "en": "Install a trellis and gently train stems if growing vertically."
+        }
+      ],
+      "care": {
+        "ar": "حافظ على رطوبة منتظمة وتجنب ترك خليط الأصيص يجف.",
+        "en": "Keep moisture consistent; do not let container compost dry out."
+      },
+      "tips": {
+        "ar": "تعليمات إزالة الأزهار الذكرية تعتمد على الصنف؛ راجع بطاقة البذور.",
+        "en": "Male-flower removal depends on the variety; check its seed instructions."
+      }
+    },
+    "pepper": {
+      "source_ids": [
+        "pepper"
+      ],
+      "description": {
+        "ar": "نبات مثمر يمكن أن يلائم وعاءً في مكان دافئ.",
+        "en": "A fruiting crop that can suit a container in a warm spot."
+      },
+      "season": {
+        "ar": "يحتاج دفئًا؛ وفق المرجع قد تقل الثمار فوق 30°م في البيت المحمي.",
+        "en": "Needs warmth; the source notes reduced fruiting above 30°C in greenhouses."
+      },
+      "place": {
+        "ar": "شمس وتربة خصبة جيدة الصرف، أو وعاء بعرض 30 سم على الأقل.",
+        "en": "Provide sun and fertile, well-drained soil, or a container at least 30 cm wide."
+      },
+      "steps": [
+        {
+          "ar": "عوّد الشتلات للخارج تدريجيًا ثم ازرعها على عمقها السابق.",
+          "en": "Acclimatise young plants outdoors and plant at their previous depth."
+        },
+        {
+          "ar": "اترك 38–45 سم بين النباتات بحسب الصنف؛ ادعم الفروع المثقلة بالثمار.",
+          "en": "Space plants 38–45 cm apart according to variety; support fruit-laden stems."
+        }
+      ],
+      "care": {
+        "ar": "أبقِ التربة رطبة باعتدال وبانتظام وهوّ المكان عند ارتفاع الحرارة.",
+        "en": "Maintain even soil moisture and ventilate when hot."
+      },
+      "tips": {
+        "ar": "افحص أسفل الأوراق للمنّ؛ لا تترك الأصيص يجف أثناء الإزهار.",
+        "en": "Check leaf undersides for aphids; avoid drying out during flowering."
+      }
+    },
+    "eggplant": {
+      "source_ids": [
+        "eggplant"
+      ],
+      "description": {
+        "ar": "خضار محبة للدفء تصلح للأرض أو الأوعية.",
+        "en": "A warmth-loving vegetable for beds or containers."
+      },
+      "season": {
+        "ar": "تحتاج موسمًا دافئًا طويلًا؛ لا تنقل الشتلات لمكان بارد.",
+        "en": "Needs a long, warm growing period; avoid moving young plants into cold conditions."
+      },
+      "place": {
+        "ar": "موقع خارجي مشمس ومحمي عند كفاية الدفء، أو بيت محمي وتربة خصبة.",
+        "en": "Use a sunny, sheltered outdoor spot when warm enough, or a greenhouse with fertile soil."
+      },
+      "steps": [
+        {
+          "ar": "ابدأ ببذور في الدفء أو اشترِ شتلة سليمة.",
+          "en": "Start seeds in warmth or buy a healthy young plant."
+        },
+        {
+          "ar": "عوّد الشتلة قبل نقلها للخارج، وثبّت دعامة للنمو المثمر.",
+          "en": "Acclimatise before planting outside and support fruiting growth."
+        }
+      ],
+      "care": {
+        "ar": "حافظ على إمداد رطوبة منتظم؛ راقب أصص الحر لأنها تجف بسرعة.",
+        "en": "Maintain steady moisture; check containers, which dry rapidly in heat."
+      },
+      "tips": {
+        "ar": "لبعض الأصناف أشواك على السيقان؛ تعامل معها بحذر.",
+        "en": "Some varieties have spiny stems; handle with care."
+      }
+    },
+    "onion": {
+      "source_ids": [
+        "onion"
+      ],
+      "description": {
+        "ar": "يمكن البدء ببصيلات صغيرة بدل البذور.",
+        "en": "Small onion sets offer an alternative to seeds."
+      },
+      "season": {
+        "ar": "موعد الغرس يرتبط بالصنف وطول النهار؛ تقويم المرجع بريطاني وليس سعوديًا.",
+        "en": "Timing depends on variety and day length; the source calendar is British, not Saudi."
+      },
+      "place": {
+        "ar": "سرير خارجي مشمس بتربة مصرفة وخالية من الحشائش.",
+        "en": "Use a sunny outdoor bed with free-draining, weed-free soil."
+      },
+      "steps": [
+        {
+          "ar": "ازرع البصيلات الصغيرة بعمق نحو 2 سم مع ظهور الطرف عند السطح.",
+          "en": "Plant sets about 2 cm deep with the tip just showing."
+        },
+        {
+          "ar": "اترك 10–15 سم بين البصيلات و20–30 سم بين الصفوف، ثم اسقِ.",
+          "en": "Space sets 10–15 cm apart and rows 20–30 cm apart, then water."
+        }
+      ],
+      "care": {
+        "ar": "اسقِ في الجفاف وأزل الحشائش بحذر حول الجذور.",
+        "en": "Water during dry periods and weed carefully around roots."
+      },
+      "tips": {
+        "ar": "تجنب الأرض المشبعة بالماء؛ اختر صنفًا مناسبًا لطول النهار محليًا.",
+        "en": "Avoid saturated ground; choose a variety appropriate to local day length."
+      }
+    },
+    "potato": {
+      "source_ids": [
+        "potato"
+      ],
+      "description": {
+        "ar": "تزرع من درنات تقاوي وليست بذور الثمرة.",
+        "en": "Grown from seed tubers rather than fruit seeds."
+      },
+      "season": {
+        "ar": "يذكر المرجع الغرس الربيعي مع حماية النمو من الصقيع؛ التوقيت المحلي غير موثق.",
+        "en": "The source plants in spring with frost protection; local timing is not verified."
+      },
+      "place": {
+        "ar": "مكان مشمس وتربة خصبة مصرفة؛ يمكن استعمال وعاء كبير ذي تصريف.",
+        "en": "Use a sunny site with fertile, free-draining soil, or a large draining container."
+      },
+      "steps": [
+        {
+          "ar": "استخدم درنات تقاوي معتمدة خالية من الفيروسات.",
+          "en": "Use certified virus-free seed tubers."
+        },
+        {
+          "ar": "غطّ الدرنات بالتربة، ثم كوّم التربة حول النمو تدريجيًا لحجب الضوء عن الدرنات الجديدة.",
+          "en": "Cover tubers with soil, then earth up growth progressively to exclude light from new tubers."
+        }
+      ],
+      "care": {
+        "ar": "حافظ على إمداد الماء خصوصًا أثناء تكوّن الدرنات دون تغدق.",
+        "en": "Maintain water supply, particularly during tuber formation, without waterlogging."
+      },
+      "tips": {
+        "ar": "لا تأكل الدرنات الخضراء؛ أبقها مغطاة بعيدًا عن الضوء.",
+        "en": "Do not eat green tubers; keep developing potatoes covered from light."
+      }
+    },
+    "rosemary": {
+      "source_ids": [
+        "rosemary"
+      ],
+      "description": {
+        "ar": "عشب عطري يلائم الأوعية المصرفة.",
+        "en": "An aromatic herb suited to draining containers."
+      },
+      "season": {
+        "ar": "الربيع بعد دفء التربة في المرجع البريطاني.",
+        "en": "Spring after soil warms in the UK source."
+      },
+      "place": {
+        "ar": "شمس كاملة وتربة خفيفة مصرفة؛ يزرع خارج المنزل أو في وعاء.",
+        "en": "Use full sun and light, free-draining soil outdoors or in a container."
+      },
+      "steps": [
+        {
+          "ar": "ابدأ بشتلة؛ لا تدفن قمة الجذور عميقًا.",
+          "en": "Start with a young plant; avoid burying the root crown deeply."
+        },
+        {
+          "ar": "اترك 45 سم على الأقل بين النباتات.",
+          "en": "Allow at least 45 cm between plants."
+        }
+      ],
+      "care": {
+        "ar": "اسقِ الشتلات في فترات الجفاف وراقب رطوبة الأصص؛ قلّم بخفة بعد الإزهار.",
+        "en": "Water young plants during dry spells and monitor containers; trim lightly after flowering."
+      },
+      "tips": {
+        "ar": "لا تترك الجذور في ماء راكد.",
+        "en": "Do not leave roots standing in water."
+      }
+    },
+    "basil": {
+      "source_ids": [
+        "basil"
+      ],
+      "description": {
+        "ar": "عشب ورقي عطري يصلح لوعاء مشمس.",
+        "en": "An aromatic leafy herb for a sunny container."
+      },
+      "season": {
+        "ar": "يحتاج جوًا دافئًا؛ ينقل للخارج بعد التهيئة وفي طقس مناسب.",
+        "en": "Needs warmth; move outdoors after acclimatisation in suitable weather."
+      },
+      "place": {
+        "ar": "شمس ومكان محمي وخليط جيد الصرف؛ يمكن تربيته تحت غطاء.",
+        "en": "Provide sun, shelter and free-draining compost; protected growing is possible."
+      },
+      "steps": [
+        {
+          "ar": "انثر البذور على سطح خليط البذر دون تغطية، بحسب المرجع.",
+          "en": "Sow seeds on the compost surface without covering, as described by the source."
+        },
+        {
+          "ar": "عند النقل، حافظ على العمق السابق واترك 10 سم على الأقل بين النباتات.",
+          "en": "Transplant at the previous depth and allow at least 10 cm between plants."
+        }
+      ],
+      "care": {
+        "ar": "حافظ على رطوبة متوازنة واقطف القمم بانتظام لتشجيع التفريع.",
+        "en": "Maintain even moisture and harvest shoot tips to encourage branching."
+      },
+      "tips": {
+        "ar": "أزل بدايات الأزهار لإطالة حصاد الأوراق؛ تجنب بلل الجذور طوال الليل.",
+        "en": "Remove flower shoots to extend leaf harvest; avoid wet roots overnight."
+      }
+    },
+    "mint": {
+      "source_ids": [
+        "mint"
+      ],
+      "description": {
+        "ar": "عشب عطري سريع الانتشار؛ الوعاء يحد من تمدده.",
+        "en": "A spreading aromatic herb; containers restrict its spread."
+      },
+      "season": {
+        "ar": "الربيع أو الخريف للاستقرار الأفضل في المرجع البريطاني.",
+        "en": "Spring or autumn for best establishment in the UK source."
+      },
+      "place": {
+        "ar": "شمس أو ظل جزئي وتربة تحتفظ بالرطوبة؛ وعاء مستقل يمنع انتشار الجذامير.",
+        "en": "Use sun or partial shade and moisture-retentive soil; a separate pot contains rhizomes."
+      },
+      "steps": [
+        {
+          "ar": "ازرع شتلة في وعاء أو قسّم كتلة نبات قائمة.",
+          "en": "Plant a young plant in a pot or divide an established clump."
+        },
+        {
+          "ar": "يمكن تجذير ساق في الماء ثم نقلها لخليط الأصص.",
+          "en": "Stems can root in water before being potted up."
+        }
+      ],
+      "care": {
+        "ar": "راقب رطوبة الأصيص واقطف القمم الصغيرة؛ جدّد الكتل المزدحمة بالتقسيم.",
+        "en": "Monitor container moisture, harvest young shoot tips and divide crowded clumps."
+      },
+      "tips": {
+        "ar": "تجنّب ترك الجذامير تنتشر بين النباتات الأخرى.",
+        "en": "Prevent rhizomes from spreading among other plants."
+      }
+    },
+    "thyme": {
+      "source_ids": [
+        "thyme"
+      ],
+      "description": {
+        "ar": "عشب صغير يلائم التربة الخفيفة والأوعية.",
+        "en": "A small herb suited to light soil and containers."
+      },
+      "season": {
+        "ar": "من منتصف الربيع إلى بداية الصيف في المرجع البريطاني.",
+        "en": "Mid-spring to early summer in the UK source."
+      },
+      "place": {
+        "ar": "مكان خارجي دافئ مشمس وتربة خفيفة شديدة الصرف.",
+        "en": "Use a warm, sunny outdoor spot with light, sharply draining soil."
+      },
+      "steps": [
+        {
+          "ar": "ابدأ بشتلة مجذّرة وعوّدها للخارج إن تربت داخليًا.",
+          "en": "Start with a rooted plant; acclimatise indoor-raised plants."
+        },
+        {
+          "ar": "ازرعها على عمقها السابق وبمسافة 20–30 سم بحسب الصنف.",
+          "en": "Plant at its previous depth, spaced 20–30 cm apart according to variety."
+        }
+      ],
+      "care": {
+        "ar": "راقب الشتلات والأصص في الحر؛ قلّم بخفة بعد الإزهار.",
+        "en": "Monitor young plants and containers in heat; trim lightly after flowering."
+      },
+      "tips": {
+        "ar": "زيادة الماء وسوء الصرف قد يعفنان الجذور.",
+        "en": "Overwatering and poor drainage may rot roots."
+      }
+    },
+    "parsley": {
+      "source_ids": [
+        "parsley"
+      ],
+      "description": {
+        "ar": "عشب ورقي يمكن زراعته في حديقة أو نافذة مضيئة.",
+        "en": "A leafy herb for gardens or a well-lit windowsill."
+      },
+      "season": {
+        "ar": "البذر الخارجي من الربيع إلى آخر الصيف في المرجع البريطاني.",
+        "en": "Outdoor sowing from spring to late summer in the UK source."
+      },
+      "place": {
+        "ar": "شمس أو ظل جزئي وتربة خصبة تحتفظ بالرطوبة دون تغدق.",
+        "en": "Use sun or partial shade and fertile, moisture-retentive soil without waterlogging."
+      },
+      "steps": [
+        {
+          "ar": "ابذر بعمق نحو 1 سم في خليط ناعم.",
+          "en": "Sow about 1 cm deep in a fine-textured growing medium."
+        },
+        {
+          "ar": "خفّ الشتلات أو انقلها لتتباعد 15–30 سم بحسب الصنف.",
+          "en": "Thin or transplant seedlings to 15–30 cm apart according to variety."
+        }
+      ],
+      "care": {
+        "ar": "راقب رطوبة الأصص واقطف السيقان الخارجية من قرب القاعدة.",
+        "en": "Monitor container moisture and harvest outer stems near the base."
+      },
+      "tips": {
+        "ar": "في الحر الشديد انقل الأصيص للظل لتقليل الجفاف.",
+        "en": "Move containers into shade during hot spells to reduce drying."
+      }
+    }
+  },
+  "explorer": {
+    "1": "date-palm",
+    "2": "mango",
+    "3": "pomegranate",
+    "4": "guava",
+    "5": "grape",
+    "6": "olive",
+    "7": "citrus",
+    "8": "citrus",
+    "9": "melon",
+    "10": "papaya",
+    "11": "prickly-pear",
+    "12": "tomato",
+    "13": "cucumber",
+    "14": "pepper",
+    "15": "eggplant",
+    "16": "onion",
+    "17": "potato"
+  }
+}

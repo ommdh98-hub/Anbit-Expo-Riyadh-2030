@@ -1,0 +1,251 @@
+.role-home-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  min-height: 58px;
+  padding: 6px 4px;
+  margin-bottom: 14px;
+  color: var(--ink);
+}
+.role-home-intro p {
+  margin: 0;
+  font-size: 14px;
+}
+.role-home-intro small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 3px;
+}
+.role-home-intro .anbit-garden-art {
+  position: static;
+  width: 95px;
+  height: 58px;
+  margin: 0;
+  flex-shrink: 0;
+  opacity: 1;
+}
+.role-home-intro .anbit-garden-art g {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: role-leaf-sway 6s ease-in-out infinite;
+}
+@keyframes role-leaf-sway {
+  0%,
+  100% {
+    rotate: -1deg;
+  }
+  50% {
+    rotate: 1deg;
+  }
+}
+.survey-home {
+  display: grid;
+  gap: 14px;
+}
+.survey-home .role-home-intro {
+  margin-bottom: 0;
+}
+.survey-home .role-zone-picker {
+  padding: 18px 22px;
+}
+.role-zone-picker h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+.survey-home .quick-zone-choice {
+  padding: 11px 12px;
+}
+.survey-home .quick-zone-choice small {
+  line-height: 1.5;
+}
+.survey-current {
+  padding: 20px 22px;
+}
+.survey-action-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 8px;
+}
+.survey-action-heading h2 {
+  font-size: 22px;
+  margin: 0;
+}
+.survey-status {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 3px 0;
+}
+.survey-action-heading .primary {
+  padding: 12px 22px;
+  min-height: 46px;
+  white-space: nowrap;
+}
+.survey-current > p {
+  font-size: 13px;
+  margin: 8px 0;
+}
+.survey-location {
+  display: flex;
+  gap: 12px;
+  background: var(--sage);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 13px 16px;
+  margin-top: 14px;
+}
+.survey-location > svg {
+  flex-shrink: 0;
+  color: var(--green);
+}
+.survey-location h3 {
+  font-size: 15px;
+  margin: 0 0 4px;
+}
+.survey-location p {
+  font-size: 13px;
+  margin: 4px 0;
+}
+.survey-location small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.survey-details {
+  margin-top: 14px;
+}
+.survey-details p {
+  font-size: 12px;
+}
+.survey-optional-map {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 14px 18px;
+}
+.survey-optional-map .site-map {
+  min-height: 220px;
+  max-height: 360px;
+}
+.survey-feedback {
+  color: var(--green);
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.quick-home > .quick-panel {
+  padding: 18px 22px;
+}
+.quick-home .quick-zone-choice {
+  padding: 11px 12px;
+}
+.quick-home .quick-next {
+  margin: 10px 0 16px;
+}
+@media (max-width: 800px) {
+  .survey-action-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .survey-action-heading .primary {
+    width: 100%;
+  }
+  .survey-home .quick-zone-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .survey-current,
+  .survey-home .role-zone-picker {
+    padding: 17px;
+  }
+  .role-home-intro p {
+    font-size: 13px;
+  }
+  .role-home-intro .anbit-garden-art {
+    width: 70px;
+    height: 46px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .role-home-intro .anbit-garden-art g {
+    animation: none;
+  }
+}
+
+.quick-home {
+  gap: 14px;
+}
+.quick-home .role-home-intro {
+  margin-bottom: 0;
+}
+.quick-home .quick-section-head {
+  margin-bottom: 12px;
+}
+.quick-home .quick-result {
+  padding: 20px 22px;
+}
+.quick-home .quick-next {
+  padding: 14px 18px;
+}
+.individual-home {
+  display: grid;
+  gap: 18px;
+}
+.individual-home .role-home-intro {
+  margin-bottom: 0;
+}
+.audience-links,
+.team-discovery-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.team-discovery-link {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.team-discovery-link button {
+  padding: 8px 12px;
+}
+.team-next-measurement {
+  padding: 12px 15px;
+  border: 1px solid var(--line);
+  background: var(--sage);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.team-next-measurement p {
+  margin: 6px 0;
+  font-size: 13px;
+}
+.team-next-measurement small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.individual-home .explorer-selector select {
+  min-height: 44px;
+}
+.plant-care-limit {
+  padding: 10px;
+  border-inline-start: 3px solid var(--olive);
+  background: var(--sage);
+}
+@media (max-width: 600px) {
+  .audience-links button {
+    width: 100%;
+  }
+  .team-discovery-link {
+    align-items: flex-start;
+  }
+  .team-discovery-link button {
+    width: 100%;
+  }
+}

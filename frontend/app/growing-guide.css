@@ -1,0 +1,168 @@
+/* Personal gardening and shared care: inherits the existing theme and direction. */
+.choose-plant > h2,
+.plant-growing-section > h2 {
+  font-size: 21px;
+  margin: 8px 0 12px;
+}
+.plant-description {
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0 0 14px;
+}
+.plant-discovery .plant-match {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.plant-discovery .plant-match[data-selected="true"] {
+  border-color: var(--green);
+  box-shadow: 0 0 0 1px var(--green);
+}
+.plant-discovery .care-open {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 8px 18px;
+}
+.plant-growing-section {
+  scroll-margin-top: 24px;
+  outline-offset: 5px;
+}
+.growing-guide {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  min-width: 0;
+}
+.care-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--green);
+}
+.care-title h3 {
+  font-size: 21px;
+  margin: 0;
+}
+.care-title p {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 5px 0 0;
+}
+.care-local-note {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 14px 0;
+}
+.care-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.care-section {
+  background: var(--sage);
+  padding: 15px 18px;
+  border-radius: 12px;
+  min-width: 0;
+}
+.care-section:nth-child(3) {
+  grid-column: 1 / -1;
+}
+.care-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  margin: 0 0 8px;
+  color: var(--green);
+}
+.care-section h4 svg {
+  flex-shrink: 0;
+}
+.care-section p,
+.care-section ol {
+  font-size: 15px;
+  line-height: 1.85;
+  margin: 0;
+}
+.care-section ol {
+  padding-inline-start: 22px;
+}
+.care-evidence {
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.care-evidence summary {
+  color: var(--green);
+  font-weight: 600;
+  cursor: pointer;
+}
+.care-evidence a {
+  color: var(--green);
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+}
+.plant-list .growing-guide,
+.plant-match-details .growing-guide {
+  margin-top: 12px;
+  padding: 12px;
+}
+.plant-list .care-sections,
+.plant-match-details .care-sections {
+  grid-template-columns: 1fr;
+}
+.plant-list .care-section:nth-child(3),
+.plant-match-details .care-section:nth-child(3) {
+  grid-column: auto;
+}
+.beginner-soil {
+  padding: 22px;
+  line-height: 1.9;
+}
+.beginner-soil li {
+  margin: 12px 0;
+}
+@media (max-width: 700px) {
+  .care-sections {
+    grid-template-columns: 1fr;
+  }
+  .care-section:nth-child(3) {
+    grid-column: auto;
+  }
+  .growing-guide {
+    padding: 14px;
+  }
+  .care-title h3 {
+    font-size: 18px;
+  }
+  .care-section {
+    padding: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plant-growing-section {
+    scroll-behavior: auto;
+  }
+}
+
+.care-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.care-navigation h2 {
+  font-size: 21px;
+  margin: 8px 0;
+}
+.choose-plant {
+  scroll-margin-top: 24px;
+  outline-offset: 5px;
+}

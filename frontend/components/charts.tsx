@@ -1,4 +1,6 @@
 "use client";
+import { currentLanguage } from "../lib/i18n";
+import { display } from "../lib/i18n";
 import {
   ResponsiveContainer,
   BarChart,
@@ -21,7 +23,7 @@ export function WaterChart({ report }: { report: Report }) {
           <YAxis tick={{ fontSize: 11 }} />
           <Tooltip />
           <Bar
-            name="لتر"
+            name={display("لتر")}
             dataKey="litres"
             fill="#6e9eac"
             radius={[4, 4, 0, 0]}
@@ -32,8 +34,10 @@ export function WaterChart({ report }: { report: Report }) {
   ) : (
     <div className="empty-chart">
       <div className="chart-grid" />
-      <p>لم تُسجّل عمليات ري في هذه الفترة بعد.</p>
-      <small>ستظهر الكميات بعد تسجيل التنفيذ، وليس عند الاعتماد.</small>
+      <p>{display(" لم تُسجّل عمليات ري في هذه الفترة بعد. ")}</p>
+      <small>
+        {display(" ستظهر الكميات بعد تسجيل التنفيذ، وليس عند الاعتماد. ")}
+      </small>
     </div>
   );
 }
@@ -43,11 +47,14 @@ export function MoistureChart({ readings }: { readings: Reading[] }) {
     .slice()
     .reverse()
     .map((r) => ({
-      time: new Date(r.measured_at).toLocaleTimeString("ar-SA", {
-        timeZone: "Asia/Riyadh",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      time: new Date(r.measured_at).toLocaleTimeString(
+        currentLanguage() === "ar" ? "ar-SA" : "en-GB",
+        {
+          timeZone: "Asia/Riyadh",
+          hour: "2-digit",
+          minute: "2-digit",
+        },
+      ),
       value: r.value * (r.unit === "vwc_fraction" ? 100 : 1),
       point: r.point_id,
     }));
@@ -60,7 +67,7 @@ export function MoistureChart({ readings }: { readings: Reading[] }) {
           <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
           <Tooltip />
           <Line
-            name="الرطوبة الحجمية %"
+            name={display("الرطوبة الحجمية %")}
             dataKey="value"
             stroke="#487e89"
             strokeWidth={0}

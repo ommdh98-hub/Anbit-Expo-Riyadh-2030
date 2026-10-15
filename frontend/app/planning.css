@@ -1,0 +1,342 @@
+.app-shell {
+  --planning-ink: #204d38;
+  --planning-gap: #e6e8e2;
+  --planning-line: #b9c5bb;
+}
+[data-theme="dark"] .app-shell {
+  --planning-ink: #9bd4ae;
+  --planning-gap: #34463d;
+  --planning-line: #566c5c;
+}
+.predictive-panel,
+.executive-report {
+  margin-block: 18px;
+  min-width: 0;
+}
+.planning-primary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-inline-start: 3px solid var(--planning-ink);
+  padding-inline: 14px;
+}
+.planning-primary > div {
+  flex: 1;
+  min-width: 200px;
+}
+.planning-primary p {
+  font-size: 13px;
+  margin-block: 5px;
+}
+.planning-existing-details {
+  border: 1px solid var(--planning-line);
+  border-radius: 12px;
+  padding: 12px;
+}
+.planning-existing-details > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.planning-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.planning-title h2 {
+  margin: 4px 0 12px;
+  font-size: 23px;
+}
+.planning-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 10px;
+  margin-block: 15px;
+}
+.planning-cards > div {
+  border: 1px solid var(--planning-line);
+  border-radius: 12px;
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.planning-cards small {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.planning-cards strong {
+  font-size: 21px;
+  overflow-wrap: anywhere;
+}
+.planning-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-block: 12px;
+}
+.planning-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+.planning-inputs input,
+.planning-inputs select {
+  width: 100%;
+  min-height: 42px;
+  background: var(--surface);
+  color: inherit;
+  border: 1px solid var(--planning-line);
+  border-radius: 8px;
+  padding: 8px;
+}
+.planning-config form {
+  margin-block: 14px;
+}
+.planning-config fieldset {
+  border: 1px solid var(--planning-line);
+  border-radius: 12px;
+  padding: 12px;
+  margin-block: 14px;
+  min-width: 0;
+}
+.predictive-panel p,
+.executive-report p,
+.twin-scenario p {
+  font-size: 14px;
+  line-height: 1.8;
+}
+.predictive-panel details,
+.twin-advanced {
+  border-block-start: 1px solid var(--planning-line);
+  margin-block-start: 14px;
+  padding-block-start: 10px;
+}
+.predictive-panel summary,
+.twin-advanced > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.forecast-chart {
+  margin: 12px 0;
+  max-width: 800px;
+}
+.forecast-chart svg {
+  width: 100%;
+  display: block;
+  direction: ltr;
+}
+.forecast-chart text {
+  fill: var(--muted);
+  font: 11px sans-serif;
+}
+.forecast-chart .grid-line {
+  stroke: var(--planning-line);
+  stroke-width: 0.5;
+}
+.forecast-band {
+  fill: #509771;
+  opacity: 0.2;
+}
+.forecast-line {
+  fill: none;
+  stroke: var(--planning-ink);
+  stroke-width: 2.5;
+}
+.scheduled-line {
+  fill: none;
+  stroke: #3887c3;
+  stroke-width: 2.5;
+}
+.threshold-line {
+  stroke: #bd7626;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+.forecast-chart figcaption {
+  color: var(--muted);
+  font-size: 12px;
+}
+.planning-warning {
+  border-inline-start: 3px solid #bd7626;
+  padding-inline: 12px;
+}
+.planning-proposal {
+  border: 1px solid var(--planning-line);
+  padding: 12px;
+  border-radius: 10px;
+}
+.spatial-chart {
+  display: block;
+  height: 240px;
+  max-width: 100%;
+  margin-block: 12px;
+}
+.twin-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.twin-advanced .twin-state {
+  margin-top: 12px;
+}
+.twin-scenario {
+  width: 100%;
+}
+.twin-scenario h2 {
+  font-size: 24px;
+}
+.executive-report {
+  border: 1px solid var(--planning-line);
+  padding: 22px;
+  border-radius: 14px;
+  background: var(--surface);
+}
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.report-trends > div {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) 2fr auto;
+  align-items: center;
+  gap: 12px;
+  padding-block: 8px;
+  font-size: 13px;
+}
+.report-trends meter {
+  width: 100%;
+}
+.executive-report h3 {
+  margin-block: 24px 10px;
+}
+.executive-report td,
+.executive-report th {
+  font-size: 12px;
+  white-space: normal;
+}
+.executive-report li {
+  margin-block: 8px;
+  line-height: 1.7;
+}
+.hypothetical-comparison {
+  border: 1px dashed var(--planning-line);
+  padding: 14px;
+  border-radius: 12px;
+  margin-block: 16px;
+}
+@media (max-width: 650px) {
+  .planning-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .planning-cards > div {
+    padding: 10px;
+  }
+  .planning-cards strong {
+    font-size: 18px;
+  }
+  .planning-title h2,
+  .twin-scenario h2 {
+    font-size: 21px;
+  }
+  .planning-inputs {
+    grid-template-columns: 1fr;
+  }
+  .executive-report {
+    padding: 12px;
+  }
+  .report-trends > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  body:has(.executive-report) {
+    background: white !important;
+    color: #15251b !important;
+    font-size: 11pt;
+  }
+  body:has(.executive-report) .sidebar,
+  body:has(.executive-report) .topbar,
+  body:has(.executive-report) .mobile-nav,
+  body:has(.executive-report) .page-heading {
+    display: none !important;
+  }
+  body:has(.executive-report) .app-shell,
+  body:has(.executive-report) main {
+    display: block !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  body:has(.executive-report) .content {
+    padding: 0 !important;
+  }
+  body:has(.executive-report)
+    .content
+    > :not(.executive-report):not(:has(.executive-report)) {
+    display: none !important;
+  }
+  .executive-report {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: white !important;
+    color: #15251b !important;
+    --muted: #425548;
+    --planning-line: #b9c5bb;
+  }
+  .executive-report button,
+  .executive-report input,
+  .executive-report select,
+  .executive-report .planning-inputs {
+    display: none !important;
+  }
+  .executive-report .table-scroll {
+    overflow: visible !important;
+  }
+  .executive-report table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  .executive-report td,
+  .executive-report th {
+    padding: 5px;
+    word-break: break-word;
+    background: white !important;
+    color: #15251b !important;
+  }
+  .executive-report tr,
+  .executive-report .planning-cards > div {
+    break-inside: avoid;
+  }
+  .executive-report h3 {
+    break-after: avoid;
+  }
+  .executive-report details > :not(summary) {
+    display: block !important;
+  }
+  .executive-report summary {
+    list-style: none;
+    font-weight: 700;
+  }
+  .executive-report a {
+    color: #15251b !important;
+    overflow-wrap: anywhere;
+  }
+  .executive-report .planning-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.schedule-window {
+  fill: #3887c3;
+  opacity: 0.16;
+}

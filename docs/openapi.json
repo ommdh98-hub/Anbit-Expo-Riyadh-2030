@@ -1,14 +1,222 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Anbit API",
+    "title": "أنبت | ANBIT API",
     "version": "0.1.0"
   },
   "paths": {
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login",
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "summary": "Me",
+        "operationId": "me_api_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "Logout",
+        "operationId": "logout_api_auth_logout_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "summary": "Health",
         "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/zones/{zone_id}/plan": {
+      "post": {
+        "summary": "Predictive Plan",
+        "operationId": "predictive_plan_api_zones__zone_id__plan_post",
+        "parameters": [
+          {
+            "name": "zone_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Zone Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/zones/{zone_id}/spatial": {
+      "get": {
+        "summary": "Spatial Outlook",
+        "operationId": "spatial_outlook_api_zones__zone_id__spatial_get",
+        "parameters": [
+          {
+            "name": "zone_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Zone Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/executive": {
+      "get": {
+        "summary": "Executive",
+        "operationId": "executive_api_reports_executive_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 7,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/research/forecast": {
+      "get": {
+        "summary": "Forecast Research",
+        "operationId": "forecast_research_api_research_forecast_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -651,6 +859,53 @@
           }
         }
       }
+    },
+    "/api/zones/{zone_id}/simulate": {
+      "post": {
+        "summary": "Simulate",
+        "operationId": "simulate_api_zones__zone_id__simulate_post",
+        "parameters": [
+          {
+            "name": "zone_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Zone Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -679,6 +934,30 @@
           "operator"
         ],
         "title": "ActionInput"
+      },
+      "Credentials": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "enum": [
+              "user",
+              "survey"
+            ],
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Credentials"
       },
       "EstimateInput": {
         "properties": {
@@ -828,6 +1107,202 @@
         ],
         "title": "InspectionInput"
       },
+      "PlanInput": {
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/PlantSoilProfile"
+          },
+          "baseline_mode": {
+            "type": "string",
+            "enum": [
+              "stored",
+              "hypothetical"
+            ],
+            "title": "Baseline Mode",
+            "default": "stored"
+          },
+          "starting_vwc": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starting Vwc"
+          },
+          "weather": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WeatherScenario"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "manual",
+              "automatic_simulation"
+            ],
+            "title": "Mode",
+            "default": "manual"
+          },
+          "allowed_start_hour": {
+            "type": "integer",
+            "maximum": 23.0,
+            "minimum": 0.0,
+            "title": "Allowed Start Hour",
+            "default": 4
+          },
+          "allowed_end_hour": {
+            "type": "integer",
+            "maximum": 24.0,
+            "minimum": 1.0,
+            "title": "Allowed End Hour",
+            "default": 9
+          },
+          "cooldown_hours": {
+            "type": "integer",
+            "maximum": 72.0,
+            "minimum": 1.0,
+            "title": "Cooldown Hours",
+            "default": 12
+          },
+          "hysteresis_vwc": {
+            "type": "number",
+            "maximum": 0.1,
+            "minimum": 0.001,
+            "title": "Hysteresis Vwc",
+            "default": 0.01
+          },
+          "last_simulated_hour": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 0.0,
+                "minimum": -72.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Simulated Hour"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "profile"
+        ],
+        "title": "PlanInput"
+      },
+      "PlantSoilProfile": {
+        "properties": {
+          "plant": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 2,
+            "title": "Plant"
+          },
+          "soil": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 2,
+            "title": "Soil"
+          },
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "demo_assumption",
+              "user_supplied"
+            ],
+            "title": "Provenance",
+            "default": "demo_assumption"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 8,
+            "title": "Evidence"
+          },
+          "field_capacity": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Field Capacity"
+          },
+          "wilting_point": {
+            "type": "number",
+            "exclusiveMaximum": 1.0,
+            "minimum": 0.0,
+            "title": "Wilting Point"
+          },
+          "threshold": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Threshold"
+          },
+          "target": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Target"
+          },
+          "root_depth_m": {
+            "type": "number",
+            "maximum": 3.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Root Depth M"
+          },
+          "area_m2": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Area M2"
+          },
+          "efficiency": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Efficiency"
+          },
+          "flow_l_h": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flow L H"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "plant",
+          "soil",
+          "evidence",
+          "field_capacity",
+          "wilting_point",
+          "threshold",
+          "target",
+          "root_depth_m",
+          "area_m2",
+          "efficiency"
+        ],
+        "title": "PlantSoilProfile"
+      },
       "ReadingInput": {
         "properties": {
           "id": {
@@ -946,6 +1421,65 @@
         ],
         "title": "ReadingInput"
       },
+      "SimulationInput": {
+        "properties": {
+          "volume_l": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Volume L"
+          },
+          "baseline_mode": {
+            "type": "string",
+            "enum": [
+              "stored",
+              "hypothetical"
+            ],
+            "title": "Baseline Mode",
+            "default": "stored"
+          },
+          "starting_vwc": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starting Vwc"
+          },
+          "irrigated_area_m2": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Irrigated Area M2"
+          },
+          "root_depth_m": {
+            "type": "number",
+            "maximum": 3.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Root Depth M"
+          },
+          "efficiency": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Efficiency"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "volume_l",
+          "irrigated_area_m2",
+          "root_depth_m",
+          "efficiency"
+        ],
+        "title": "SimulationInput"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -985,6 +1519,49 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "WeatherScenario": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "assumed",
+            "title": "Kind",
+            "default": "assumed"
+          },
+          "et_mm_day": {
+            "type": "number",
+            "maximum": 30.0,
+            "minimum": 0.0,
+            "title": "Et Mm Day"
+          },
+          "rain_mm": {
+            "type": "number",
+            "maximum": 200.0,
+            "minimum": 0.0,
+            "title": "Rain Mm"
+          },
+          "rain_hour": {
+            "type": "integer",
+            "maximum": 24.0,
+            "minimum": 1.0,
+            "title": "Rain Hour"
+          },
+          "uncertainty_vwc": {
+            "type": "number",
+            "maximum": 0.3,
+            "minimum": 0.005,
+            "title": "Uncertainty Vwc"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "et_mm_day",
+          "rain_mm",
+          "rain_hour",
+          "uncertainty_vwc"
+        ],
+        "title": "WeatherScenario"
       }
     }
   }

@@ -1,0 +1,58 @@
+.anbit-official-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  flex-shrink: 0;
+  /* The official palette stays identical in both themes. */
+  filter: none;
+}
+.reference-brand .logo-login {
+  width: 230px;
+  max-width: 100%;
+}
+.brand .logo-sidebar {
+  width: 160px;
+  margin: 0 auto 8px;
+}
+.breadcrumb .logo-navigation {
+  width: 76px;
+  height: auto;
+}
+.report-brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-block-end: 12px;
+}
+.report-brand .logo-report {
+  width: 142px;
+}
+@media (max-width: 700px) {
+  .reference-brand .logo-login {
+    width: 180px;
+  }
+  .breadcrumb .logo-navigation {
+    width: 62px;
+  }
+  .report-brand {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .report-brand .logo-report {
+    width: 120px;
+  }
+}
+@media print {
+  .executive-report .report-brand {
+    break-inside: avoid;
+  }
+  .executive-report .logo-report {
+    width: 38mm;
+    height: auto;
+    object-fit: contain;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

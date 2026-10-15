@@ -1,0 +1,12 @@
+{
+  "name": "أنبت | ANBIT",
+  "short_name": "ANBIT",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#224335",
+  "theme_color": "#224335",
+  "icons": [
+    { "src": "/brand/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

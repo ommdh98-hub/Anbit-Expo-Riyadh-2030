@@ -81,3 +81,20 @@ class EstimateInput(Input):
     efficiency: float = Field(gt=0, le=1)
     root_representative: bool
     homogeneous: bool
+
+
+class SimulationInput(Input):
+    volume_l: float = Field(ge=0, le=1_000_000)
+    baseline_mode: Literal["stored", "hypothetical"] = "stored"
+    starting_vwc: float | None = Field(default=None, ge=0, le=1)
+    irrigated_area_m2: float = Field(gt=0, le=1_000_000)
+    root_depth_m: float = Field(gt=0, le=3)
+    efficiency: float = Field(gt=0, le=1)
+
+    @model_validator(mode="after")
+    def baseline(self):
+        if self.baseline_mode == "hypothetical" and self.starting_vwc is None:
+            raise ValueError("أدخل رطوبة بداية افتراضية")
+        if self.baseline_mode == "stored" and self.starting_vwc is not None:
+            raise ValueError("الرطوبة المحفوظة يحددها الخادم من القراءات الصالحة")
+        return self

@@ -1,0 +1,2043 @@
+{
+  "metadata": {
+    "source_file": "ENBT.db",
+    "source_sha256": "f24d6d99336a7ed9e664c1a8ac3ea75c08d893ff769ea4e615dc408dcfff4c8e",
+    "status": "unverified_reference",
+    "units": "Not independently documented; numerical climate fields omitted",
+    "rule": "50 temperature + 50 atmospheric humidity; not probability"
+  },
+  "plants": [
+    {
+      "id": 1,
+      "name": "Date Palm"
+    },
+    {
+      "id": 2,
+      "name": "Mango"
+    },
+    {
+      "id": 3,
+      "name": "Pomegranate"
+    },
+    {
+      "id": 4,
+      "name": "Guava"
+    },
+    {
+      "id": 5,
+      "name": "Grapes"
+    },
+    {
+      "id": 6,
+      "name": "Olive"
+    },
+    {
+      "id": 7,
+      "name": "Orange & Mandarin"
+    },
+    {
+      "id": 8,
+      "name": "Lime & Lemon"
+    },
+    {
+      "id": 9,
+      "name": "Cantaloupe"
+    },
+    {
+      "id": 10,
+      "name": "Papaya"
+    },
+    {
+      "id": 11,
+      "name": "Prickly Pear"
+    },
+    {
+      "id": 12,
+      "name": "Tomato"
+    },
+    {
+      "id": 13,
+      "name": "Cucumber"
+    },
+    {
+      "id": 14,
+      "name": "Bell Pepper"
+    },
+    {
+      "id": 15,
+      "name": "Eggplant"
+    },
+    {
+      "id": 16,
+      "name": "Onion"
+    },
+    {
+      "id": 17,
+      "name": "Potato"
+    }
+  ],
+  "cities": [
+    {
+      "id": 1,
+      "name": "Riyadh"
+    },
+    {
+      "id": 2,
+      "name": "Mecca"
+    },
+    {
+      "id": 3,
+      "name": "Medina"
+    },
+    {
+      "id": 4,
+      "name": "Jazan"
+    },
+    {
+      "id": 5,
+      "name": "Al_Qassim"
+    },
+    {
+      "id": 6,
+      "name": "Al_Baha"
+    },
+    {
+      "id": 7,
+      "name": "Abha"
+    },
+    {
+      "id": 8,
+      "name": "Taif"
+    },
+    {
+      "id": 9,
+      "name": "Al_Jouf"
+    },
+    {
+      "id": 10,
+      "name": "Hail"
+    },
+    {
+      "id": 11,
+      "name": "Tabuk"
+    },
+    {
+      "id": 12,
+      "name": "Najran"
+    },
+    {
+      "id": 13,
+      "name": "Al_Hasa"
+    },
+    {
+      "id": 14,
+      "name": "Al_Kharj"
+    }
+  ],
+  "assessments": [
+    {
+      "id": 1,
+      "plant_id": 1,
+      "city_id": 1,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 2,
+      "plant_id": 1,
+      "city_id": 2,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 3,
+      "plant_id": 1,
+      "city_id": 3,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 4,
+      "plant_id": 1,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 5,
+      "plant_id": 1,
+      "city_id": 5,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 6,
+      "plant_id": 1,
+      "city_id": 6,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 7,
+      "plant_id": 1,
+      "city_id": 7,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 8,
+      "plant_id": 1,
+      "city_id": 8,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 9,
+      "plant_id": 1,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 10,
+      "plant_id": 1,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 11,
+      "plant_id": 1,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 12,
+      "plant_id": 1,
+      "city_id": 12,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 13,
+      "plant_id": 1,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 14,
+      "plant_id": 1,
+      "city_id": 14,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 15,
+      "plant_id": 2,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 16,
+      "plant_id": 2,
+      "city_id": 2,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 17,
+      "plant_id": 2,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 18,
+      "plant_id": 2,
+      "city_id": 4,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 19,
+      "plant_id": 2,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 20,
+      "plant_id": 2,
+      "city_id": 6,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 21,
+      "plant_id": 2,
+      "city_id": 7,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 22,
+      "plant_id": 2,
+      "city_id": 8,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 23,
+      "plant_id": 2,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 24,
+      "plant_id": 2,
+      "city_id": 10,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 25,
+      "plant_id": 2,
+      "city_id": 11,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 26,
+      "plant_id": 2,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 27,
+      "plant_id": 2,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 28,
+      "plant_id": 2,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 29,
+      "plant_id": 3,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 30,
+      "plant_id": 3,
+      "city_id": 2,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 31,
+      "plant_id": 3,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 32,
+      "plant_id": 3,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 33,
+      "plant_id": 3,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 34,
+      "plant_id": 3,
+      "city_id": 6,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 35,
+      "plant_id": 3,
+      "city_id": 7,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 36,
+      "plant_id": 3,
+      "city_id": 8,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 37,
+      "plant_id": 3,
+      "city_id": 9,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 38,
+      "plant_id": 3,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 39,
+      "plant_id": 3,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 40,
+      "plant_id": 3,
+      "city_id": 12,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 41,
+      "plant_id": 3,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 42,
+      "plant_id": 3,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 43,
+      "plant_id": 4,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 44,
+      "plant_id": 4,
+      "city_id": 2,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 45,
+      "plant_id": 4,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 46,
+      "plant_id": 4,
+      "city_id": 4,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 47,
+      "plant_id": 4,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 48,
+      "plant_id": 4,
+      "city_id": 6,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 49,
+      "plant_id": 4,
+      "city_id": 7,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 50,
+      "plant_id": 4,
+      "city_id": 8,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 51,
+      "plant_id": 4,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 52,
+      "plant_id": 4,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 53,
+      "plant_id": 4,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 54,
+      "plant_id": 4,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 55,
+      "plant_id": 4,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 56,
+      "plant_id": 4,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 57,
+      "plant_id": 5,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 58,
+      "plant_id": 5,
+      "city_id": 2,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 59,
+      "plant_id": 5,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 60,
+      "plant_id": 5,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 61,
+      "plant_id": 5,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 62,
+      "plant_id": 5,
+      "city_id": 6,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 63,
+      "plant_id": 5,
+      "city_id": 7,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 64,
+      "plant_id": 5,
+      "city_id": 8,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 65,
+      "plant_id": 5,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 66,
+      "plant_id": 5,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 67,
+      "plant_id": 5,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 68,
+      "plant_id": 5,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 69,
+      "plant_id": 5,
+      "city_id": 13,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 70,
+      "plant_id": 5,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 71,
+      "plant_id": 6,
+      "city_id": 1,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 72,
+      "plant_id": 6,
+      "city_id": 2,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 73,
+      "plant_id": 6,
+      "city_id": 3,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 74,
+      "plant_id": 6,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 75,
+      "plant_id": 6,
+      "city_id": 5,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 76,
+      "plant_id": 6,
+      "city_id": 6,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 77,
+      "plant_id": 6,
+      "city_id": 7,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 78,
+      "plant_id": 6,
+      "city_id": 8,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 79,
+      "plant_id": 6,
+      "city_id": 9,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 80,
+      "plant_id": 6,
+      "city_id": 10,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 81,
+      "plant_id": 6,
+      "city_id": 11,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 82,
+      "plant_id": 6,
+      "city_id": 12,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 83,
+      "plant_id": 6,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 84,
+      "plant_id": 6,
+      "city_id": 14,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 85,
+      "plant_id": 7,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 86,
+      "plant_id": 7,
+      "city_id": 2,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 87,
+      "plant_id": 7,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 88,
+      "plant_id": 7,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 89,
+      "plant_id": 7,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 90,
+      "plant_id": 7,
+      "city_id": 6,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 91,
+      "plant_id": 7,
+      "city_id": 7,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 92,
+      "plant_id": 7,
+      "city_id": 8,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 93,
+      "plant_id": 7,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 94,
+      "plant_id": 7,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 95,
+      "plant_id": 7,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 96,
+      "plant_id": 7,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 97,
+      "plant_id": 7,
+      "city_id": 13,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 98,
+      "plant_id": 7,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 99,
+      "plant_id": 8,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 100,
+      "plant_id": 8,
+      "city_id": 2,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 101,
+      "plant_id": 8,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 102,
+      "plant_id": 8,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 103,
+      "plant_id": 8,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 104,
+      "plant_id": 8,
+      "city_id": 6,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 105,
+      "plant_id": 8,
+      "city_id": 7,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 106,
+      "plant_id": 8,
+      "city_id": 8,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 107,
+      "plant_id": 8,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 108,
+      "plant_id": 8,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 109,
+      "plant_id": 8,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 110,
+      "plant_id": 8,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 111,
+      "plant_id": 8,
+      "city_id": 13,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 112,
+      "plant_id": 8,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 113,
+      "plant_id": 9,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 114,
+      "plant_id": 9,
+      "city_id": 2,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 115,
+      "plant_id": 9,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 116,
+      "plant_id": 9,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 117,
+      "plant_id": 9,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 118,
+      "plant_id": 9,
+      "city_id": 6,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 119,
+      "plant_id": 9,
+      "city_id": 7,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 120,
+      "plant_id": 9,
+      "city_id": 8,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 121,
+      "plant_id": 9,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 122,
+      "plant_id": 9,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 123,
+      "plant_id": 9,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 124,
+      "plant_id": 9,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 125,
+      "plant_id": 9,
+      "city_id": 13,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 126,
+      "plant_id": 9,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 127,
+      "plant_id": 10,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 128,
+      "plant_id": 10,
+      "city_id": 2,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 129,
+      "plant_id": 10,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 130,
+      "plant_id": 10,
+      "city_id": 4,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 131,
+      "plant_id": 10,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 132,
+      "plant_id": 10,
+      "city_id": 6,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 133,
+      "plant_id": 10,
+      "city_id": 7,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 134,
+      "plant_id": 10,
+      "city_id": 8,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 135,
+      "plant_id": 10,
+      "city_id": 9,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 136,
+      "plant_id": 10,
+      "city_id": 10,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 137,
+      "plant_id": 10,
+      "city_id": 11,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 138,
+      "plant_id": 10,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 139,
+      "plant_id": 10,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 140,
+      "plant_id": 10,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 141,
+      "plant_id": 11,
+      "city_id": 1,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 142,
+      "plant_id": 11,
+      "city_id": 2,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 143,
+      "plant_id": 11,
+      "city_id": 3,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 144,
+      "plant_id": 11,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 145,
+      "plant_id": 11,
+      "city_id": 5,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 146,
+      "plant_id": 11,
+      "city_id": 6,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 147,
+      "plant_id": 11,
+      "city_id": 7,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 148,
+      "plant_id": 11,
+      "city_id": 8,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 149,
+      "plant_id": 11,
+      "city_id": 9,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 150,
+      "plant_id": 11,
+      "city_id": 10,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 151,
+      "plant_id": 11,
+      "city_id": 11,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 152,
+      "plant_id": 11,
+      "city_id": 12,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 153,
+      "plant_id": 11,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 154,
+      "plant_id": 11,
+      "city_id": 14,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 155,
+      "plant_id": 12,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 156,
+      "plant_id": 12,
+      "city_id": 2,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 157,
+      "plant_id": 12,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 158,
+      "plant_id": 12,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 159,
+      "plant_id": 12,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 160,
+      "plant_id": 12,
+      "city_id": 6,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 161,
+      "plant_id": 12,
+      "city_id": 7,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 162,
+      "plant_id": 12,
+      "city_id": 8,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 163,
+      "plant_id": 12,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 164,
+      "plant_id": 12,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 165,
+      "plant_id": 12,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 166,
+      "plant_id": 12,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 167,
+      "plant_id": 12,
+      "city_id": 13,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 168,
+      "plant_id": 12,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 169,
+      "plant_id": 13,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 170,
+      "plant_id": 13,
+      "city_id": 2,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 171,
+      "plant_id": 13,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 172,
+      "plant_id": 13,
+      "city_id": 4,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 173,
+      "plant_id": 13,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 174,
+      "plant_id": 13,
+      "city_id": 6,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 175,
+      "plant_id": 13,
+      "city_id": 7,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 176,
+      "plant_id": 13,
+      "city_id": 8,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 177,
+      "plant_id": 13,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 178,
+      "plant_id": 13,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 179,
+      "plant_id": 13,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 180,
+      "plant_id": 13,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 181,
+      "plant_id": 13,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 182,
+      "plant_id": 13,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 183,
+      "plant_id": 14,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 184,
+      "plant_id": 14,
+      "city_id": 2,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 185,
+      "plant_id": 14,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 186,
+      "plant_id": 14,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 187,
+      "plant_id": 14,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 188,
+      "plant_id": 14,
+      "city_id": 6,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 189,
+      "plant_id": 14,
+      "city_id": 7,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 190,
+      "plant_id": 14,
+      "city_id": 8,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 191,
+      "plant_id": 14,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 192,
+      "plant_id": 14,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 193,
+      "plant_id": 14,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 194,
+      "plant_id": 14,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 195,
+      "plant_id": 14,
+      "city_id": 13,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 196,
+      "plant_id": 14,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 197,
+      "plant_id": 15,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 198,
+      "plant_id": 15,
+      "city_id": 2,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 199,
+      "plant_id": 15,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 200,
+      "plant_id": 15,
+      "city_id": 4,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 201,
+      "plant_id": 15,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 202,
+      "plant_id": 15,
+      "city_id": 6,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 203,
+      "plant_id": 15,
+      "city_id": 7,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 204,
+      "plant_id": 15,
+      "city_id": 8,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 205,
+      "plant_id": 15,
+      "city_id": 9,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 206,
+      "plant_id": 15,
+      "city_id": 10,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 207,
+      "plant_id": 15,
+      "city_id": 11,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 208,
+      "plant_id": 15,
+      "city_id": 12,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 209,
+      "plant_id": 15,
+      "city_id": 13,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 210,
+      "plant_id": 15,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 211,
+      "plant_id": 16,
+      "city_id": 1,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 212,
+      "plant_id": 16,
+      "city_id": 2,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 213,
+      "plant_id": 16,
+      "city_id": 3,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 214,
+      "plant_id": 16,
+      "city_id": 4,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 215,
+      "plant_id": 16,
+      "city_id": 5,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 216,
+      "plant_id": 16,
+      "city_id": 6,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 217,
+      "plant_id": 16,
+      "city_id": 7,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 218,
+      "plant_id": 16,
+      "city_id": 8,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 219,
+      "plant_id": 16,
+      "city_id": 9,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 220,
+      "plant_id": 16,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 221,
+      "plant_id": 16,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 222,
+      "plant_id": 16,
+      "city_id": 12,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 223,
+      "plant_id": 16,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 224,
+      "plant_id": 16,
+      "city_id": 14,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 225,
+      "plant_id": 17,
+      "city_id": 1,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 226,
+      "plant_id": 17,
+      "city_id": 2,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 227,
+      "plant_id": 17,
+      "city_id": 3,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 228,
+      "plant_id": 17,
+      "city_id": 4,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 229,
+      "plant_id": 17,
+      "city_id": 5,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 230,
+      "plant_id": 17,
+      "city_id": 6,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 231,
+      "plant_id": 17,
+      "city_id": 7,
+      "score": 100,
+      "temperature_match": true,
+      "air_humidity_match": true
+    },
+    {
+      "id": 232,
+      "plant_id": 17,
+      "city_id": 8,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 233,
+      "plant_id": 17,
+      "city_id": 9,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 234,
+      "plant_id": 17,
+      "city_id": 10,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 235,
+      "plant_id": 17,
+      "city_id": 11,
+      "score": 50,
+      "temperature_match": true,
+      "air_humidity_match": false
+    },
+    {
+      "id": 236,
+      "plant_id": 17,
+      "city_id": 12,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    },
+    {
+      "id": 237,
+      "plant_id": 17,
+      "city_id": 13,
+      "score": 50,
+      "temperature_match": false,
+      "air_humidity_match": true
+    },
+    {
+      "id": 238,
+      "plant_id": 17,
+      "city_id": 14,
+      "score": 0,
+      "temperature_match": false,
+      "air_humidity_match": false
+    }
+  ]
+}

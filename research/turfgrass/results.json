@@ -1,0 +1,518 @@
+{
+  "archive_sha256": "dd9e145dde68009f95d0c659b76be819ac77411e64053e9bd833b55200f4d535",
+  "source": "https://zenodo.org/records/10972539",
+  "profiles": {
+    "Turfgrass_Burnley_MEASURED_Hourly.csv": {
+      "rows": 3792,
+      "columns": [
+        "Time",
+        "Year",
+        "Site",
+        "Treatment",
+        "DataType",
+        "SoilMoistureContent_Percent",
+        "IrrigationAmount_mm",
+        "AirTemperature_DegC",
+        "VapourPressure_kPa",
+        "TurfSurfaceTemperature_DegC",
+        "SoilTemperature_DegC",
+        "StationAirTemperature_DegC",
+        "RelativeHumidity_Percent",
+        "WindSpeed_mpers",
+        "Rainfall_mm",
+        "IncomingShortwaveRadiation_Wperm2",
+        "AtmosphericPressure_Pa",
+        "LatentHeatFlux_Wperm2",
+        "SensibleHeatFlux_Wperm2",
+        "GroundHeatFlux_Wperm2",
+        "EvaporationGrassCanopy_mm",
+        "EvaporationSoilSurface_mm",
+        "EvaporationPondingWater_mm",
+        "Transpiration_mm",
+        "TotalEvapotranspiration_mm",
+        "SourceFile",
+        "ClimateSourceFile"
+      ],
+      "missing": {
+        "IrrigationAmount_mm": 48,
+        "AtmosphericPressure_Pa": 3792,
+        "LatentHeatFlux_Wperm2": 3792,
+        "SensibleHeatFlux_Wperm2": 3792,
+        "GroundHeatFlux_Wperm2": 3792,
+        "EvaporationGrassCanopy_mm": 3792,
+        "EvaporationSoilSurface_mm": 3792,
+        "EvaporationPondingWater_mm": 3792,
+        "Transpiration_mm": 3792,
+        "TotalEvapotranspiration_mm": 3792
+      },
+      "exact_duplicates": 0
+    },
+    "Turfgrass_UTC_MODELED_Hourly.csv": {
+      "rows": 2808,
+      "columns": [
+        "Time",
+        "Year",
+        "Site",
+        "Treatment",
+        "DataType",
+        "SoilMoistureContent_Percent",
+        "IrrigationAmount_mm",
+        "AirTemperature_DegC",
+        "VapourPressure_kPa",
+        "TurfSurfaceTemperature_DegC",
+        "SoilTemperature_DegC",
+        "StationAirTemperature_DegC",
+        "RelativeHumidity_Percent",
+        "WindSpeed_mpers",
+        "Rainfall_mm",
+        "IncomingShortwaveRadiation_Wperm2",
+        "AtmosphericPressure_Pa",
+        "LatentHeatFlux_Wperm2",
+        "SensibleHeatFlux_Wperm2",
+        "GroundHeatFlux_Wperm2",
+        "EvaporationGrassCanopy_mm",
+        "EvaporationSoilSurface_mm",
+        "EvaporationPondingWater_mm",
+        "Transpiration_mm",
+        "TotalEvapotranspiration_mm",
+        "SourceFile",
+        "ClimateSourceFile"
+      ],
+      "missing": {
+        "SoilMoistureContent_Percent": 64,
+        "AirTemperature_DegC": 64,
+        "VapourPressure_kPa": 64,
+        "TurfSurfaceTemperature_DegC": 64,
+        "SoilTemperature_DegC": 64,
+        "LatentHeatFlux_Wperm2": 64,
+        "SensibleHeatFlux_Wperm2": 64,
+        "GroundHeatFlux_Wperm2": 64,
+        "EvaporationGrassCanopy_mm": 64,
+        "EvaporationSoilSurface_mm": 64,
+        "EvaporationPondingWater_mm": 64,
+        "Transpiration_mm": 64,
+        "TotalEvapotranspiration_mm": 64
+      },
+      "exact_duplicates": 0
+    },
+    "Turfgrass_AllSources_LABELED_Hourly.csv": {
+      "rows": 6600,
+      "columns": [
+        "Time",
+        "Year",
+        "Site",
+        "Treatment",
+        "DataType",
+        "SoilMoistureContent_Percent",
+        "IrrigationAmount_mm",
+        "AirTemperature_DegC",
+        "VapourPressure_kPa",
+        "TurfSurfaceTemperature_DegC",
+        "SoilTemperature_DegC",
+        "StationAirTemperature_DegC",
+        "RelativeHumidity_Percent",
+        "WindSpeed_mpers",
+        "Rainfall_mm",
+        "IncomingShortwaveRadiation_Wperm2",
+        "AtmosphericPressure_Pa",
+        "LatentHeatFlux_Wperm2",
+        "SensibleHeatFlux_Wperm2",
+        "GroundHeatFlux_Wperm2",
+        "EvaporationGrassCanopy_mm",
+        "EvaporationSoilSurface_mm",
+        "EvaporationPondingWater_mm",
+        "Transpiration_mm",
+        "TotalEvapotranspiration_mm",
+        "SourceFile",
+        "ClimateSourceFile"
+      ],
+      "missing": {
+        "SoilMoistureContent_Percent": 64,
+        "IrrigationAmount_mm": 48,
+        "AirTemperature_DegC": 64,
+        "VapourPressure_kPa": 64,
+        "TurfSurfaceTemperature_DegC": 64,
+        "SoilTemperature_DegC": 64,
+        "AtmosphericPressure_Pa": 3792,
+        "LatentHeatFlux_Wperm2": 3856,
+        "SensibleHeatFlux_Wperm2": 3856,
+        "GroundHeatFlux_Wperm2": 3856,
+        "EvaporationGrassCanopy_mm": 3856,
+        "EvaporationSoilSurface_mm": 3856,
+        "EvaporationPondingWater_mm": 3856,
+        "Transpiration_mm": 3856,
+        "TotalEvapotranspiration_mm": 3856
+      },
+      "exact_duplicates": 0
+    },
+    "Turfgrass_MEASURED_NextHour_Prediction.csv": {
+      "rows": 3788,
+      "columns": [
+        "Time",
+        "Year",
+        "Site",
+        "Treatment",
+        "DataType",
+        "SoilMoistureContent_Percent",
+        "IrrigationAmount_mm",
+        "AirTemperature_DegC",
+        "VapourPressure_kPa",
+        "TurfSurfaceTemperature_DegC",
+        "SoilTemperature_DegC",
+        "StationAirTemperature_DegC",
+        "RelativeHumidity_Percent",
+        "WindSpeed_mpers",
+        "Rainfall_mm",
+        "IncomingShortwaveRadiation_Wperm2",
+        "AtmosphericPressure_Pa",
+        "LatentHeatFlux_Wperm2",
+        "SensibleHeatFlux_Wperm2",
+        "GroundHeatFlux_Wperm2",
+        "EvaporationGrassCanopy_mm",
+        "EvaporationSoilSurface_mm",
+        "EvaporationPondingWater_mm",
+        "Transpiration_mm",
+        "TotalEvapotranspiration_mm",
+        "SourceFile",
+        "ClimateSourceFile",
+        "Target_SoilMoisture_NextHour_Percent"
+      ],
+      "missing": {
+        "IrrigationAmount_mm": 48,
+        "AtmosphericPressure_Pa": 3788,
+        "LatentHeatFlux_Wperm2": 3788,
+        "SensibleHeatFlux_Wperm2": 3788,
+        "GroundHeatFlux_Wperm2": 3788,
+        "EvaporationGrassCanopy_mm": 3788,
+        "EvaporationSoilSurface_mm": 3788,
+        "EvaporationPondingWater_mm": 3788,
+        "Transpiration_mm": 3788,
+        "TotalEvapotranspiration_mm": 3788
+      },
+      "exact_duplicates": 0
+    },
+    "Turfgrass_Data_Dictionary.csv": {
+      "rows": 27,
+      "columns": [
+        "Column",
+        "Description",
+        "Units"
+      ],
+      "missing": {},
+      "exact_duplicates": 0
+    }
+  },
+  "measured_groups": {
+    "2021|Irrigated": {
+      "rows": 984,
+      "start": "2021-01-21 00:00:00",
+      "end": "2021-03-02 23:00:00",
+      "missing_irrigation": 48
+    },
+    "2021|Unirrigated": {
+      "rows": 984,
+      "start": "2021-01-21 00:00:00",
+      "end": "2021-03-02 23:00:00",
+      "missing_irrigation": 0
+    },
+    "2022|Irrigated": {
+      "rows": 912,
+      "start": "2022-01-28 00:00:00",
+      "end": "2022-03-06 23:00:00",
+      "missing_irrigation": 0
+    },
+    "2022|Unirrigated": {
+      "rows": 912,
+      "start": "2022-01-28 00:00:00",
+      "end": "2022-03-06 23:00:00",
+      "missing_irrigation": 0
+    }
+  },
+  "measured_ranges": {
+    "SoilMoistureContent_Percent": {
+      "min": 8.16666666666667,
+      "max": 47.3233333333333,
+      "negative": 0
+    },
+    "IrrigationAmount_mm": {
+      "min": 0.0,
+      "max": 4.97079978529254,
+      "negative": 0
+    },
+    "AirTemperature_DegC": {
+      "min": 7.76333333333333,
+      "max": 41.655,
+      "negative": 0
+    },
+    "VapourPressure_kPa": {
+      "min": 0.873666666666667,
+      "max": 2.65521111111111,
+      "negative": 0
+    },
+    "TurfSurfaceTemperature_DegC": {
+      "min": 4.40308964431264,
+      "max": 41.0006838900981,
+      "negative": 0
+    },
+    "SoilTemperature_DegC": {
+      "min": 16.0166666666667,
+      "max": 32.1671666666667,
+      "negative": 0
+    },
+    "StationAirTemperature_DegC": {
+      "min": 7.56963333333333,
+      "max": 39.65945,
+      "negative": 0
+    },
+    "RelativeHumidity_Percent": {
+      "min": 19.1266666666667,
+      "max": 98.4166666666667,
+      "negative": 0
+    },
+    "WindSpeed_mpers": {
+      "min": 0.0,
+      "max": 2.055,
+      "negative": 0
+    },
+    "Rainfall_mm": {
+      "min": 0.0,
+      "max": 27.2,
+      "negative": 0
+    },
+    "IncomingShortwaveRadiation_Wperm2": {
+      "min": -6.34925,
+      "max": 1085.45166666667,
+      "negative": 712
+    }
+  },
+  "verified_target_pairs": 3788,
+  "combined_equals_union": true,
+  "metadata_quality_report": {
+    "source": "https://zenodo.org/records/10972539",
+    "original_uploaded_files": 11,
+    "missing_uploaded_file": "UTC2021-Irrigated_1hour.csv",
+    "observed_rows": 3792,
+    "modeled_rows": 2808,
+    "combined_rows": 6600,
+    "supervised_rows": 3788,
+    "per_group": {
+      "measured|2021|Irrigated": 984,
+      "measured|2021|Unirrigated": 984,
+      "measured|2022|Irrigated": 912,
+      "measured|2022|Unirrigated": 912,
+      "modeled_UTC|2021|Unirrigated": 984,
+      "modeled_UTC|2022|Irrigated": 912,
+      "modeled_UTC|2022|Unirrigated": 912
+    },
+    "files": [
+      {
+        "source": "Burnley2021-Irrigated_1hour.csv",
+        "type": "measured",
+        "rows": 984,
+        "unmatched_times": 0,
+        "missing_irrigation": 48,
+        "missing_moisture": 0
+      },
+      {
+        "source": "Burnley2021-Unirrigated_1hour.csv",
+        "type": "measured",
+        "rows": 984,
+        "unmatched_times": 0,
+        "missing_irrigation": 0,
+        "missing_moisture": 0
+      },
+      {
+        "source": "UTC2021-Irrigated_1hour.csv",
+        "type": "modeled",
+        "rows": 0,
+        "status": "Not uploaded; available at Zenodo source"
+      },
+      {
+        "source": "UTC2021-Unirrigated_1hour.csv",
+        "type": "modeled",
+        "rows": 984,
+        "unmatched_times": 0,
+        "missing_irrigation": 0,
+        "missing_moisture": 0
+      },
+      {
+        "source": "Burnley2022-Irrigated_1hour.csv",
+        "type": "measured",
+        "rows": 912,
+        "unmatched_times": 0,
+        "missing_irrigation": 0,
+        "missing_moisture": 0
+      },
+      {
+        "source": "Burnley2022-Unirrigated_1hour.csv",
+        "type": "measured",
+        "rows": 912,
+        "unmatched_times": 0,
+        "missing_irrigation": 0,
+        "missing_moisture": 0
+      },
+      {
+        "source": "UTC2022-Irrigated_1hour.csv",
+        "type": "modeled",
+        "rows": 912,
+        "unmatched_times": 0,
+        "missing_irrigation": 0,
+        "missing_moisture": 32
+      },
+      {
+        "source": "UTC2022-Unirrigated_1hour.csv",
+        "type": "modeled",
+        "rows": 912,
+        "unmatched_times": 0,
+        "missing_irrigation": 0,
+        "missing_moisture": 32
+      }
+    ]
+  },
+  "archive_readme": "# Turfgrass irrigation + soil moisture (measured vs modeled)\n\n## Source\nPui Kwan Cheung et al., Identifying the mechanisms by which irrigation can cool urban green spaces in summer, Zenodo, 2024.\nOriginal record: https://zenodo.org/records/10972539\nDOI: https://doi.org/10.5281/zenodo.10972539\n\n## Contents\n- Turfgrass_Burnley_MEASURED_Hourly.csv — 3,792 rows: actual experimental field observations, joined to Burnley reference climate station on year+hour; use as primary modeling data.\n- Turfgrass_UTC_MODELED_Hourly.csv — 2,808 rows: UT&C simulation output joined to the forcing climate; do NOT label as real-world measurements.\n- Turfgrass_AllSources_LABELED_Hourly.csv — 6,600 rows, measured+modeled stacked (not duplicate-reduced), explicit DataType for every row.\n- Turfgrass_MEASURED_NextHour_Prediction.csv — 3,788 observed current-to-next-hour pairs. Next-hour soil moisture is the target; split by experiment/year/time rather than random hour to avoid temporal leakage.\n- Turfgrass_Data_Dictionary.csv — column meanings and units.\n- Turfgrass_Quality_Report.json — raw source counts and missingness.\n\n## Dates and experimental coverage\n- 2021-01-21 00:00:00 to 2021-03-02 23:00:00 (984 hours)\n- 2022-01-28 00:00:00 to 2022-03-06 23:00:00 (912 hours)\n- Dates are not two continuous full years; each year covers one summer experiment.\n\n## Critical handling / limitations\n- Original index column named empty string is dropped; row order is preserved. Dates come from original Time column, with no UTC/local clock conversion.\n- All NA and missing values are empty in output, not zero. For Burnley2021 Irrigated there are 48 missing irrigation amount cells; do not assume no irrigation.\n- UTC2022 simulation has first 32 hours of missing soil moisture/energy/ET outputs in EACH 2022 plot; these remain missing.\n- The 12th original file UTC2021-Irrigated_1hour.csv was NOT uploaded; it was not filled in or fabricated. Original source link: https://zenodo.org/records/10972539/files/UTC2021-Irrigated_1hour.csv?download=1\n- UTC model variables are not independent ground truth. Avoid mixing model outputs with observed rows in the same training split without explicit modeling choices.\n- Same-hour irrigation is an observed action, not a reliable label of optimal irrigation; this dataset does NOT directly provide a ground-truth 'water needed' target or field capacity, soil pH, soil salinity, grass species, or Riyadh climate.\n- Rainfall and solar radiation can contain small negative instrumental/model night values. No values were clipped or imputed.\n- Burnley2022-ReferenceClimateStation_1hour.csv has generic column names (no unit suffix); mapping to equivalent 2021 columns assumes same physical units. Verify with dataset documentation before a production deployment.\n- Apparent many-row dataset does not imply many independent seasons or sites. This is one site over two short experiments.\n- The parent dataset's source citation should accompany derivative works.\n",
+  "coefficients_research_only": {
+    "Irrigated": {
+      "slope": 0.9909842012002528,
+      "intercept": 0.38685376353536327,
+      "train_n": 983,
+      "test_n": 911
+    },
+    "Unirrigated": {
+      "slope": 0.9976646402174584,
+      "intercept": 0.03876196120518216,
+      "train_n": 983,
+      "test_n": 911
+    }
+  },
+  "evaluation": [
+    {
+      "treatment": "Irrigated",
+      "segment": "all",
+      "model": "persistence",
+      "n": 911,
+      "mae_pp": 0.2157391145261617,
+      "rmse_pp": 0.5458398497131514
+    },
+    {
+      "treatment": "Irrigated",
+      "segment": "all",
+      "model": "ols_current_moisture",
+      "n": 911,
+      "mae_pp": 0.32281674432681123,
+      "rmse_pp": 0.5571909812830703
+    },
+    {
+      "treatment": "Irrigated",
+      "segment": "event_window",
+      "model": "persistence",
+      "n": 112,
+      "mae_pp": 0.7169742063492107,
+      "rmse_pp": 1.0500708094247726
+    },
+    {
+      "treatment": "Irrigated",
+      "segment": "event_window",
+      "model": "ols_current_moisture",
+      "n": 112,
+      "mae_pp": 0.6746921270161584,
+      "rmse_pp": 0.9679182759500121
+    },
+    {
+      "treatment": "Irrigated",
+      "segment": "no_recorded_event",
+      "model": "persistence",
+      "n": 799,
+      "mae_pp": 0.14547837574746145,
+      "rmse_pp": 0.4302802372910637
+    },
+    {
+      "treatment": "Irrigated",
+      "segment": "no_recorded_event",
+      "model": "ols_current_moisture",
+      "n": 799,
+      "mae_pp": 0.2734925354892557,
+      "rmse_pp": 0.47186382762897094
+    },
+    {
+      "treatment": "Irrigated",
+      "segment": "unknown_irrigation",
+      "model": "persistence",
+      "n": 0,
+      "mae_pp": null,
+      "rmse_pp": null
+    },
+    {
+      "treatment": "Irrigated",
+      "segment": "unknown_irrigation",
+      "model": "ols_current_moisture",
+      "n": 0,
+      "mae_pp": null,
+      "rmse_pp": null
+    },
+    {
+      "treatment": "Unirrigated",
+      "segment": "all",
+      "model": "persistence",
+      "n": 911,
+      "mae_pp": 0.09015855592145355,
+      "rmse_pp": 0.3869345776950936
+    },
+    {
+      "treatment": "Unirrigated",
+      "segment": "all",
+      "model": "ols_current_moisture",
+      "n": 911,
+      "mae_pp": 0.09292557402023309,
+      "rmse_pp": 0.3867866423430338
+    },
+    {
+      "treatment": "Unirrigated",
+      "segment": "event_window",
+      "model": "persistence",
+      "n": 0,
+      "mae_pp": null,
+      "rmse_pp": null
+    },
+    {
+      "treatment": "Unirrigated",
+      "segment": "event_window",
+      "model": "ols_current_moisture",
+      "n": 0,
+      "mae_pp": null,
+      "rmse_pp": null
+    },
+    {
+      "treatment": "Unirrigated",
+      "segment": "no_recorded_event",
+      "model": "persistence",
+      "n": 911,
+      "mae_pp": 0.09015855592145355,
+      "rmse_pp": 0.3869345776950936
+    },
+    {
+      "treatment": "Unirrigated",
+      "segment": "no_recorded_event",
+      "model": "ols_current_moisture",
+      "n": 911,
+      "mae_pp": 0.09292557402023309,
+      "rmse_pp": 0.3867866423430338
+    },
+    {
+      "treatment": "Unirrigated",
+      "segment": "unknown_irrigation",
+      "model": "persistence",
+      "n": 0,
+      "mae_pp": null,
+      "rmse_pp": null
+    },
+    {
+      "treatment": "Unirrigated",
+      "segment": "unknown_irrigation",
+      "model": "ols_current_moisture",
+      "n": 0,
+      "mae_pp": null,
+      "rmse_pp": null
+    }
+  ],
+  "event_definition": "Irrigation >0 at current OR next row, used ONLY to stratify evaluation; unknown is not zero. Hour interval convention unverified."
+}

@@ -233,3 +233,42 @@ node_modules/
 !frontend/lib/
 !frontend/lib/**
 backups/
+
+# Private local configuration and credential material
+.env.*
+.envrc.*
+.netrc
+.npmrc
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+service-account*.json
+secrets/
+.secrets/
+
+# Other SQLite names and transient database sidecars
+*.sqlite
+*.sqlite3
+*.db-journal
+*.sqlite-*
+*.sqlite3-*
+
+# Local backups, temporary files and generated tooling output
+*.bak
+*.backup
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+tmp/
+temp/
+.tmp/
+out/
+coverage/
+playwright-report/
+test-results/
+.turbo/
+.eslintcache

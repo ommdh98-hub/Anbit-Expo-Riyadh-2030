@@ -1173,3 +1173,443 @@ label small {
     top: 0;
   }
 }
+
+.twin-intro {
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.twin-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+  align-items: start;
+}
+.twin-layout > .panel {
+  padding: 24px;
+  min-width: 0;
+}
+.twin-layout p,
+.twin-layout code {
+  overflow-wrap: anywhere;
+}
+.twin-layout h3 {
+  margin: 22px 0 8px;
+}
+.twin-layout .eyebrow {
+  color: var(--green);
+  font-size: 12px;
+}
+.twin-layout label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0;
+}
+.twin-layout input,
+.twin-layout select {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.twin-inputs,
+.twin-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.twin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.twin-result {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px dashed var(--olive);
+  border-radius: 12px;
+  background: #f3f3e8;
+}
+.twin-compare > div {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 12px;
+}
+.twin-compare strong {
+  display: block;
+  font-size: 30px;
+  color: var(--green);
+}
+.twin-point {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+.twin-layout summary {
+  cursor: pointer;
+  color: var(--green);
+}
+@media (max-width: 1100px) {
+  .twin-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .twin-layout > .panel {
+    padding: 16px;
+  }
+  .twin-inputs {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Guided entry keeps operational detail available through progressive disclosure. */
+.guide-intro {
+  max-width: 760px;
+  padding: 12px 0 24px;
+}
+.guide-intro > p {
+  font-size: 18px;
+  line-height: 1.9;
+  margin-top: 0;
+}
+.guide-intro small {
+  display: block;
+  color: var(--muted);
+  margin-top: 12px;
+}
+.guide-steps {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 28px;
+}
+.guide-steps button {
+  flex: 1;
+  justify-content: flex-start;
+  padding: 16px;
+}
+.guide-steps [aria-current="step"] {
+  background: #e8eddf;
+  border-color: var(--green);
+  font-weight: 600;
+}
+.guide-steps button:disabled {
+  cursor: default;
+}
+.guide-zone-list {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.guide-zone-list article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--line);
+}
+.guide-zone-list article:last-child {
+  border-bottom: 0;
+}
+.guide-zone-list h3 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+.guide-zone-list strong {
+  font-size: 13px;
+  color: #66552e;
+}
+.guide-zone-list p {
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+.guide-zone-list button {
+  flex-shrink: 0;
+}
+.guide-stale {
+  padding: 14px 18px;
+  background: #f2eddd;
+  border-radius: 8px;
+  color: #66552e;
+}
+.guide-panel {
+  padding: 28px;
+  max-width: 940px;
+}
+.guide-panel h2 {
+  margin: 8px 0 24px;
+}
+.guide-panel h3 {
+  font-size: 21px;
+}
+.guide-summary {
+  font-size: 17px;
+}
+.guide-location {
+  padding: 18px;
+  border-right: 3px solid var(--olive);
+  background: #f4f5ec;
+  margin: 20px 0;
+}
+.guide-actions,
+.guide-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0;
+}
+.guide-explanation,
+.guide-advanced {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.guide-explanation summary,
+.guide-advanced summary {
+  cursor: pointer;
+  color: var(--green);
+  padding: 8px 0;
+  font-weight: 500;
+}
+.guide-advanced > .metrics {
+  margin-top: 24px;
+}
+.guide-explanation p {
+  overflow-wrap: anywhere;
+}
+.guide-explanation h3 {
+  font-size: 16px;
+}
+.guide-estimate {
+  background: #edf1e7;
+  padding: 16px;
+  border-radius: 8px;
+}
+.guide-feedback {
+  background: #edf1e7;
+  padding: 14px;
+  border-radius: 8px;
+}
+.guide-return {
+  margin-bottom: 14px;
+}
+@media (max-width: 600px) {
+  .guide-steps {
+    gap: 5px;
+  }
+  .guide-steps button {
+    padding: 10px 7px;
+    font-size: 12px;
+  }
+  .guide-zone-list article {
+    align-items: flex-start;
+    padding: 16px;
+    gap: 12px;
+    flex-direction: column;
+  }
+  .guide-zone-list button {
+    align-self: flex-end;
+  }
+  .guide-panel {
+    padding: 18px;
+  }
+  .guide-intro > p {
+    font-size: 16px;
+  }
+}
+
+.plant-explorer {
+  padding: 24px;
+  margin-bottom: 28px;
+}
+.explorer-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
+  margin: 20px 0;
+}
+.explorer-selector select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.explorer-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.explorer-results article {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px;
+  min-width: 0;
+}
+.explorer-results h3 {
+  margin: 0;
+}
+.plant-explorer summary {
+  cursor: pointer;
+  color: var(--green);
+}
+.explorer-provenance {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+@media (max-width: 1100px) {
+  .explorer-results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .explorer-results {
+    grid-template-columns: 1fr;
+  }
+  .plant-explorer {
+    padding: 16px;
+  }
+}
+
+.decision-explanation {
+  margin-block: 18px;
+  padding: 16px;
+  border: 1px solid var(--line, #dce2d6);
+  border-radius: 12px;
+}
+.decision-explanation details {
+  margin-block: 12px;
+}
+.decision-explanation input {
+  max-width: 100%;
+}
+
+/* Unified, decision-first interface. Visual language draws on the team design;
+   values, statuses and all actions remain connected to ANBIT's original API. */
+.quick-home { display: grid; gap: 20px; margin-bottom: 24px; }
+.quick-hero { background: linear-gradient(115deg,#234d36,#37694c); border-radius: 22px; padding: 28px 32px; color: #fffefa; display: flex; justify-content: space-between; align-items: center; gap: 24px; overflow: hidden; min-height: 230px; }
+.quick-hero-text { flex: 1 1 55%; position: relative; z-index: 1; }
+.quick-kicker { display: inline-block; font-weight: 600; color: #d1e3bc; font-size: 12px; margin-bottom: 9px; }
+.quick-hero h2 { color: white; max-width: 600px; font-size: clamp(22px,2.7vw,33px); font-weight: 600; line-height: 1.5; }
+.quick-hero p { font-size: 14px; color: #e0ebdb; max-width: 540px; margin-bottom: 15px; }
+.quick-demo-tag { display: inline-block; font-size: 11px; padding: 5px 12px; border-radius: 40px; color: #e5ecdb; border: 1px solid #a6c5a266; background: #ffffff11; }
+.anbit-garden-art { width: min(41%,350px); height: auto; flex: 0 0 auto; filter: drop-shadow(0 9px 12px #071c1444); }
+.quick-panel,.quick-result { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 26px 28px; box-shadow: 0 7px 23px #234d360a; }
+.quick-section-head { display:flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 18px; }
+.quick-section-head h2 { font-size: 21px; color: #244d36; }
+.quick-eyebrow { font-size: 11px; color: #718273; margin: 0 0 3px; font-weight: 600; }
+.quick-muted { font-size: 12px; color: #788278; }
+.quick-zone-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; }
+.quick-zone-choice { min-width: 0; border: 1px solid #dee8dc; background: #fcfdfb; padding: 17px 12px; border-radius: 12px; text-align: right; display:flex; flex-direction:column; align-items:flex-start; gap: 4px; }
+.quick-zone-choice strong { font-size: 14px; white-space:normal; line-height:1.55; }
+.quick-zone-choice small { color: #718078; font-size: 11px; line-height: 1.6; }
+.quick-zone-choice.is-selected,.quick-zone-choice[aria-pressed="true"] { border-color: #376c4d; background:#edf4e9; box-shadow: inset -3px 0 #376c4d; }
+.quick-status-code { font-size: 12px; padding: 6px 12px; border-radius: 30px; background: #f1f1ed; color:#5b665b; }
+.quick-status-code.code-review,.quick-status-code.code-measure { color:#7b5515; background:#f8eeda; }
+.quick-status-code.code-high { color:#346a77; background:#e4f2f5; }
+.quick-status-code.code-conflict { color:#a14640; background:#f9e7e5; }
+.quick-status-code.code-defer { color:#39664a; background:#e9f4e8; }
+.quick-state-explain { font-size: 15px; margin: 0 0 18px; color: #5d6e61; }
+.quick-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap: 12px; margin-bottom:20px; }
+.quick-metrics > div { padding: 18px; border-radius:14px; background:#f6f8f3; border:1px solid #e8eee5; display:flex; flex-direction:column; min-width:0; }
+.quick-metrics span { color:#697c6d; font-size: 12px; }
+.quick-metrics strong { font-size: clamp(18px,2vw,26px); color:#254d36; line-height:1.6; overflow-wrap:anywhere; }
+.quick-metrics small { color:#728077; font-size:11px; }
+.quick-next { display:flex; gap: 20px; align-items: center; justify-content:space-between; background: #edf3e9; border-right: 4px solid var(--olive); border-radius:14px; padding: 19px 22px; }
+.quick-next strong { font-size: 18px; }
+.quick-next p:last-child { margin:4px 0 0; color:#607362; font-size: 12px; }
+.quick-buttons { display:flex; gap:9px; flex-wrap:wrap; align-items:center; flex-shrink:0; }
+.quick-buttons button { white-space:normal; }
+.quick-optional { border:1px solid var(--line); border-radius:13px; padding:13px 16px; margin-top:18px; }
+.quick-optional summary { cursor:pointer; color:var(--green); font-weight:600; }
+.quick-optional label { display:block; margin:10px 0 7px; }
+.quick-optional input { display:block; border:1px solid var(--line); border-radius:9px; padding:9px; width:min(100%,320px); }
+.quick-optional p[role=status] { display:flex; align-items:center; gap:7px; font-weight:600; }
+.quick-optional small { color:var(--muted); }
+.quick-provenance { margin:16px 0 0; color:var(--muted); font-size: 11px; line-height:1.8; }
+.quick-guided-extra,.map-twin-access { margin: 0 0 22px; border:1px solid var(--line); background:#fffefa; padding:18px 24px; border-radius:14px; }
+.quick-guided-extra > summary,.map-twin-access > summary { cursor:pointer; font-weight:600; color:var(--green); font-size:15px; }
+.quick-guided-extra[open] > summary,.map-twin-access[open] > summary { margin-bottom:18px; }
+.map-layer-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.map-headline { align-items:flex-start; gap:15px; flex-wrap:wrap; }
+.map-clear .site-map { background:#edf1e8; border-radius:14px; margin:10px auto; }
+.map-clear .map-state-label { font-size:1.4px; fill:#566e5c; font-weight:500; }
+.map-clear .map-pin-label { font-size:1.65px; fill:#895b16; font-weight:700; }
+.map-simple-key { display:flex; gap:9px; flex-direction:column; align-items:flex-start; color:#637466; font-size:12px; margin-top:16px; }
+.map-simple-key span { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.map-selected-note { padding:11px 14px; margin:13px 0 0; background:#f2f6ee; border-radius:11px; color:#526f56; font-size:12px; }
+.map-zone:hover > rect:first-of-type { filter:brightness(.97); }
+.map-zone[aria-pressed="true"] > rect:first-of-type { stroke:#234d36; }
+.map-zone:focus-visible > rect:first-of-type { stroke:#327f8a; stroke-width:.65px; }
+.map-zone text { pointer-events:none; }
+.map-zone { cursor:pointer; }
+.map-zone [pointer-events="none"] { pointer-events:none; }
+.map-zone-summary { background:#fffefa; border:1px solid var(--line); border-radius:14px; padding:22px; margin:16px 0 20px; display:flex; align-items:center; justify-content:space-between; gap:22px; }
+.map-zone-summary h2 { font-size:23px; }
+.map-zone-summary strong { color:var(--ink); display:block; margin-top:5px; }
+.map-zone-summary p { color:#5b6e5e; max-width:680px; }
+.map-zone-summary small { color:var(--muted); font-size:11px; }
+@media(max-width:1250px) { .quick-zone-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } .quick-next { align-items:flex-start; flex-direction:column; } }
+@media(max-width:750px) {
+  .quick-hero { padding:22px; min-height:220px; }
+  .quick-hero h2 { font-size:24px; }
+  .quick-hero p { font-size:12px; }
+  .anbit-garden-art { width:30%; }
+  .quick-panel,.quick-result { padding:19px 16px; }
+  .quick-zone-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .quick-metrics { grid-template-columns:1fr 1fr; }
+  .quick-metrics>div:last-child { grid-column:span 2; }
+  .quick-buttons { width:100%; }
+  .quick-buttons button { flex:1 1 auto; }
+  .map-zone-summary { align-items:flex-start; flex-direction:column; }
+}
+@media(max-width:460px) {
+  .quick-hero { display:block; position:relative; min-height:215px; }
+  .quick-hero-text { max-width:100%; }
+  .anbit-garden-art { position:absolute; width:135px; bottom:-39px; left:-35px; opacity:.2; pointer-events:none; }
+  .quick-hero h2 { font-size:23px; }
+  .quick-zone-grid { grid-template-columns:1fr 1fr; }
+  .quick-zone-choice { padding:12px 10px; }
+  .quick-zone-choice strong { font-size:12px; }
+  .quick-zone-choice small { font-size:10px; }
+  .quick-metrics { grid-template-columns:1fr; }
+  .quick-metrics>div:last-child { grid-column:auto; }
+  .map-layer-actions { width:100%; }
+  .map-layer-actions button { flex: 1 1 170px; }
+  .quick-guided-extra,.map-twin-access { padding:14px; }
+}
+
+/* Role-based demo login. Separate from the irrigation UI and the map. */
+.anbit-auth-shell{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:28px;background:radial-gradient(circle at 70% 10%,#e4eddf 0,#f8f7f1 48%,#f3f4ed 100%)}
+.anbit-login{width:min(100%,530px);padding:clamp(24px,5vw,42px);background:#fffefa;border:1px solid #dfe5da;border-radius:24px;box-shadow:0 18px 60px #1f3e2a10;text-align:center}
+.anbit-login-brand img{width:130px;height:auto;margin:auto;border-radius:8px}
+.anbit-login-overline{font-size:11px;color:#57785f;margin:8px 0 4px}
+.anbit-login h1{font-size:29px;margin:4px 0;color:#234d36;line-height:1.5}
+.anbit-login-desc{font-size:13px;color:#637465;margin-bottom:24px}
+.anbit-role-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 24px}
+button.anbit-role-card{display:flex;align-items:center;flex-direction:column;text-align:center;gap:6px;padding:19px 12px 18px;background:#f8faf5;border:2px solid #e4eade;border-radius:15px;min-height:155px;transition:background .2s,border-color .2s}
+button.anbit-role-card.is-active{background:#e9f1e7;border-color:#417756}
+.anbit-role-icon{width:48px;height:48px;border-radius:14px;background:#e3ebdb;color:#315c40;display:flex;align-items:center;justify-content:center}
+.anbit-role-card strong{font-size:15px}
+.anbit-role-card small{font-size:11px;line-height:1.75;color:#6a776d}
+.anbit-login-field{display:flex;gap:7px;align-items:center;margin-bottom:8px;text-align:right;font-weight:600;font-size:13px}
+.anbit-login input[type=password]{display:block;width:100%;border:1px solid #cfd9cb;padding:13px 14px;border-radius:11px;background:white;font-size:15px;text-align:right}
+.anbit-login-submit{width:100%;margin-top:16px;padding:13px;justify-content:center;font-size:14px}
+.anbit-login-error{color:#9b2929;text-align:right;margin-top:10px;font-size:12px}
+.anbit-login-help{color:#718074;font-size:11px;line-height:1.8;margin-top:14px}
+.anbit-login-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;font-size:12px;color:#44634c}
+.anbit-login-foot span{color:#798779}
+.anbit-login-loading{padding:25px 0;text-align:center}
+.anbit-login-loading button{margin-top:15px}
+.anbit-profile{display:flex;flex-direction:column;gap:8px;padding:11px;border:1px solid #dee5da;border-radius:12px;margin-bottom:14px;background:#fffefa}
+.anbit-profile small{color:#657569}
+.anbit-profile button{font-size:11px;justify-content:center;padding:6px 8px}
+.anbit-role-hint{font-size:12px;color:#526b58;line-height:1.7;align-self:center}
+.anbit-map-tip{font-size:12px;color:#536b56}
+@media(max-width:480px){.anbit-auth-shell{padding:16px}.anbit-login{padding:24px 17px;border-radius:18px}.anbit-role-grid{gap:8px}.anbit-role-card small{font-size:10px}button.anbit-role-card{padding:14px 8px;min-height:165px}}

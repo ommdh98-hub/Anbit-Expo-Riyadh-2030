@@ -22,6 +22,8 @@ export type Coverage = {
   caveat: string;
 };
 export type Estimate = {
+  current_vwc: number;
+  target_vwc: number;
   net_l: number;
   gross_l: number;
   deficit_fraction: number;
@@ -32,6 +34,7 @@ export type Estimate = {
   formula: string;
 };
 export type Decision = {
+  soil_condition?: string;
   code: string;
   label: string;
   reason: string;
@@ -56,15 +59,17 @@ export type Zone = {
   width: number;
   height: number;
   area_m2: number;
-  irrigated_area_m2: number;
-  root_depth_m: number;
-  efficiency: number;
+  irrigated_area_m2: number | null;
+  root_depth_m: number | null;
+  efficiency: number | null;
+  root_representative: boolean;
   origin: string;
   method: string;
   revision: number;
   plant: { name: string };
   soil: {
     name: string;
+    calibration: string;
     lower_vwc: number;
     target_vwc: number;
     upper_vwc: number;

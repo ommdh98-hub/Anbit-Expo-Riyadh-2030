@@ -1,7 +1,7 @@
 """Pure, deterministic decision functions. No database or UI dependencies."""
 
 from datetime import datetime, timezone
-from math import hypot
+from math import hypot, isfinite
 from statistics import mean
 
 
@@ -27,6 +27,8 @@ def usable_readings(zone, readings, now):
         reason = None
         if vwc(reading) is None:
             reason = "قيمة خام غير معايرة"
+        elif not isfinite(vwc(reading)) or not 0 <= vwc(reading) <= 1:
+            reason = "رطوبة حجمية خارج النطاق أو غير صالحة حسابيًا"
         elif reading.quality != "verified":
             reason = "جودة القراءة غير متحققة"
         elif age < 0 or age > zone.freshness_hours:
@@ -134,7 +136,7 @@ def decide(zone, soil, points, readings, now=None):
         rules.append("geometric-coverage")
     elif (
         not zone.homogeneous
-        or not soil
+        or not valid_thresholds(soil)
         or (zone.origin != "simulation" and soil.calibration != "field_validated")
     ):
         missing.append("معايرة ملائمة وتحقق من تمثيل التربة والنبات")
@@ -162,35 +164,13 @@ def decide(zone, soil, points, readings, now=None):
         rules.append("zone-vwc-range")
     estimate = None
     if code == "review":
-        if all(
-            [
-                zone.irrigated_area_m2,
-                zone.root_depth_m,
-                zone.efficiency,
-                zone.root_representative,
-            ]
-        ):
-            deficit = max(0, soil.target_vwc - mean(values))
-            net = zone.irrigated_area_m2 * zone.root_depth_m * deficit * 1000
-            estimate = {
-                "net_l": round(net, 1),
-                "gross_l": round(net / zone.efficiency, 1),
-                "deficit_fraction": round(deficit, 4),
-                "area_m2": zone.irrigated_area_m2,
-                "root_depth_m": zone.root_depth_m,
-                "efficiency": zone.efficiency,
-                "label": (
-                    "تقدير محاكاة"
-                    if zone.origin == "simulation"
-                    else "تقدير حسابي مشروط"
-                ),
-                "formula": "المساحة × عمق الجذور × فرق الرطوبة الحجمية × 1000 ÷ الكفاءة",
-            }
-        else:
+        estimate = conditional_water(zone, soil, mean(values))
+        if estimate is None:
             missing.append(
                 "مساحة الري وعمق الجذور والكفاءة والتحقق من تمثيل كامل العمق"
             )
     return {
+        "soil_condition": soil_condition(code),
         "code": code,
         "label": label,
         "reason": reason,
@@ -216,4 +196,68 @@ def decide(zone, soil, points, readings, now=None):
             code, 0
         ),
         "evaluated_at": now.isoformat(),
+    }
+
+
+CONDITIONAL_LABEL = "تقدير حسابي مشروط، وليس كمية ري معتمدة ميدانيًا."
+
+
+def valid_thresholds(soil):
+    return bool(
+        soil
+        and all(
+            isinstance(v, (int, float)) and isfinite(v)
+            for v in (soil.lower_vwc, soil.target_vwc, soil.upper_vwc)
+        )
+        and 0 <= soil.lower_vwc <= soil.target_vwc <= soil.upper_vwc <= 1
+    )
+
+
+def soil_condition(code):
+    return {
+        "review": "رطوبة أقل من الحد المحدد",
+        "defer": "رطوبة ضمن النطاق المحدد",
+        "high": "رطوبة أعلى من الحد المحدد",
+    }.get(code, "لا تتوفر بيانات كافية لتحديد حالة التربة.")
+
+
+def conditional_water(zone, soil, current):
+    """Only used after decision eligibility; VWC fractions, metres, litres."""
+    values = (
+        current,
+        zone.area_m2,
+        zone.irrigated_area_m2,
+        zone.root_depth_m,
+        zone.efficiency,
+    )
+    if (
+        not valid_thresholds(soil)
+        or not zone.root_representative
+        or not all(isinstance(v, (int, float)) and isfinite(v) for v in values)
+    ):
+        return None
+    if not (
+        0 <= current <= 1
+        and zone.irrigated_area_m2 > 0
+        and zone.irrigated_area_m2 <= zone.area_m2
+        and zone.root_depth_m > 0
+        and 0 < zone.efficiency <= 1
+    ):
+        return None
+    deficit = max(0, soil.target_vwc - current)
+    net = zone.irrigated_area_m2 * zone.root_depth_m * deficit * 1000
+    gross = net / zone.efficiency
+    if not all(isfinite(v) for v in (net, gross)):
+        return None
+    return {
+        "net_l": round(net, 1),
+        "gross_l": round(gross, 1),
+        "deficit_fraction": round(deficit, 4),
+        "current_vwc": current,
+        "target_vwc": soil.target_vwc,
+        "area_m2": zone.irrigated_area_m2,
+        "root_depth_m": zone.root_depth_m,
+        "efficiency": zone.efficiency,
+        "label": CONDITIONAL_LABEL,
+        "formula": "المساحة (م²) × عمق الجذور (م) × فرق VWC الكسري × 1000 ÷ الكفاءة",
     }

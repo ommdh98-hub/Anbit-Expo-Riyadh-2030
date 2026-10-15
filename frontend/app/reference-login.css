@@ -1,0 +1,318 @@
+/* Login geometry, artwork and palette from ANBIT_Login_Reference/source.
+   Scoped to this screen; the existing application stylesheet remains intact. */
+.reference-login {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  min-height: 100vh;
+  background: var(--card);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.reference-login h1,
+.reference-login h2,
+.reference-login p {
+  margin: 0;
+}
+.reference-login-visual {
+  background: #234334;
+  color: #e9f0df;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 30px;
+  overflow: hidden;
+}
+.reference-brand {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  color: #d8e8c4;
+  padding-inline: 13px;
+  margin-bottom: 36px;
+}
+.reference-brand b {
+  font-size: 32px;
+  line-height: 1.05;
+}
+.reference-brand b span {
+  display: block;
+  font-family: Manrope, Arial, sans-serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  padding-top: 7px;
+  font-weight: 600;
+}
+.reference-login-visual h1 {
+  font-size: 50px;
+  font-weight: 500;
+  letter-spacing: -0.8px;
+  line-height: 1.5;
+  text-align: center;
+}
+.reference-login-visual > p {
+  font-size: 14px;
+  color: #b9cdb3;
+  margin-top: 13px;
+  text-align: center;
+}
+.reference-login .garden-art {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+  max-width: 610px;
+  margin: 14px 0;
+}
+.reference-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  color: #c9dbc0;
+  background: #ffffff12;
+  font-size: 10px;
+  font-weight: 500;
+}
+.reference-login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 455px;
+  width: 100%;
+  padding: 50px 40px;
+  margin: auto;
+  position: relative;
+  min-width: 0;
+}
+.reference-eyebrow {
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  font-weight: 700;
+  color: var(--green);
+}
+.reference-login-form h2 {
+  font-size: 29px;
+  font-weight: 600;
+  margin-top: 11px;
+}
+.reference-login-form > p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 10px;
+  margin-bottom: 27px;
+}
+.reference-segments {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 3px;
+}
+.reference-segments button {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  padding: 8px 16px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.reference-segments .selected {
+  background: var(--card);
+  color: var(--green);
+  box-shadow: 0 1px 5px #0000000a;
+}
+.reference-role-description {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 9px;
+  min-height: 36px;
+}
+.reference-login-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+.reference-login label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.reference-login input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--ink);
+  min-height: 43px;
+}
+.reference-login input[readonly] {
+  color: var(--muted);
+}
+.reference-login .primary {
+  border: 0;
+  background: #337656;
+  color: #fff;
+  border-radius: 9px;
+  padding: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.reference-login .primary:hover {
+  background: #285e44;
+}
+.reference-login .reference-login-note {
+  font-size: 10px;
+  line-height: 1.8;
+  margin-top: 24px;
+  margin-bottom: 0;
+  text-align: center;
+}
+.reference-login .preference-controls {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 40px;
+}
+.reference-error {
+  padding: 14px 18px;
+  border: 1px solid #be736344;
+  background: var(--errorbg);
+  color: var(--error);
+  border-radius: 9px;
+  font-size: 12px;
+}
+.reference-error p {
+  color: inherit;
+}
+.reference-login .sprout {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: reference-sway 6s ease-in-out infinite;
+}
+.reference-login .waterdrop {
+  animation: reference-fall 2s linear infinite;
+}
+@keyframes reference-sway {
+  0%,
+  100% {
+    rotate: -1deg;
+  }
+  50% {
+    rotate: 1deg;
+  }
+}
+@keyframes reference-fall {
+  0% {
+    translate: 0 -10px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    translate: 0 105px;
+    opacity: 0;
+  }
+}
+@media (max-width: 1000px) and (min-width: 701px) {
+  .reference-login-visual h1 {
+    font-size: 38px;
+  }
+  .reference-login-form {
+    padding-inline: 28px;
+  }
+  .reference-login-visual {
+    padding-inline: 22px;
+  }
+}
+@media (max-width: 700px) {
+  .reference-login {
+    display: flex;
+    flex-direction: column;
+  }
+  .reference-login-visual {
+    padding: 30px 25px 20px;
+    min-height: 340px;
+  }
+  .reference-brand {
+    margin-bottom: 16px;
+  }
+  .reference-login-visual h1 {
+    font-size: 31px;
+  }
+  .reference-login-visual > p {
+    font-size: 11px;
+  }
+  .reference-login .garden-art {
+    height: 160px;
+    margin: 0;
+    max-width: 350px;
+  }
+  .reference-pill {
+    font-size: 9px;
+  }
+  .reference-login-form {
+    padding: 55px 27px 42px;
+    max-width: 500px;
+  }
+  .reference-login-form h2 {
+    font-size: 26px;
+  }
+  .reference-login .preference-controls {
+    top: 13px;
+    inset-inline-end: 27px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reference-login .sprout,
+  .reference-login .waterdrop {
+    animation: none;
+  }
+}
+main.reference-login {
+  margin: 0;
+  width: 100%;
+}
+html[data-theme="light"] .reference-login {
+  --ink: #233d32;
+  --muted: #7a877f;
+  --line: #e7ebe3;
+  --green: #377c5d;
+  --bg: #f5f6f1;
+  --card: #fff;
+}
+.reference-login label {
+  margin: 0;
+}
+.reference-login .waterdrop {
+  animation: reference-fall 1.8s ease-in infinite;
+}
+@media (max-width: 700px) {
+  .reference-login-visual {
+    padding: 20px 25px 15px;
+  }
+  .reference-login .garden-art {
+    height: 145px;
+  }
+  .reference-brand {
+    margin-bottom: 12px;
+  }
+}
+@media (min-width: 701px) and (max-width: 1000px) {
+  .reference-login-form h2 {
+    font-size: 26px;
+    text-wrap: balance;
+  }
+}

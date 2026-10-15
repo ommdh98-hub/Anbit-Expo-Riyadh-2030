@@ -1,0 +1,274 @@
+:root {
+  --bg: #f5f6f1;
+  --card: #fff;
+  --side: #fff;
+  --sage: #eef3e8;
+  --error: #9a3f35;
+  --errorbg: #fff0ed;
+}
+html[data-localizing="true"] body {
+  visibility: hidden;
+}
+html[lang="en"] body {
+  font-family: Manrope, "IBM Plex Sans Arabic", Arial, sans-serif;
+}
+.preference-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.preference-controls .icon-button {
+  width: auto;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px;
+  color: var(--green);
+}
+.preference-controls span {
+  font-size: 11px;
+}
+html[dir="ltr"] .sidebar {
+  right: auto;
+  left: 0;
+  border-left: 0;
+  border-right: 1px solid var(--line);
+}
+html[dir="ltr"] .workspace {
+  margin-right: 0;
+  margin-left: 210px;
+}
+html[dir="ltr"] .quick-zone-choice {
+  text-align: left;
+}
+html[dir="ltr"] .sidebar nav button.active {
+  box-shadow: inset 3px 0 var(--green);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #14221b;
+  --card: #1c2d23;
+  --ink: #e0e9db;
+  --muted: #a4b3a7;
+  --line: #324438;
+  --green: #98c7a6;
+  --sage: #2a3f2f;
+  --side: #18271f;
+  --shadow: none;
+  --error: #f4afa5;
+  --errorbg: #412c2a;
+  --surface: #1c2d23;
+  --ivory: #14221b;
+  --olive: #b7cb83;
+  --red: #f4afa5;
+  --amber: #d6b776;
+}
+[data-theme="dark"] .sidebar,
+[data-theme="dark"] .topbar {
+  background: var(--side);
+}
+[data-theme="dark"] .sidebar nav button {
+  color: var(--muted);
+}
+[data-theme="dark"] button:hover,
+[data-theme="dark"] .selected,
+[data-theme="dark"] .sidebar nav button.active {
+  background: var(--sage);
+  border-color: var(--line);
+}
+[data-theme="dark"] button.primary {
+  color: #14221b;
+}
+[data-theme="dark"] button.primary:hover {
+  background: #b4d8b8;
+}
+[data-theme="dark"] .reference-login button.primary {
+  background: #337656;
+  color: white;
+}
+[data-theme="dark"] .reference-login button.primary:hover {
+  background: #285e44;
+}
+[data-theme="dark"]
+  :is(
+    input,
+    select,
+    textarea,
+    dialog,
+    .anbit-profile,
+    .inset,
+    .guide-location,
+    .guide-stale,
+    .guide-zone-list article,
+    .map-zone-summary,
+    .quick-zone-choice,
+    .quick-metrics > div
+  ) {
+  background: var(--card);
+  color: var(--ink);
+  border-color: var(--line);
+}
+[data-theme="dark"]
+  :is(
+    .quick-section-head h2,
+    .quick-metrics strong,
+    .quick-next strong,
+    .quick-state-explain,
+    .map-zone-summary p,
+    .anbit-role-hint,
+    .anbit-map-tip
+  ) {
+  color: var(--ink);
+}
+[data-theme="dark"]
+  :is(
+    .quick-eyebrow,
+    .quick-muted,
+    .quick-zone-choice small,
+    .quick-metrics span,
+    .quick-metrics small,
+    .anbit-profile small
+  ) {
+  color: var(--muted);
+}
+[data-theme="dark"] .quick-zone-choice.is-selected {
+  background: var(--sage);
+  border-color: var(--green);
+}
+[data-theme="dark"] .quick-hero {
+  background: linear-gradient(115deg, #234334, #37694c);
+}
+[data-theme="dark"] .reference-login {
+  --green: #98c7a6;
+}
+[data-theme="dark"] :is(.status, .quick-status-code) {
+  color: #233d32;
+}
+[data-theme="dark"] :is(.message.error, [role="alert"]) {
+  color: var(--error);
+}
+[data-theme="dark"] .recharts-text {
+  fill: var(--muted);
+}
+[data-theme="dark"] .recharts-default-tooltip {
+  background: var(--card) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+}
+[data-theme="dark"] :is(.map-label, .map-state-label, .map-pin-label) {
+  fill: #233d32;
+}
+[data-theme="dark"] .map-area {
+  fill: #233d32;
+}
+@media (max-width: 760px) {
+  html[dir="ltr"] .workspace {
+    margin-left: 0;
+  }
+  html[dir="ltr"] .sidebar {
+    transform: translateX(-105%);
+  }
+  html[dir="ltr"] .sidebar.open {
+    transform: translateX(0);
+  }
+}
+.topbar-preferences {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topbar-preferences .preference-controls {
+  margin: 0;
+}
+html[dir="ltr"] .app-shell > main {
+  margin-right: 0;
+  margin-left: 210px;
+}
+@media (min-width: 1450px) {
+  html[dir="ltr"] .app-shell > main {
+    margin-left: 225px;
+  }
+}
+@media (max-width: 1150px) {
+  html[dir="ltr"] .app-shell > main {
+    margin-left: 180px;
+  }
+}
+@media (max-width: 800px) {
+  html[dir="ltr"] .app-shell > main {
+    margin-left: 0;
+  }
+  html[dir="ltr"] .sidebar.is-open {
+    transform: none;
+  }
+}
+@media (max-width: 480px) {
+  .topbar-preferences {
+    gap: 4px;
+  }
+  .topbar .demo-disclosure {
+    display: none;
+  }
+  .breadcrumb {
+    gap: 5px;
+  }
+  .breadcrumb > span {
+    display: none;
+  }
+}
+html[dir="ltr"] :is(.quick-zone-choice, .table, .plant-list) {
+  text-align: start;
+}
+html[lang="en"] .map-state-label {
+  font-size: 1.25px;
+}
+html[lang="en"] .map-pin-label {
+  font-size: 1.1px;
+}
+[data-theme="dark"]
+  :is(
+    .quick-next,
+    .quick-guided-extra,
+    .map-twin-access,
+    .twin-result,
+    .guide-estimate,
+    .guide-feedback,
+    .map-selected-note,
+    .priority-list > button.chosen,
+    .guide-steps [aria-current="step"]
+  ) {
+  background: var(--sage);
+  color: var(--ink);
+}
+[data-theme="dark"] .quick-next p {
+  color: var(--muted);
+}
+[data-theme="dark"] .status {
+  background: var(--sage);
+  color: var(--ink);
+}
+[data-theme="dark"] .quick-status-code {
+  color: #233d32;
+}
+[data-theme="dark"] .message.success {
+  background: var(--sage);
+}
+[data-theme="dark"] .message.error {
+  background: var(--errorbg);
+}
+[data-theme="dark"] .skeleton > div {
+  background: var(--sage);
+}
+html[dir="ltr"] table {
+  text-align: left;
+}
+html[dir="ltr"] input[type="number"],
+html[dir="ltr"] input[type="datetime-local"] {
+  text-align: left;
+}
+@media (max-width: 700px) {
+  .reference-login-visual {
+    height: 340px;
+    min-height: 0;
+  }
+}
