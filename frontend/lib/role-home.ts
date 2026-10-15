@@ -4,7 +4,6 @@ const teamNavigation = [
   { id: "overview", label: "إدارة المسطحات الخضراء" },
   { id: "plants", label: "النباتات والمدن" },
   { id: "map", label: "الخريطة والتوأم" },
-  { id: "measurements", label: "القياسات والفحوصات" },
   { id: "decisions", label: "قرارات الري" },
   { id: "water", label: "تقارير المياه" },
 ] as const;

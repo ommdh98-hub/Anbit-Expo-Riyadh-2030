@@ -34,6 +34,7 @@ from .auth import router as auth_router, auth_middleware
 from .planning import PlanInput, plan, spatial_estimate
 from .executive import executive_report, research_summary
 from .presentation import public_source, public_plant
+from .home import HomeInput, home_summary
 
 
 @asynccontextmanager
@@ -97,6 +98,18 @@ def health():
     with Session(engine) as session:
         session.exec(select(Site)).first()
     return {"status": "ok", "database": "connected"}
+
+
+@app.post("/api/zones/{zone_id}/home")
+def home_outlook(zone_id: str, payload: HomeInput):
+    with Session(engine) as session:
+        zone = get_zone(session, zone_id)
+        points, readings, soil = zone_data(session, zone)
+        try:
+            return home_summary(zone, soil, readings, decide(zone, soil, points, readings),
+                                payload, datetime.now(timezone.utc))
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
 
 
 @app.post("/api/zones/{zone_id}/plan")

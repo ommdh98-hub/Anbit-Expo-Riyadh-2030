@@ -16,6 +16,7 @@ import "./planning.css";
 import "./brand.css";
 import "./growing-guide.css";
 import "./report-print.css";
+import "./landscape-home.css";
 import { preferenceBootstrap } from "../lib/preferences.mjs";
 export const metadata: Metadata = {
   applicationName: "أنبت | ANBIT",

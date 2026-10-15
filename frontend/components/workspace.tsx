@@ -26,8 +26,7 @@ import SiteMap from "./site-map";
 import DigitalTwin from "./digital-twin";
 import PlantCityExplorer from "./plant-city-explorer";
 import GuidedEvaluation, { simpleState } from "./guided-evaluation";
-import QuickDecision from "./quick-decision";
-import PredictivePlanner from "./predictive-planner";
+import LandscapeHome from "./landscape-home";
 import ExecutiveReport from "./executive-report";
 import SurveyHome from "./survey-home";
 import IndividualHome from "./individual-home";
@@ -403,7 +402,7 @@ export default function Workspace({
                 {display(
                   view === "overview"
                     ? canMeasure
-                      ? "راقب المنطقة، أكمل القياسات، ثم راجع توصيات الري."
+                      ? "من القياس إلى القرار."
                       : "اختر مدينة، ثم نباتًا، واتبع دليل زراعته."
                     : view === "map"
                       ? canOperate
@@ -483,210 +482,112 @@ export default function Workspace({
                 {display(
                   view === "overview" && (
                     <>
-                      <QuickDecision
+                      <LandscapeHome
+                        key={`${zone.id}:${zone.revision}:${dataVersion}`}
                         zones={zones}
                         zone={zone}
+                        busy={busy}
                         onSelect={selectZone}
                         onReading={openReading}
-                        onDetails={() => openZone(zone.id)}
+                        onReview={() => openZone(zone.id)}
                         onMap={openMeasurementMap}
-                        recommendation={currentRec}
-                        onExecute={
-                          currentRec?.status === "approved"
-                            ? () => {
-                                setExecuteId(currentRec.id);
-                                setModal("execute");
-                              }
-                            : undefined
-                        }
-                        canMeasure={canMeasure}
-                        busy={busy}
-                        outlook={
-                          <PredictivePlanner
-                            key={zone.id + ":" + zone.revision}
-                            zone={zone}
-                            report={report}
-                            onDecisions={() => go("decisions")}
-                          />
-                        }
-                      />
-                      <div className="team-discovery-link">
-                        <span>
-                          {display(
-                            "استكشف نباتات مناسبة لمشروع المسطحات الخضراء",
+                        onDecisions={() => go("decisions")}
+                      >
+                        <details className="panel">
+                          <summary>
+                            {display("تفاصيل حالة المنطقة والحساب الحالي")}
+                          </summary>
+                          <Status decision={zone.decision} />
+                          <p>{display(zone.decision.reason)}</p>
+                          <p>
+                            {display("التغطية الهندسية")}:{" "}
+                            {number(zone.decision.coverage.fraction * 100)}% ·{" "}
+                            {display("قراءات صالحة")}:{" "}
+                            {zone.decision.readings_used.length}
+                          </p>
+                          {zone.decision.missing.map((item) => (
+                            <p key={item}>{display(item)}</p>
+                          ))}
+                          {zone.decision.rejected.map((item) => (
+                            <p key={item.id}>{display(item.reason)}</p>
+                          ))}
+                          <p>
+                            {display("كمية الري الحسابية:")}{" "}
+                            {zone.decision.estimate
+                              ? `${number(zone.decision.estimate.gross_l)} ${display("لتر")}`
+                              : display("أكمل الإعدادات")}
+                          </p>
+                          {zone.decision.estimate && (
+                            <p>{display(zone.decision.estimate.formula)}</p>
                           )}
-                        </span>
-                        <button onClick={() => go("plants")}>
-                          <Leaf size={18} />
-                          {display("النباتات والمدن")}
-                        </button>
-                      </div>
-                      <details className="quick-guided-extra">
-                        <summary>{display(" أحتاج شرحًا خطوة بخطوة ")}</summary>
-                        <GuidedEvaluation
-                          zones={zones}
-                          zone={zone}
-                          step={guideStep}
-                          chosen={guideChosen}
-                          onStep={setGuideStep}
-                          onChoose={(id) => {
-                            selectZone(id);
-                            setGuideChosen(true);
-                            setGuideStep(2);
-                          }}
-                          onReading={openReading}
-                          onTwin={() => go("map")}
-                          onOperations={() => openZone(zone.id)}
-                          busy={busy}
-                          feedback={readingFeedback}
-                          canMeasure={canMeasure}
-                        />
-                      </details>
-                      <div className="guide-secondary">
-                        <button onClick={() => go("map")}>
-                          {display(" استعرض التوأم الرقمي والخريطة ")}
-                        </button>
-                        <button onClick={() => go("water")}>
-                          {display(" تقارير المياه ")}
-                        </button>
-                      </div>
-                      <details className="guide-advanced">
-                        <summary>
-                          {display(
-                            " لوحة المتابعة التفصيلية: المؤشرات والخريطة وأولوية الفحص ",
-                          )}
-                        </summary>
-                        <section className="metrics">
-                          <div>
-                            <span>{display(" المناطق الزراعية ")}</span>
-                            <strong>
-                              {display(number(zones.length))}
-                              <Leaf />
-                            </strong>
-                            <small>{display(" ضمن الموقع التجريبي ")}</small>
-                          </div>
-                          <div>
-                            <span>{display(" تحتاج قياسًا أو فحصًا ")}</span>
-                            <strong>
-                              {display(number(needs.length))}
-                              <ScanLine className="amber-text" />
-                            </strong>
-                            <small>
-                              {display(" قراءات ناقصة، متعارضة أو قديمة ")}
-                            </small>
-                          </div>
-                          <div>
-                            <span>{display(" المياه المسجّلة ")}</span>
-                            <strong>
-                              {display(number(report.total_l))}{" "}
-                              <em>{display(" لتر ")}</em>
-                              <Droplets className="blue-text" />
-                            </strong>
-                            <small>
-                              {display(" آخر ")}
-                              {display(number(days))}
-                              {display(" أيام · ")}
-                              {display(" ")}
-                              {display(number(report.events_count))}
-                              {display(" عمليات ")}
-                            </small>
-                          </div>
-                        </section>
-                        <div className="overview-grid">
-                          <SiteMap
+                          <button onClick={() => openZone(zone.id)}>
+                            {display("افتح سجل المنطقة وجميع الإجراءات")}
+                          </button>
+                        </details>
+                        <details className="quick-guided-extra">
+                          <summary>{display("أحتاج شرحًا خطوة بخطوة")}</summary>
+                          <GuidedEvaluation
                             zones={zones}
-                            selected={selected}
-                            onSelect={selectZone}
+                            zone={zone}
+                            step={guideStep}
+                            chosen={guideChosen}
+                            onStep={setGuideStep}
+                            onChoose={(id) => {
+                              selectZone(id);
+                              setGuideChosen(true);
+                              setGuideStep(2);
+                            }}
+                            onReading={openReading}
+                            onTwin={() => go("map")}
+                            onOperations={() => openZone(zone.id)}
+                            busy={busy}
+                            feedback={readingFeedback}
+                            canMeasure={canMeasure}
+                            homeMode
                           />
-                          <section className="panel priorities">
-                            <div className="section-title">
-                              <div>
-                                <h2>{display(" أين نقيس أولًا؟ ")}</h2>
-                                <p>
-                                  {display(
-                                    " غياب البيانات، ثم التضارب، ثم التغطية ",
-                                  )}
-                                </p>
-                              </div>
-                              <ScanLine size={21} />
-                            </div>
-                            <div className="priority-list">
-                              {display(
-                                needs.map((z, i) => (
+                        </details>
+                        <details className="guide-advanced">
+                          <summary>
+                            {display(
+                              "لوحة المتابعة التفصيلية: المؤشرات والخريطة وأولوية الفحص",
+                            )}
+                          </summary>
+                          <p>
+                            {zones.length} {display("مناطق الحديقة")} ·{" "}
+                            {needs.length} {display("تحتاج قياسًا أو فحصًا")}
+                          </p>
+                          <div className="overview-grid">
+                            <SiteMap
+                              zones={zones}
+                              selected={selected}
+                              onSelect={selectZone}
+                            />
+                            <section className="panel priorities">
+                              <h2>{display("أين نقيس أولًا؟")}</h2>
+                              <div className="priority-list">
+                                {needs.map((item, i) => (
                                   <button
-                                    key={z.id}
-                                    className={
-                                      selected === z.id ? "chosen" : ""
-                                    }
-                                    onClick={() => selectZone(z.id)}
+                                    key={item.id}
+                                    onClick={() => selectZone(item.id)}
                                   >
                                     <span className="rank">
-                                      {display(number(i + 1))}
+                                      {number(i + 1)}
                                     </span>
                                     <div>
-                                      <strong>{display(z.name)}</strong>
-                                      <Status decision={z.decision} />
-                                      <small>
-                                        {display(
-                                          z.decision.coverage.active_points,
-                                        )}
-                                        {display(" نقاط صالحة من ")}
-                                        {display(z.points.length)}
-                                      </small>
+                                      <strong>{display(item.name)}</strong>
+                                      <Status decision={item.decision} />
                                     </div>
-                                    <ChevronLeft size={16} />
                                   </button>
-                                )),
-                              )}
-                            </div>
-                            <div className="selected-summary">
-                              <small>{display(" المنطقة المحددة ")}</small>
-                              <strong>{display(zone.name)}</strong>
-                              <p>{display(zone.decision.reason)}</p>
-                              <button
-                                className="primary full"
-                                onClick={() => openZone(zone.id)}
-                              >
-                                {display(" عرض المنطقة ")}
-                                <ArrowUpLeft size={17} />
+                                ))}
+                              </div>
+                              <button onClick={() => openZone(zone.id)}>
+                                {display("عرض المنطقة")}
                               </button>
-                            </div>
-                          </section>
-                        </div>
-                        <div className="bottom-grid">
-                          <section className="panel">
-                            <div className="section-title">
-                              <h2>{display(" مناطق الحديقة ")}</h2>
-                              <button
-                                className="text-button"
-                                onClick={() => go("map")}
-                              >
-                                {display(" عرض الكل ")}
-                                <ArrowUpLeft size={15} />
-                              </button>
-                            </div>
-                            <ZoneTable zones={zones} onOpen={openZone} />
-                          </section>
-                          <section className="panel">
-                            <div className="section-title">
-                              <h2>{display(" استخدام المياه ")}</h2>
-                              <span className="subtle">
-                                {display(" آخر ")}
-                                {display(number(days))}
-                                {display(" أيام · لتر ")}
-                              </span>
-                            </div>
-                            <WaterChart report={report} />
-                            <button
-                              className="text-button"
-                              onClick={() => go("water")}
-                            >
-                              {display(" استعراض التقرير ")}
-                              <ArrowUpLeft size={15} />
-                            </button>
-                          </section>
-                        </div>
-                      </details>
+                            </section>
+                          </div>
+                          <ZoneTable zones={zones} onOpen={openZone} />
+                        </details>
+                      </LandscapeHome>
                     </>
                   ),
                 )}

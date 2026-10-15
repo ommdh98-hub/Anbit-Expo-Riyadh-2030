@@ -53,6 +53,9 @@ function components(language = "ar") {
     return loaded.exports;
   }
   return {
+    Landscape: load(resolve("frontend/components/landscape-home.tsx")).default,
+    HomeCards: load(resolve("frontend/components/landscape-home.tsx"))
+      .HomeCards,
     Survey: load(resolve("frontend/components/survey-home.tsx")).default,
     User: load(resolve("frontend/components/quick-decision.tsx")).default,
     Individual: load(resolve("frontend/components/individual-home.tsx"))
@@ -241,7 +244,7 @@ test("audience navigation gives landscape every site feature and shared plant ac
   const { navigationFor } = components();
   assert.deepEqual(
     Array.from(navigationFor("survey"), (n) => n.id),
-    ["overview", "plants", "map", "measurements", "decisions", "water"],
+    ["overview", "plants", "map", "decisions", "water"],
   );
   assert.equal(navigationFor("survey")[0].label, "إدارة المسطحات الخضراء");
   assert.deepEqual(
@@ -436,7 +439,7 @@ test("compact zone picker retains every API zone for mobile selection", () => {
 });
 
 for (const language of ["ar", "en"]) {
-  test(`predictive planner starts unavailable, labels assumptions and preserves Individuals (${language})`, () => {
+  test(`advanced planner keeps configuration without dashboard headings and preserves Individuals (${language})`, () => {
     const { Planner, Individual } = components(language);
     const zone = {
       ...fixture(),
@@ -450,13 +453,9 @@ for (const language of ["ar", "en"]) {
       report: { total_l: 100 },
       onDecisions: () => {},
     });
-    assert.match(
+    assert.doesNotMatch(
       out,
-      new RegExp(
-        language === "ar"
-          ? "التوقع التشغيلي غير متاح"
-          : "Operational forecast unavailable",
-      ),
+      /التوقع التشغيلي غير متاح|Operational forecast unavailable|planning-title|planning-cards/,
     );
     assert.match(
       out,
@@ -577,24 +576,35 @@ test("comparison guards missing/zero baselines and preserves negative savings; d
   assert.match(csv, /""quoted""/);
 });
 
-test("professional outlook keeps zone choices and a visible primary action before optional details", () => {
-  const { User: Dashboard } = components("en"),
+test("professional Home puts four cards and the only primary action before collapsed details", () => {
+  const { Landscape } = components("en"),
     zone = fixture();
-  const out = html(Dashboard, zone, [zone], {
-    canMeasure: true,
-    outlook: React.createElement("div", null, "actual predictive outlet"),
+  const out = html(Landscape, zone, [zone], {
+    onReview: () => {},
+    onDecisions: () => {},
+    children: React.createElement("p", null, "optional details"),
   });
-  assert.match(out, /class="planning-primary"/);
-  assert.match(out, /class="planning-existing-details"/);
+  assert.equal((out.match(/data-home-card=/g) || []).length, 4);
+  assert.equal((out.match(/class="primary"/g) || []).length, 1);
   assert.ok(
-    out.indexOf('class="planning-primary"') <
-      out.indexOf("actual predictive outlet"),
+    out.indexOf('id="home-zone"') < out.indexOf('data-home-card="moisture"'),
   );
   assert.ok(
-    out.indexOf("actual predictive outlet") <
-      out.indexOf('class="planning-existing-details"'),
+    out.indexOf('data-home-card="next"') <
+      out.indexOf('class="home-primary-actions"'),
+  );
+  assert.ok(
+    out.indexOf('class="home-primary-actions"') <
+      out.indexOf('class="home-advanced"'),
+  );
+  assert.doesNotMatch(
+    out,
+    /optional details|Unavailable|غير متاح|Logged simulation consumption/,
   );
   assert.match(out, /Record a reading/);
+  assert.match(out, /Where should I measure/);
+  assert.match(out, /<details class="home-advanced"/);
+  assert.doesNotMatch(out, /<details[^>]+open/);
 });
 
 test("login, navigation, dashboards and reports share the exact official brand asset", () => {
@@ -620,7 +630,7 @@ for (const language of ["ar", "en"]) {
     );
     assert.match(
       empty,
-      new RegExp(language === "ar" ? "غير متاح" : "Unavailable"),
+      new RegExp(language === "ar" ? "أكمل الإعدادات" : "Complete settings"),
     );
     assert.doesNotMatch(empty, /24/);
     const known = renderToStaticMarkup(
@@ -714,5 +724,66 @@ for (const language of ["ar", "en"]) {
     );
     assert.match(missing, /role="status"/);
     assert.doesNotMatch(missing, /<article/);
+  });
+}
+
+for (const language of ["ar", "en"]) {
+  test(`Home cards distinguish fresh, stale, missing data and flow assumptions (${language})`, () => {
+    const { HomeCards } = components(language);
+    const data = {
+      current_vwc: 0.12,
+      source: "measured",
+      origin: "field",
+      stale: false,
+      age_hours: 2,
+      target_vwc: 0.14,
+      demo_profile: true,
+      gross_l: 1500,
+      area_m2: 300,
+      duration_hours: 3.75,
+      default_flow: true,
+      next_at: "2026-10-16T04:00:00+03:00",
+    };
+    const render = (summary) =>
+      renderToStaticMarkup(
+        React.createElement(HomeCards, { summary, onTarget: () => {} }),
+      );
+    const fresh = render(data);
+    assert.equal((fresh.match(/data-home-card=/g) || []).length, 4);
+    assert.match(fresh, language === "ar" ? /١٢%/ : /12%/);
+    assert.match(fresh, language === "ar" ? /١٤%/ : /14%/);
+    assert.match(fresh, new RegExp(language === "ar" ? "مقاسة" : "Measured"));
+    assert.match(
+      fresh,
+      new RegExp(language === "ar" ? "تدفق افتراضي" : "Default flow"),
+    );
+    const stale = render({
+      ...data,
+      source: "estimated",
+      stale: true,
+      age_hours: 72,
+    });
+    assert.match(
+      stale,
+      new RegExp(language === "ar" ? "تقدير سيناريو" : "Scenario estimate"),
+    );
+    assert.match(stale, new RegExp(language === "ar" ? "أيام" : "days"));
+    const missing = render(null);
+    assert.equal((missing.match(/data-home-card=/g) || []).length, 4);
+    assert.match(
+      missing,
+      new RegExp(language === "ar" ? "أدخل قراءة" : "Add a reading"),
+    );
+    assert.match(
+      missing,
+      new RegExp(language === "ar" ? "حدد الهدف" : "Set target"),
+    );
+    for (const output of [fresh, stale, missing])
+      assert.doesNotMatch(
+        output,
+        /Unavailable|غير متاح|undefined|NaN|التوقع التشغيلي/,
+      );
+    if (language === "en")
+      assert.doesNotMatch(fresh + stale + missing, /[\u0621-\u064a]/);
   });
 }

@@ -5,7 +5,15 @@ import { Zone } from "../lib/types";
 import { number, date } from "../lib/api";
 import { waterRisk } from "../lib/water-risk.mjs";
 
-export default function DecisionExplanation({ zone }: { zone: Zone }) {
+export default function DecisionExplanation({
+  zone,
+  emptyLabel = "غير متاح",
+  compact = false,
+}: {
+  zone: Zone;
+  emptyLabel?: string;
+  compact?: boolean;
+}) {
   const [proposed, setProposed] = useState("");
   const d = zone.decision,
     e = d.estimate;
@@ -31,7 +39,7 @@ export default function DecisionExplanation({ zone }: { zone: Zone }) {
       <p>
         {display(" كمية الري الحسابية: ")}
         {display(" ")}
-        <strong>{display(e ? `${number(e.gross_l)} لتر` : "غير متاح")}</strong>
+        <strong>{display(e ? `${number(e.gross_l)} لتر` : emptyLabel)}</strong>
       </p>
       <p>{display(" تقدير حسابي مشروط، وليس كمية ري معتمدة ميدانيًا. ")}</p>
       {display(
@@ -51,7 +59,7 @@ export default function DecisionExplanation({ zone }: { zone: Zone }) {
           {display(
             zone.soil
               ? `${number(zone.soil.lower_vwc * 100)}% / ${number(zone.soil.target_vwc * 100)}% / ${number(zone.soil.upper_vwc * 100)}% حجمية`
-              : "غير متاح",
+              : emptyLabel,
           )}
           .{display(" ")}
           {display(
@@ -135,7 +143,9 @@ export default function DecisionExplanation({ zone }: { zone: Zone }) {
       </details>
       <p className="footnote">
         {display(
-          " الطقس الحي والمتوقع: غير متاح. مناخ المدن في دليل النباتات سياق عام مستقل؛ الرطوبة الجوية ليست رطوبة تربة ولا تعدّل هذا الحساب. ",
+          compact
+            ? "لا اتصال بطقس حي؛ بيانات المدن لا تعدّل حساب التربة."
+            : " الطقس الحي والمتوقع: غير متاح. مناخ المدن في دليل النباتات سياق عام مستقل؛ الرطوبة الجوية ليست رطوبة تربة ولا تعدّل هذا الحساب. ",
         )}
       </p>
     </section>

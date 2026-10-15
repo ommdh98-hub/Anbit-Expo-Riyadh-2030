@@ -98,7 +98,7 @@ def is_allowed_write(role: str, method: str, path: str) -> bool:
         return method == "POST"
     if role == "survey":
         return (method == "POST" and (
-            (path.startswith("/api/zones/") and path.endswith(("/measurements", "/inspections", "/recommendations", "/plan")))
+            (path.startswith("/api/zones/") and path.endswith(("/measurements", "/inspections", "/recommendations", "/plan", "/home")))
             or path == "/api/irrigation-events"
         )) or (method == "PATCH" and path.startswith("/api/recommendations/"))
     return False

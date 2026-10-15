@@ -2,7 +2,8 @@
 import { FormEvent, useRef, useState, useSyncExternalStore } from "react";
 import { display as t } from "../lib/i18n";
 import { api, post, number, date } from "../lib/api";
-import type { Zone, Report } from "../lib/types";
+import type { Zone } from "../lib/types";
+import type { HomeSettings } from "../lib/home";
 import type {
   ForecastPoint,
   Plan,
@@ -137,7 +138,7 @@ export function ForecastCrossing({
     <p>
       {t("بلوغ حد التدخل في السيناريو")}:{" "}
       {result.forecast.length === 0
-        ? t("غير متاح")
+        ? t("أكمل الإعدادات")
         : result.crossing_hour === null
           ? t("غير متوقع ضمن 24 ساعة")
           : `${number(result.crossing_hour)} ${t("ساعة من الآن")}`}
@@ -198,12 +199,16 @@ export function ResearchTable({ research }: { research: Research }) {
 }
 export default function PredictivePlanner({
   zone,
-  report,
   onDecisions,
+  initialProfile,
+  initialWeather,
+  onConfigured,
 }: {
   zone: Zone;
-  report: Report;
   onDecisions: () => void;
+  initialProfile?: Profile;
+  initialWeather?: HomeSettings["weather"];
+  onConfigured?: (settings: HomeSettings) => void;
 }) {
   const snapshot = useSyncExternalStore(
     subscribe,
@@ -212,7 +217,7 @@ export default function PredictivePlanner({
   );
   let stored: Partial<Profile> = {};
   try {
-    stored = JSON.parse(snapshot || "{}");
+    stored = { ...initialProfile, ...JSON.parse(snapshot || "{}") };
   } catch {
     /* Corrupt browser settings are not operational data. */
   }
@@ -294,35 +299,34 @@ export default function PredictivePlanner({
     setBusy(true);
     setError("");
     setResult(null);
+    const settings = {
+      profile,
+      baseline_mode: f.get("baseline"),
+      ...(f.get("baseline") === "hypothetical"
+        ? { starting_vwc: n("start") / 100 }
+        : {}),
+      weather:
+        f.get("et") === ""
+          ? null
+          : {
+              kind: "assumed",
+              et_mm_day: n("et"),
+              rain_mm: n("rain"),
+              rain_hour: n("rain_hour"),
+              uncertainty_vwc: n("uncertainty") / 100,
+            },
+      mode: f.get("mode"),
+      allowed_start_hour: n("allowed_start"),
+      allowed_end_hour: n("allowed_end"),
+      cooldown_hours: n("cooldown"),
+      hysteresis_vwc: n("hysteresis") / 100,
+      last_simulated_hour: f.get("previous") ? -n("previous") : null,
+    };
     try {
-      const value = await api<Plan>(
-        `/zones/${zone.id}/plan`,
-        post({
-          profile,
-          baseline_mode: f.get("baseline"),
-          ...(f.get("baseline") === "hypothetical"
-            ? { starting_vwc: n("start") / 100 }
-            : {}),
-          weather:
-            f.get("et") === ""
-              ? null
-              : {
-                  kind: "assumed",
-                  et_mm_day: n("et"),
-                  rain_mm: n("rain"),
-                  rain_hour: n("rain_hour"),
-                  uncertainty_vwc: n("uncertainty") / 100,
-                },
-          mode: f.get("mode"),
-          allowed_start_hour: n("allowed_start"),
-          allowed_end_hour: n("allowed_end"),
-          cooldown_hours: n("cooldown"),
-          hysteresis_vwc: n("hysteresis") / 100,
-          last_simulated_hour: f.get("previous") ? -n("previous") : null,
-        }),
-      );
+      const value = await api<Plan>(`/zones/${zone.id}/plan`, post(settings));
       if (id !== token.current) return;
       setResult(value);
+      onConfigured?.(settings);
       try {
         localStorage.setItem(profileKey(zone.id), JSON.stringify(profile));
         window.dispatchEvent(new Event("anbit-profile"));
@@ -336,11 +340,6 @@ export default function PredictivePlanner({
       if (id === token.current) setBusy(false);
     }
   }
-  const displayedVolume = result
-    ? (result.schedule[0]?.volume_l ?? result.estimate.gross_l)
-    : zone.decision.code === "review"
-      ? zone.decision.estimate?.gross_l
-      : null;
   const pct = (v: number | null | undefined) => (v == null ? "" : v * 100);
   const input = (
     name: string,
@@ -366,83 +365,8 @@ export default function PredictivePlanner({
   return (
     <section
       className="panel predictive-panel"
-      aria-label={t("التخطيط التنبؤي")}
+      aria-label={t("إعدادات السيناريو")}
     >
-      <div className="planning-title">
-        <div>
-          <span className="eyebrow">{t("التخطيط التنبؤي")}</span>
-          <h2>{t("من حالة التربة إلى موعد الري")}</h2>
-        </div>
-        <span className="status">
-          {t(result ? "محاكاة افتراضية" : "التوقع التشغيلي غير متاح")}
-        </span>
-      </div>
-      <div className="planning-cards">
-        <div>
-          <small>{t("رطوبة التربة الحالية")}</small>
-          <strong>
-            {zone.decision.mean_vwc === null
-              ? t("غير متاح")
-              : `${number(zone.decision.mean_vwc * 100)}%`}
-          </strong>
-          <small>
-            {t("متوسط نقاط صالحة؛ قد لا يمثل كامل المنطقة")} ·{" "}
-            {t(
-              zone.origin === "simulation"
-                ? "بيانات محاكاة محفوظة"
-                : "إدخالات محفوظة",
-            )}
-          </small>
-        </div>
-        <div>
-          <small>{t("موعد الري القادم")}</small>
-          <strong>
-            {result?.schedule[0] ? date(result.schedule[0].at) : t("غير متاح")}
-          </strong>
-          <small>{t("لا طقس حي ولا ML معتمد محليًا")}</small>
-        </div>
-        <div>
-          <small>{t("الاحتياج المائي")}</small>
-          <strong>
-            {displayedVolume != null
-              ? `${number(displayedVolume)} ${t("لتر")}`
-              : t("غير متاح")}
-          </strong>
-          <small>
-            {t(
-              result?.schedule.length
-                ? "كمية المقترح عند موعده — افتراضية"
-                : result
-                  ? "حساب مشروط للوصول إلى هدف السيناريو"
-                  : "تقدير المحرك الحالي وفق افتراضات المنطقة",
-            )}
-          </small>
-        </div>
-        <div>
-          <small>{t("مدة الري")}</small>
-          <strong>
-            {(result?.schedule[0]?.duration_hours ?? result?.duration_hours) !=
-            null
-              ? `${number((result?.schedule[0]?.duration_hours ?? result?.duration_hours)!)} ${t("ساعة")}`
-              : t("التدفق غير معروف")}
-          </strong>
-          <small>{t("مدة تطبيق نظرية؛ ليست ضمانًا للرطوبة")}</small>
-        </div>
-        <div>
-          <small>{t("استهلاك مسجل بالمحاكاة")}</small>
-          <strong>
-            {number(report.total_l)} {t("لتر")}
-          </strong>
-          <small>{t("التوفير الفعلي غير متاح؛ لا خط أساس متحقق")}</small>
-        </div>
-      </div>
-      {!result && (
-        <p>
-          {t(
-            "أكمل القياسات والمعايرة والطقس الموثق للتخطيط الفعلي، أو افتح سيناريو عرض معلنًا أدناه.",
-          )}
-        </p>
-      )}
       <details className="planning-config">
         <summary>{t("إعداد ملف النبات والتربة وسيناريو 24 ساعة")}</summary>
         <p>
@@ -554,17 +478,29 @@ export default function PredictivePlanner({
               {input(
                 "et",
                 "فقد تبخر ونتح مفترض (مم/يوم) — اتركه فارغًا لعدم توفر الطقس",
-                "",
+                initialWeather?.et_mm_day ?? "",
                 0,
                 30,
                 false,
               )}
-              {input("rain", "مطر مفترض (مم)", 0, 0, 200)}
-              {input("rain_hour", "المطر بعد كم ساعة؟", 18, 1, 24)}
+              {input(
+                "rain",
+                "مطر مفترض (مم)",
+                initialWeather?.rain_mm ?? 0,
+                0,
+                200,
+              )}
+              {input(
+                "rain_hour",
+                "المطر بعد كم ساعة؟",
+                initialWeather?.rain_hour ?? 18,
+                1,
+                24,
+              )}
               {input(
                 "uncertainty",
                 "هامش حساسية مفترض (نقطة مئوية)",
-                1,
+                pct(initialWeather?.uncertainty_vwc ?? 0.01),
                 0.5,
                 30,
               )}
@@ -670,7 +606,7 @@ export default function PredictivePlanner({
           <p>
             {t("الري التالي بعد المقترح")}:{" "}
             {result.forecast.length === 0
-              ? t("غير متاح")
+              ? t("أكمل الإعدادات")
               : result.next_window_hour === null
                 ? t("غير محدد ضمن أفق السيناريو")
                 : `${number(result.next_window_hour)} ${t("ساعة من الآن")}`}

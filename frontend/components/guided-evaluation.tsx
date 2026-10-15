@@ -74,6 +74,7 @@ export default function GuidedEvaluation({
   busy,
   feedback,
   canMeasure = true,
+  homeMode = false,
 }: {
   zones: Zone[];
   zone: Zone;
@@ -87,6 +88,7 @@ export default function GuidedEvaluation({
   busy: boolean;
   feedback: string;
   canMeasure?: boolean;
+  homeMode?: boolean;
 }) {
   const selection = useRef<HTMLHeadingElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -279,6 +281,8 @@ export default function GuidedEvaluation({
                     ),
                   )}
                   <DecisionExplanation
+                    emptyLabel={homeMode ? "أكمل الإعدادات" : undefined}
+                    compact={homeMode}
                     key={zone.id + d.evaluated_at}
                     zone={zone}
                   />
@@ -340,7 +344,9 @@ export default function GuidedEvaluation({
                 {display(
                   zone.soil
                     ? `${number(zone.soil.lower_vwc * 100)}% أدنى، ${number(zone.soil.target_vwc * 100)}% مستهدف، ${number(zone.soil.upper_vwc * 100)}% أعلى؛ المعايرة: ${zone.soil.calibration}`
-                    : "غير متوفرة",
+                    : homeMode
+                      ? "أكمل الإعدادات"
+                      : "غير متوفرة",
                 )}
               </p>
               <p>
@@ -355,7 +361,9 @@ export default function GuidedEvaluation({
                 {display(" ")}
                 {display(
                   zone.irrigated_area_m2 === null
-                    ? "غير متوفرة"
+                    ? homeMode
+                      ? "أكمل الإعدادات"
+                      : "غير متوفرة"
                     : number(zone.irrigated_area_m2),
                 )}
                 {display(" ")}
@@ -363,7 +371,9 @@ export default function GuidedEvaluation({
                 {display(" ")}
                 {display(
                   zone.root_depth_m === null
-                    ? "غير متوفر"
+                    ? homeMode
+                      ? "أكمل الإعدادات"
+                      : "غير متوفر"
                     : number(zone.root_depth_m),
                 )}
                 {display(" ")}
@@ -371,7 +381,9 @@ export default function GuidedEvaluation({
                 {display(" ")}
                 {display(
                   zone.efficiency === null
-                    ? "غير متوفرة"
+                    ? homeMode
+                      ? "أكمل الإعدادات"
+                      : "غير متوفرة"
                     : number(zone.efficiency * 100) + "%",
                 )}
                 . {display(d.caveats.join(" "))}
