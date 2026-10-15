@@ -1,5 +1,6 @@
 "use client";
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowUpLeft, RefreshCw } from "lucide-react";
 import BrandLogo from "./brand-logo";
 import { Garden } from "./login-garden";
@@ -98,6 +99,18 @@ export default function AuthGate() {
     setStatus("login");
     setError("");
   }
+  const router = useRouter();
+  const toLandscape = status === "ready" && profile?.role === "survey";
+  // Landscape Teams use the new /landscape experience; individuals keep the workspace.
+  useEffect(() => {
+    if (toLandscape) router.replace("/landscape");
+  }, [toLandscape, router]);
+  if (toLandscape)
+    return (
+      <main className="reference-login">
+        <p role="status">{t("لحظة…", "One moment…")}</p>
+      </main>
+    );
   if (status === "ready" && profile)
     return <Workspace profile={profile} onLogout={logout} />;
   return (
