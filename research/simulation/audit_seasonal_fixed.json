@@ -1,0 +1,118 @@
+{
+ "engine": "frontend/lib/twin",
+ "city": "riyadh",
+ "seeds": 5,
+ "days": 28,
+ "bySeason": {
+  "summer": {
+   "anbit": {
+    "waterM3": 626.8,
+    "wastePct": 0.01,
+    "inRangePct": 92.8,
+    "stressH": 544.2,
+    "wetH": 38.2,
+    "wetRainH": 0,
+    "overEvents": 6.2
+   },
+   "sensor": {
+    "waterM3": 611.2,
+    "wastePct": 1.34,
+    "inRangePct": 77.7,
+    "stressH": 1175.5,
+    "wetH": 620.3,
+    "wetRainH": 0,
+    "overEvents": 6.8
+   },
+   "fixed": {
+    "waterM3": 584.6,
+    "wastePct": 5.51,
+    "inRangePct": 46.2,
+    "stressH": 2471.1,
+    "wetH": 1867,
+    "wetRainH": 0,
+    "overEvents": 52.6
+   },
+   "savingVsFixedPct": -7.2,
+   "savingVsSensorPct": -2.6
+  },
+  "winter": {
+   "anbit": {
+    "waterM3": 152.1,
+    "wastePct": 0,
+    "inRangePct": 97.1,
+    "stressH": 14.9,
+    "wetH": 216.8,
+    "wetRainH": 173.2,
+    "overEvents": 0
+   },
+   "sensor": {
+    "waterM3": 181.6,
+    "wastePct": 2.87,
+    "inRangePct": 80.1,
+    "stressH": 125.3,
+    "wetH": 1478,
+    "wetRainH": 126.7,
+    "overEvents": 11.6
+   },
+   "fixed": {
+    "waterM3": 219.2,
+    "wastePct": 7.73,
+    "inRangePct": 57.6,
+    "stressH": 249.7,
+    "wetH": 3169.3,
+    "wetRainH": 0,
+    "overEvents": 31.8
+   },
+   "savingVsFixedPct": 30.6,
+   "savingVsSensorPct": 16.4
+  },
+  "spring": {
+   "anbit": {
+    "waterM3": 396.2,
+    "wastePct": 0,
+    "inRangePct": 96.8,
+    "stressH": 211.3,
+    "wetH": 44.6,
+    "wetRainH": 7.9,
+    "overEvents": 1.4
+   },
+   "sensor": {
+    "waterM3": 420.7,
+    "wastePct": 2.71,
+    "inRangePct": 75.8,
+    "stressH": 384.6,
+    "wetH": 1568.8,
+    "wetRainH": 0,
+    "overEvents": 21
+   },
+   "fixed": {
+    "waterM3": 438.5,
+    "wastePct": 8.02,
+    "inRangePct": 50.5,
+    "stressH": 753.8,
+    "wetH": 3237.7,
+    "wetRainH": 0,
+    "overEvents": 32.8
+   },
+   "savingVsFixedPct": 9.6,
+   "savingVsSensorPct": 5.8
+  }
+ },
+ "virtualSignedVwcPoints": {
+  "S02": -0.13,
+  "S05": 0.03,
+  "S07": 0.46,
+  "S10": 0.5,
+  "S12": 0.68
+ },
+ "virtualWorstRunVwcPoints": {
+  "S02": -1.97,
+  "S05": 4.49,
+  "S07": 2.85,
+  "S10": 3.54,
+  "S12": 1.99
+ },
+ "virtualMeanSigned": 0.31,
+ "loraOvershootPctOfAvailableWater": 0.54,
+ "loraValveCloses": 1802
+}

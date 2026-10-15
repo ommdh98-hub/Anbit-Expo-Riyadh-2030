@@ -1,0 +1,156 @@
+{
+  "note": "Synthetic, rule-generated data. Scores measure how well a tree recovers the generator's rule, not real-world irrigation accuracy.",
+  "seed": 42,
+  "split": {
+    "train": 12336,
+    "test": 3084,
+    "test_fraction": 0.2
+  },
+  "features": [
+    "soilMoisture",
+    "temperature",
+    "humidity",
+    "lightLevel",
+    "rainDetected"
+  ],
+  "excluded_as_leakage": [
+    "relayState",
+    "drySoilRisk",
+    "waterLevel"
+  ],
+  "audit": {
+    "rows": 15420,
+    "columns": [
+      "soilMoisture",
+      "temperature",
+      "humidity",
+      "lightLevel",
+      "rainDetected",
+      "waterLevel",
+      "relayState",
+      "irrigationNeeded",
+      "predictedMinutes",
+      "drySoilRisk"
+    ],
+    "sha256": "e86b7d5c3ce205d8ae5d4cfd46abab61ca10a69ea4140431ff84f5de3dc474ed",
+    "time_or_location_columns": [],
+    "duplicate_rows": 0,
+    "class_balance": {
+      "0": 8020,
+      "1": 7400
+    },
+    "ranges": {
+      "soilMoisture": [
+        10.0,
+        90.0
+      ],
+      "temperature": [
+        20.0,
+        38.0
+      ],
+      "humidity": [
+        35.0,
+        95.0
+      ],
+      "lightLevel": [
+        10.0,
+        95.0
+      ],
+      "rainDetected": [
+        0.0,
+        1.0
+      ],
+      "waterLevel": [
+        10.0,
+        95.0
+      ],
+      "relayState": [
+        0.0,
+        1.0
+      ],
+      "irrigationNeeded": [
+        0.0,
+        1.0
+      ],
+      "predictedMinutes": [
+        0.0,
+        30.0
+      ]
+    },
+    "generating_rule_found": "irrigationNeeded = soilMoisture <= 36",
+    "generating_rule_matches_rows": 15420,
+    "separation_gap": [
+      36.0,
+      42.0
+    ],
+    "rain_with_need": 0,
+    "rain_with_dry_soil": 0,
+    "relay_on_without_need": 0,
+    "predicted_minutes_when_needed": {
+      "min": 5.0,
+      "max": 30.0,
+      "mean": 17.416,
+      "corr_soilMoisture": 0.0082,
+      "corr_temperature": 0.0014,
+      "corr_humidity": 0.0017,
+      "corr_lightLevel": -0.006
+    },
+    "predicted_minutes_when_not_needed": [
+      0.0
+    ]
+  },
+  "classifier": {
+    "params": {
+      "max_depth": 4,
+      "min_leaf": 20
+    },
+    "depth": 1,
+    "leaves": 2,
+    "test": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "confusion": {
+        "tp": 1519,
+        "tn": 1565,
+        "fp": 0,
+        "fn": 0
+      }
+    }
+  },
+  "rule_baseline": {
+    "rule": "soilMoisture <= 36",
+    "test": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "confusion": {
+        "tp": 1519,
+        "tn": 1565,
+        "fp": 0,
+        "fn": 0
+      }
+    }
+  },
+  "regressor_minutes": {
+    "params": {
+      "max_depth": 3,
+      "min_leaf": 50
+    },
+    "depth": 3,
+    "leaves": 8,
+    "test_rows": 1519,
+    "test": {
+      "mae": 6.527,
+      "rmse": 7.518,
+      "r2": -0.0011
+    },
+    "mean_baseline_test": {
+      "mae": 6.524,
+      "rmse": 7.514,
+      "r2": -0.0
+    }
+  }
+}

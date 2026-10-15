@@ -1,0 +1,76 @@
+{
+ "engine": "frontend/lib/twin",
+ "city": "riyadh",
+ "seeds": 5,
+ "days": 28,
+ "bySeason": {
+  "summer": {
+   "anbit": {
+    "waterM3": 641.8,
+    "wastePct": 0.1,
+    "inRangePct": 92.3,
+    "stressH": 562.3,
+    "overEvents": 9
+   },
+   "fixed": {
+    "waterM3": 584.6,
+    "wastePct": 5.87,
+    "inRangePct": 45.7,
+    "stressH": 2448.9,
+    "overEvents": 52.4
+   },
+   "savingVsFixedPct": -9.8
+  },
+  "winter": {
+   "anbit": {
+    "waterM3": 153.3,
+    "wastePct": 0,
+    "inRangePct": 95.8,
+    "stressH": 85.3,
+    "overEvents": 0
+   },
+   "fixed": {
+    "waterM3": 584.6,
+    "wastePct": 57.14,
+    "inRangePct": 16.6,
+    "stressH": 0,
+    "overEvents": 60
+   },
+   "savingVsFixedPct": 73.8
+  },
+  "spring": {
+   "anbit": {
+    "waterM3": 402.7,
+    "wastePct": 0,
+    "inRangePct": 95.4,
+    "stressH": 302.6,
+    "overEvents": 3.4
+   },
+   "fixed": {
+    "waterM3": 584.6,
+    "wastePct": 21.05,
+    "inRangePct": 30.1,
+    "stressH": 55.5,
+    "overEvents": 86.8
+   },
+   "savingVsFixedPct": 31.1
+  }
+ },
+ "virtualSignedVwcPoints": {
+  "S02": 0.2,
+  "S05": -0.14,
+  "S07": -1.07,
+  "S10": -0.27,
+  "S12": -0.49
+ },
+ "virtualWorstRunVwcPoints": {
+  "S02": 1.64,
+  "S05": -2.65,
+  "S07": -5.64,
+  "S10": -3.58,
+  "S12": -1.92
+ },
+ "virtualMeanSigned": -0.36,
+ "loraOvershootPctOfAvailableWater": 5.88,
+ "loraValveCloses": 1929
+}
