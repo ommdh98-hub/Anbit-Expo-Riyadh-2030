@@ -51,7 +51,7 @@ bash scripts/start.sh
 
 ## الحفظ والنسخ الاحتياطي
 
-قاعدة البيانات تُنشأ تلقائيًا في `backend/anbit.db`، ولا تُرفع إلى Git. لإعداد نسخة احتياطية متسقة:
+قاعدة العرض تُنشأ تلقائيًا في `backend/data/demo.db` (يغيّرها المتغير `ANBIT_DB_PATH`)، وقاعدة التشغيل في `backend/anbit.db`، ولا تُرفع أي منهما إلى Git. تُطبَّق ترحيلات المخطط (`backend/app/migrations/`) تلقائيًا عند التشغيل، والقاعدة المرجعية `data/reference/ANBIT_reference_app.db` تُفتح للقراءة فقط. لإعداد نسخة احتياطية متسقة:
 
 ```bash
 .venv/bin/python scripts/backup.py

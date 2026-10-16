@@ -1,0 +1,102 @@
+{
+  "slide_count": 14,
+  "protected_slide_xml_equal": {
+    "1": true,
+    "2": true,
+    "3": true,
+    "14": true
+  },
+  "shapes_unchanged": {
+    "1": {
+      "count_including_group_children": 5,
+      "pass": true
+    },
+    "2": {
+      "count_including_group_children": 15,
+      "pass": true
+    },
+    "3": {
+      "count_including_group_children": 15,
+      "pass": true
+    },
+    "4": {
+      "count_including_group_children": 17,
+      "pass": true
+    },
+    "5": {
+      "count_including_group_children": 12,
+      "pass": true
+    },
+    "6": {
+      "count_including_group_children": 25,
+      "pass": true
+    },
+    "7": {
+      "count_including_group_children": 5,
+      "pass": true
+    },
+    "8": {
+      "count_including_group_children": 4,
+      "pass": true
+    },
+    "9": {
+      "count_including_group_children": 3,
+      "pass": true
+    },
+    "10": {
+      "count_including_group_children": 3,
+      "pass": true
+    },
+    "11": {
+      "count_including_group_children": 2,
+      "pass": true
+    },
+    "12": {
+      "count_including_group_children": 2,
+      "pass": true
+    },
+    "13": {
+      "count_including_group_children": 10,
+      "pass": true
+    },
+    "14": {
+      "count_including_group_children": 4,
+      "pass": true
+    }
+  },
+  "run_properties_and_paragraph_properties": {
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+  },
+  "untouched_parts_equal": true,
+  "screenshot_status": "pending: requested directory absent",
+  "forbidden_text_found": [],
+  "changed_parts": [
+    "ppt/slides/slide4.xml",
+    "ppt/slides/slide5.xml",
+    "ppt/slides/slide6.xml",
+    "ppt/slides/slide7.xml",
+    "ppt/slides/slide8.xml",
+    "ppt/slides/slide9.xml",
+    "ppt/slides/slide10.xml",
+    "ppt/slides/slide11.xml",
+    "ppt/slides/slide12.xml",
+    "ppt/slides/slide13.xml",
+    "docProps/core.xml"
+  ],
+  "template_sha256": "df532e0ddec06f4e6b6d56b1913e3ebcb9cbb9922c331cc31e21b2783e35d424",
+  "output_sha256": "315289ff5dd1baab2823db12332297c58bf3ad4811e578731fc6f37992f1862c",
+  "status": "text and preservation checks passed; screenshot requirement pending"
+}
