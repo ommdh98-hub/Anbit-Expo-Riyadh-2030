@@ -283,3 +283,14 @@ backups/**/*.db
 research/**/raw/
 research/**/archive/
 research/**/*.zip
+
+# Reference data needed by the app and its tests (read-only, small). Every other
+# database stays ignored: backend/anbit.db, backend/data/demo.db, backups, archives.
+!data/reference/ANBIT_reference_app.db
+!data/reference/weather_cache_2025/
+!data/reference/weather_cache_2025/**
+
+# Anbit 3.1: never committed (archives, local hand-off files, package instructions)
+data/archive/
+added-files/
+data/reference/CLAUDE_CODE_PROMPT.md

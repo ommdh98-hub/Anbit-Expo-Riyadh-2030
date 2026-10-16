@@ -63,6 +63,15 @@ class Zone(SQLModel, table=True):
     conflict_vwc: float = 0.12
     revision: int = 1
     last_irrigated_at: Optional[str] = None
+    # Added by migration 0001. Links to the read-only reference database.
+    soil_class: Optional[str] = None
+    reference_plant_id: Optional[int] = None
+    irrigation_method: Optional[str] = None  # "spray" | "drip"
+    flow_rate_lph: Optional[float] = None
+    allowed_start_hour: Optional[int] = None
+    allowed_end_hour: Optional[int] = None
+    # Added by migration 0004: wetted fraction (FAO-56 fw), spray 1.0, drip 0.4.
+    wetted_fraction: Optional[float] = None
 
 
 class MeasurementPoint(SQLModel, table=True):
@@ -117,3 +126,29 @@ class Inspection(SQLModel, table=True):
     operator: str
     created_at: str = Field(default_factory=now_iso)
     origin: str
+
+
+class Sensor(SQLModel, table=True):
+    """Added by migration 0002."""
+
+    __tablename__ = "sensors"
+    id: str = Field(primary_key=True)
+    zone_id: str = Field(foreign_key="zone.id")
+    point_id: Optional[str] = Field(default=None, foreign_key="measurementpoint.id")
+    kind: str  # "lora" | "virtual" | "manual"
+    depth_m: Optional[float] = None
+    installed_at: Optional[str] = None
+    calibrated_at: Optional[str] = None
+    notes: str = ""
+
+
+class BaselineSchedule(SQLModel, table=True):
+    """Fixed-schedule comparison per zone (migration 0002). months is a JSON list."""
+
+    __tablename__ = "baseline_schedules"
+    id: str = Field(primary_key=True)
+    zone_id: str = Field(foreign_key="zone.id")
+    start_hour: int
+    litres_per_m2_per_day: float
+    months: str
+    label: str = "افتراض"
