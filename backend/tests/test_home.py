@@ -126,8 +126,10 @@ def test_conflict_is_not_averaged_into_scenario():
 def test_target_above_fc_and_bad_window_are_rejected():
     with pytest.raises(ValidationError):
         HomeInput(profile=profile(target=0.45))
+    # Windows may cross midnight (20 -> 4 is valid); only an empty window is rejected.
+    assert HomeInput(allowed_start_hour=20, allowed_end_hour=4).allowed_end_hour == 4
     with pytest.raises(ValidationError):
-        HomeInput(allowed_start_hour=20, allowed_end_hour=4)
+        HomeInput(allowed_start_hour=6, allowed_end_hour=6)
 
 
 def test_known_flow_and_missing_weather_are_explicit():

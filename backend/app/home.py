@@ -7,23 +7,38 @@ from pydantic import Field, model_validator
 from .schemas import Input
 from .planning import PlantSoilProfile, WeatherScenario, volume_to_target
 from .engine import vwc, usable_readings
+from . import reference
+from .window import hours_to_window_end, in_window
+from .dose import daily_dose
 
 
 class HomeInput(Input):
     profile: PlantSoilProfile | None = None
     weather: WeatherScenario | None = None
-    allowed_start_hour: int = Field(default=4, ge=0, le=23)
-    allowed_end_hour: int = Field(default=9, ge=1, le=24)
+    # None: use the zone's own window (e.g. 18 -> 8), else the old 4 -> 9 default.
+    allowed_start_hour: int | None = Field(default=None, ge=0, le=23)
+    allowed_end_hour: int | None = Field(default=None, ge=0, le=24)
 
     @model_validator(mode="after")
     def ordered_hours(self):
-        if self.allowed_start_hour >= self.allowed_end_hour:
-            raise ValueError("حدد نافذة ري مرتبة ضمن اليوم نفسه")
+        # Windows may cross midnight; only an empty window is invalid.
+        if self.allowed_start_hour is not None and self.allowed_end_hour is not None and self.allowed_start_hour % 24 == self.allowed_end_hour % 24:
+            raise ValueError("حدد نافذة ري بساعتي بداية ونهاية مختلفتين")
         return self
+
+
+def allowed_window(zone, payload):
+    """Request window, else the zone's own window, else the earlier 4 -> 9 default."""
+    start = payload.allowed_start_hour if payload.allowed_start_hour is not None else getattr(zone, "allowed_start_hour", None)
+    end = payload.allowed_end_hour if payload.allowed_end_hour is not None else getattr(zone, "allowed_end_hour", None)
+    if start is None or end is None or start % 24 == end % 24:
+        return 4, 9
+    return start, end % 24
 
 
 def home_summary(zone, soil, readings, decision, payload, now):
     now = now.astimezone(timezone(timedelta(hours=3)))
+    start_hour, end_hour = allowed_window(zone, payload)
     # These are explicit display assumptions, not inferred soil properties.
     assumptions = [
         "تقديرات الرئيسية سيناريو فقط؛ لا تعتمد الري ولا تسجله ولا تشغّل أجهزة.",
@@ -31,18 +46,28 @@ def home_summary(zone, soil, readings, decision, payload, now):
         "التغطية الهندسية ليست ثقة إحصائية؛ الاستيفاء لا يعوض القياس.",
     ]
     profile = payload.profile
+    # Zones linked to the reference database use its soil limits, plant
+    # coefficients and 2025 weather; other zones keep the explicit demo values.
+    soil_ref = reference.soil(zone.soil_class) if getattr(zone, "soil_class", None) else None
+    plant_ref = getattr(zone, "reference_plant_id", None)
     if profile is None:
-        assumptions.append(
-            "ملف العرض: FC 50% وWP 6% افتراضان غير معايرين؛ الهدف وحد التدخل من إعدادات المنطقة التجريبية، وليسا مشتقين من رطوبة الهواء."
-        )
+        if soil_ref:
+            assumptions.append(
+                f"السعة الحقلية {soil_ref['fc_vwc']:.0%} ونقطة الذبول {soil_ref['wp_vwc']:.0%} من القاعدة المرجعية (Hanson 2000) لتربة {zone.soil_class}؛ قيم نموذجية غير معايرة ميدانيًا."
+            )
+        else:
+            assumptions.append(
+                "ملف العرض: FC 50% وWP 6% افتراضان غير معايرين؛ الهدف وحد التدخل من إعدادات المنطقة التجريبية، وليسا مشتقين من رطوبة الهواء."
+            )
         try:
             profile = PlantSoilProfile(
                 plant=zone.plant_id,
                 soil=soil.name,
                 provenance="demo_assumption",
                 evidence="Explicit Home demo assumptions; no field calibration",
-                field_capacity=0.5,
-                wilting_point=0.06,
+                field_capacity=soil_ref["fc_vwc"] if soil_ref else 0.5,
+                wilting_point=soil_ref["wp_vwc"] if soil_ref else 0.06,
+                flow_l_h=getattr(zone, "flow_rate_lph", None),
                 threshold=soil.lower_vwc,
                 target=soil.target_vwc,
                 root_depth_m=zone.root_depth_m,
@@ -53,10 +78,17 @@ def home_summary(zone, soil, readings, decision, payload, now):
             profile = None
     if profile and profile.area_m2 > zone.area_m2:
         raise ValueError("مساحة السيناريو تتجاوز مساحة المنطقة")
-    weather = payload.weather or WeatherScenario(
-        et_mm_day=5, rain_mm=0, rain_hour=18, uncertainty_vwc=0.005
-    )
-    if payload.weather is None:
+    et_reference = reference.monthly_need(plant_ref, now.month) if plant_ref and payload.weather is None else None
+    if payload.weather is not None:
+        weather = payload.weather
+    elif et_reference:
+        # Daily loss = ET0 (monthly mean, 2025) × Kc (plant, month) − effective rain.
+        weather = WeatherScenario(et_mm_day=et_reference["net_mm_day"], rain_mm=0, rain_hour=18, uncertainty_vwc=0.005)
+        assumptions.append(
+            f"{reference.ET_SOURCE}: ET0 {et_reference['et0_mm_day']} مم/يوم × Kc {et_reference['kc']} − مطر فعّال {et_reference['effective_rain_mm_day']} = {et_reference['net_mm_day']} مم/يوم؛ متوسط شهري لمدينة {et_reference['city']}، وليس توقعًا يوميًا."
+        )
+    else:
+        weather = WeatherScenario(et_mm_day=5, rain_mm=0, rain_hour=18, uncertainty_vwc=0.005)
         assumptions.append(
             "عند غياب الطقس: ET مفترض 5 مم/يوم ومطر 0؛ ليست توقعات جوية."
         )
@@ -146,10 +178,7 @@ def home_summary(zone, soil, readings, decision, payload, now):
             if theta <= profile.threshold and crossing is None:
                 crossing = h
             at = now + timedelta(hours=h)
-            if (
-                theta <= profile.threshold
-                and payload.allowed_start_hour <= at.hour < payload.allowed_end_hour
-            ):
+            if theta <= profile.threshold and in_window(at.hour, start_hour, end_hour):
                 next_at = at.isoformat()
                 break
     duration = estimate["gross_l"] / flow if estimate else None
@@ -157,8 +186,28 @@ def home_summary(zone, soil, readings, decision, payload, now):
     fits_window = bool(
         next_date
         and duration is not None
-        and next_date.hour + next_date.minute / 60 + duration
-        <= payload.allowed_end_hour
+        and duration <= hours_to_window_end(next_date.hour + next_date.minute / 60, start_hour, end_hour)
+    )
+    # Today's dose (FAO-56 high-frequency irrigation); the same inputs reach the
+    # frontend, which recomputes with its own implementation of the same rule.
+    target_ref = reference.plant_soil_target(plant_ref, zone.soil_class) if plant_ref and getattr(zone, "soil_class", None) else None
+    dose_inputs = (
+        {
+            "current_vwc": current,
+            "target_vwc": soil.target_vwc,
+            "root_depth_m": zone.root_depth_m,
+            "efficiency": zone.efficiency,
+            "area_m2": zone.irrigated_area_m2,
+            "wetted_fraction": getattr(zone, "wetted_fraction", None) or 1.0,
+            "et0_mm_day": et_reference["et0_mm_day"],
+            "kc": et_reference["kc"],
+            "raw_mm": target_ref["raw_mm"] if target_ref else None,
+            "flow_lph": getattr(zone, "flow_rate_lph", None),
+            "days_to_window": 1,
+            "vwc_min": soil.lower_vwc,
+        }
+        if et_reference and current is not None and zone.irrigated_area_m2
+        else None
     )
     return {
         "duration_fits_window": fits_window,
@@ -184,9 +233,12 @@ def home_summary(zone, soil, readings, decision, payload, now):
         "flow_l_h": flow,
         "default_flow": default_flow,
         "weather": weather.model_dump(),
-        "default_weather": payload.weather is None,
-        "allowed_start_hour": payload.allowed_start_hour,
-        "allowed_end_hour": payload.allowed_end_hour,
+        "default_weather": payload.weather is None and et_reference is None,
+        "et_reference": et_reference,
+        "dose_inputs": dose_inputs,
+        "dose": daily_dose(**dose_inputs) if dose_inputs else None,
+        "allowed_start_hour": start_hour,
+        "allowed_end_hour": end_hour,
         "next_at": next_at,
         "crossing_hour": crossing,
         "needs_reading": decision["code"] in {"insufficient", "measure", "conflict"}

@@ -31,6 +31,21 @@ export type HomeSummary = {
   next_at: string | null;
   duration_fits_window?: boolean;
   can_review: boolean;
+  // Today's dose and the inputs it used (see components/landscape/data.ts dailyDose).
+  dose_inputs?: import("../components/landscape/data").DoseInputs | null;
+  dose?: import("../components/landscape/data").DailyDose | null;
+  // Present when the zone is linked to the reference database (2025 weather).
+  et_reference?: {
+    city: string;
+    year: number;
+    month: number;
+    et0_mm_day: number;
+    kc: number;
+    etc_mm_day: number;
+    effective_rain_mm_day: number;
+    net_mm_day: number;
+    source: string;
+  } | null;
   needs_reading: boolean;
   limitations: string[];
 };

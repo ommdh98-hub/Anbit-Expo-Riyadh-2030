@@ -1,7 +1,7 @@
 "use client";
 import { useLandscape } from "./context";
 import { useCopy } from "./copy";
-import { moistureState } from "./data";
+import { irrigatedArea, moistureState } from "./data";
 
 export default function ZoneSwitcher() {
   const { zones, zoneId, setZoneId, summaries } = useLandscape();
@@ -23,6 +23,7 @@ export default function ZoneSwitcher() {
           >
             <i className={`lx-dot lx-dot-${state(z.id)}`} aria-hidden="true" />
             {c.show(z.name)}
+            <small className="lx-pill-area">{c.area(irrigatedArea(z))}</small>
           </button>
         ))}
       </div>
@@ -32,7 +33,7 @@ export default function ZoneSwitcher() {
         <select value={zoneId} onChange={(e) => setZoneId(e.target.value)}>
           {zones.map((z) => (
             <option key={z.id} value={z.id}>
-              {c.show(z.name)}
+              {c.show(z.name)} · {c.area(irrigatedArea(z))}
             </option>
           ))}
         </select>

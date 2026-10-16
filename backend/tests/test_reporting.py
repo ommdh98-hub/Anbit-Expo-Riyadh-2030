@@ -89,7 +89,7 @@ def test_liters_units_and_no_mutation(client):
     before = snapshot()
     d = decide(z, s, p, r)
     e = d["estimate"]
-    assert e["gross_l"] == 13000
+    assert e["gross_l"] == 21111.1
     assert e["label"] == "تقدير حسابي مشروط، وليس كمية ري معتمدة ميدانيًا."
     assert e["gross_l"] == pytest.approx(
         round(

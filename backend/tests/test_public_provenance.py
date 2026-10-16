@@ -14,7 +14,8 @@ def test_public_branding_keeps_raw_provenance_and_both_roles(client):
     for role in ["user", "survey"]:
         as_role(client, role)
         plants = client.get("/api/plants").json()
-        assert len(plants) == len(before) == 5
+        # Five Grow Right reference entries and five landscape demo plants.
+        assert len(plants) == len(before) == 10
         for plant in plants:
             for text in [plant["notes"], plant["source"]["title"], plant["source"]["description"]]:
                 assert obsolete not in text.lower()

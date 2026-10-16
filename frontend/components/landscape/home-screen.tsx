@@ -9,37 +9,50 @@ import {
   derivedBadge,
   flowFor,
   freshness,
+  irrigatedArea,
   minutesFor,
+  dailyDose,
   primaryAction,
   ringModel,
   zoneSaving,
 } from "./data";
 import { MoistureRing, OrganicField, SoilLayers, SourceBadge } from "./visuals";
-import { ReadingSheet, WhereSheet } from "./sheets";
+import { ReadingSheet } from "./sheets";
+import ZoneMap from "./zone-map";
+import { DoseLines, daysText, doseMoisture } from "./dose-lines";
 import ZoneSwitcher from "./zone-switcher";
 import { LoadingState } from "./states";
 
 export default function HomeScreen() {
   const { zone, summary, month, profile, loading, error } = useLandscape();
   const c = useCopy();
-  const [sheet, setSheet] = useState<"reading" | "where" | null>(null);
+  const [sheet, setSheet] = useState<"reading" | null>(null);
+  // «أين أقيس؟» highlights the suggested point on the map of the zone it was pressed for.
+  const [whereFor, setWhereFor] = useState<string | null>(null);
   if (!zone) return <LoadingState loading={loading} error={error} />;
   const soil = zone.soil;
   const ring = ringModel(summary?.current_vwc, soil.target_vwc, soil.lower_vwc, soil.upper_vwc);
   const base = badgeFor(summary?.source);
   const fresh = freshness(summary?.age_hours, summary?.stale);
-  const area = zone.irrigated_area_m2 ?? zone.area_m2;
-  const flow = flowFor(summary, area);
+  const area = irrigatedArea(zone);
+  const flow = flowFor(summary, area ?? zone.area_m2);
   const litres = summary?.gross_l ?? null;
   const minutes = litres != null ? minutesFor(litres, flow.litresPerHour) : null;
+  // Today's dose (FAO-56 high-frequency irrigation), recomputed from the API's inputs.
+  const dose = summary?.dose_inputs ? dailyDose(summary.dose_inputs) : null;
   const usage = month?.by_zone.find((z) => z.id === zone.id);
   const saving = usage ? zoneSaving(zone, usage.litres, usage.events) : null;
   const action = primaryAction(summary);
   const plant = c.show(zone.plant.name);
+  const heroMoisture = doseMoisture(summary?.current_vwc, soil.lower_vwc, soil.target_vwc);
+  const cardMoisture = doseMoisture(summary?.dose_inputs?.current_vwc ?? summary?.current_vwc, soil.lower_vwc, soil.target_vwc);
   const sentence = {
     empty: c.t("لا نعرف رطوبة هذه المنطقة بعد.", "We don't know this zone's moisture yet."),
     dry: c.t(`أقل من حاجة ${plant} — يحتاج ري اليوم`, `Below what ${plant} needs — irrigate today`),
-    good: c.t(`ضمن حاجة ${plant} — لا حاجة للري الآن`, `Within what ${plant} needs — no irrigation now`),
+    good:
+      heroMoisture === "inRange"
+        ? c.t(`ضمن حاجة ${plant} — الري في النافذة القادمة`, `Within what ${plant} needs — irrigation in the next window`)
+        : c.t(`ضمن حاجة ${plant} — لا حاجة للري الآن`, `Within what ${plant} needs — no irrigation now`),
     wet: c.t(`أعلى من حاجة ${plant} — أوقف الري وراقب`, `Above what ${plant} needs — hold irrigation`),
   }[ring.state];
   const hour = Number(new Date().toLocaleString("en-US", { timeZone: "Asia/Riyadh", hour: "numeric", hourCycle: "h23" }));
@@ -55,13 +68,13 @@ export default function HomeScreen() {
       </header>
 
       <section className="lx-hero" aria-labelledby="lx-hero-title">
-        <OrganicField tone={ring.state === "wet" ? "water" : "calm"} />
+        <OrganicField tone={ring.state === "wet" ? "water" : "calm"} leaf={false} />
         <MoistureRing model={ring} />
         <div className="lx-hero-copy">
           <SourceBadge badge={base} fresh={fresh} />
           <h1 id="lx-hero-title">{sentence}</h1>
           <p className="lx-hero-zone">
-            {c.show(zone.name)} · {plant}
+            {c.show(zone.name)} · {plant} · {c.t(`المساحة المروية ${c.area(area)}`, `Irrigated area ${c.area(area)}`)}
           </p>
           <div className="lx-actions">
             {action === "reading" ? (
@@ -73,11 +86,17 @@ export default function HomeScreen() {
                 {c.t("مراجعة الري", "Review irrigation")}
               </Link>
             )}
-            <button type="button" className="lx-link" onClick={() => setSheet("where")}>
+            <button
+              type="button"
+              className="lx-link"
+              aria-pressed={whereFor === zone.id}
+              onClick={() => setWhereFor(whereFor === zone.id ? null : zone.id)}
+            >
               {c.t("أين أقيس؟", "Where to measure?")}
             </button>
           </div>
         </div>
+        <ZoneMap key={zone.id} c={c} zone={zone} highlight={whereFor === zone.id} />
         <SoilLayers />
       </section>
 
@@ -85,9 +104,26 @@ export default function HomeScreen() {
         <article className="lx-stat">
           <Droplets size={20} aria-hidden="true" />
           <h2>{c.t("الاحتياج المائي", "Water need")}</h2>
-          <p className="lx-stat-value">{litres != null ? c.litres(litres) : dash}</p>
-          <p className="lx-stat-sub">{minutes != null ? c.duration(minutes) : c.t("بعد أول قراءة", "After the first reading")}</p>
-          <SourceBadge badge={litres != null ? derivedBadge(base) : null} />
+          {dose ? (
+            <DoseLines c={c} dose={dose} method={zone.irrigation_method} moisture={cardMoisture} valueClass="lx-stat-value" subClass="lx-stat-sub" />
+          ) : (
+            <>
+              <p className="lx-stat-value">{litres != null ? c.t(`${c.num(litres)} لتر`, `${c.num(litres)} L`) : dash}</p>
+              <p className="lx-stat-sub">
+                {litres != null
+                  ? [c.area(area), minutes != null ? c.duration(minutes) : null].filter(Boolean).join(" · ")
+                  : c.t("بعد أول قراءة", "After the first reading")}
+              </p>
+            </>
+          )}
+          {(dose || litres != null) && summary?.et_reference ? (
+            <span className="lx-badge lx-badge-estimated" title={c.t(`ET0 ${c.num(summary.et_reference.et0_mm_day, 2)} × Kc ${c.num(summary.et_reference.kc, 2)}`, `ET0 ${summary.et_reference.et0_mm_day} × Kc ${summary.et_reference.kc}`)}>
+              <i aria-hidden="true" />
+              {c.t("ET0 شهري 2025 — Open-Meteo", "ET0 monthly 2025 — Open-Meteo")}
+            </span>
+          ) : (
+            <SourceBadge badge={dose || litres != null ? derivedBadge(base) : null} />
+          )}
         </article>
         <article className="lx-stat">
           <Clock size={20} aria-hidden="true" />
@@ -140,6 +176,65 @@ export default function HomeScreen() {
               {flow.assumed && <SourceBadge badge={{ kind: "demo", simulated: false }} />}
             </dd>
           </div>
+          {summary?.et_reference && (
+            <div>
+              <dt>{c.t("الاحتياج اليومي", "Daily need")}</dt>
+              <dd>
+                {c.t(
+                  `ET0 ${c.num(summary.et_reference.et0_mm_day, 2)} × Kc ${c.num(summary.et_reference.kc, 2)} = ${c.mm(summary.et_reference.net_mm_day)}/يوم`,
+                  `ET0 ${summary.et_reference.et0_mm_day} × Kc ${summary.et_reference.kc} = ${c.mm(summary.et_reference.net_mm_day)}/day`,
+                )}
+              </dd>
+            </div>
+          )}
+          {dose && summary?.current_vwc != null && (
+            <>
+              <div className="lx-detail-wide">
+                <dt>{c.t("تفصيل جرعة اليوم", "Today's dose breakdown")}</dt>
+                <dd>
+                  {[
+                    c.t(
+                      `الرطوبة من ${c.num(summary.current_vwc * 100, 1)}% إلى ${c.num(soil.target_vwc * 100, 1)}%`,
+                      `moisture ${c.num(summary.current_vwc * 100, 1)}% → ${c.num(soil.target_vwc * 100, 1)}%`,
+                    ),
+                    zone.root_depth_m != null ? c.t(`عمق الجذور ${c.num(zone.root_depth_m, 2)} م`, `root depth ${zone.root_depth_m} m`) : null,
+                    c.t(`النقص الصافي ${c.mm(dose.deficit_mm)}`, `net deficit ${c.mm(dose.deficit_mm)}`),
+                    c.t(`الاحتياج اليومي ${c.mm(dose.daily_need_mm)}`, `daily need ${c.mm(dose.daily_need_mm)}`),
+                    c.t(`جرعة اليوم الصافية ${c.mm(dose.net_mm)}`, `today's net dose ${c.mm(dose.net_mm)}`),
+                    zone.efficiency != null
+                      ? c.t(
+                          `كفاءة ${zone.irrigation_method === "drip" ? "التنقيط" : "الرش"} ${c.num(zone.efficiency * 100)}%`,
+                          `${zone.irrigation_method === "drip" ? "drip" : "spray"} efficiency ${c.num(zone.efficiency * 100)}%`,
+                        )
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </dd>
+              </div>
+              {zone.irrigation_method === "drip" && (
+                <div>
+                  <dt>{c.t("المساحة المبللة (افتراض)", "Wetted area (assumption)")}</dt>
+                  <dd>
+                    {c.t(
+                      `مساحة مبللة ${c.area(dose.effective_area_m2)} من ${c.area(area)}`,
+                      `wetted ${c.area(dose.effective_area_m2)} of ${c.area(area)}`,
+                    )}
+                  </dd>
+                </div>
+              )}
+              <div>
+                <dt>{c.t("تعويض النقص كاملًا", "Full refill of the deficit")}</dt>
+                <dd>{c.t(`${c.num(dose.full_refill_l)} لتر`, `${c.num(dose.full_refill_l)} L`)}</dd>
+              </div>
+              {dose.refill_days != null && (
+                <div>
+                  <dt>{c.t("الوصول إلى الهدف", "Reaching the target")}</dt>
+                  <dd>{c.t(`تكتمل خلال ${daysText(c, dose.refill_days)} بنفس الجرعة`, `within ${daysText(c, dose.refill_days)} at the same dose`)}</dd>
+                </div>
+              )}
+            </>
+          )}
           <div>
             <dt>{c.t("الحدود", "Limits")}</dt>
             <dd>
@@ -166,7 +261,6 @@ export default function HomeScreen() {
       </details>
 
       <ReadingSheet open={sheet === "reading"} onClose={() => setSheet(null)} zone={zone} />
-      <WhereSheet open={sheet === "where"} onClose={() => setSheet(null)} zone={zone} />
     </div>
   );
 }

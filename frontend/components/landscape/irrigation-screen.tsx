@@ -5,7 +5,8 @@ import { api, post } from "../../lib/api";
 import type { Recommendation, Zone } from "../../lib/types";
 import { useLandscape } from "./context";
 import { useCopy, type Copy } from "./copy";
-import { autoScenario, flowFor, manualCalc, minutesFor, openRecommendations, recActions } from "./data";
+import { autoScenario, clampArea, dailyDose, flowFor, irrigatedArea, manualPlan, minutesFor, openRecommendations, recActions, type ManualMissing } from "./data";
+import { DoseLines, doseMoisture } from "./dose-lines";
 import { ReadingSheet } from "./sheets";
 import { ScreenHeader } from "./shell";
 import { LoadingState } from "./states";
@@ -23,7 +24,13 @@ export default function IrrigationScreen() {
   const start = summary?.current_vwc ?? null;
   return (
     <div className="lx-screen lx-irrigation">
-      <ScreenHeader title={c.t("متى نروي، وكم؟", "When do we irrigate, and how much?")}>
+      <ScreenHeader
+        title={c.t("متى نروي، وكم؟", "When do we irrigate, and how much?")}
+        lead={c.t(
+          `${c.show(zone.name)} · المساحة المروية ${c.area(irrigatedArea(zone))} من ${c.area(zone.area_m2)}`,
+          `${c.show(zone.name)} · irrigated area ${c.area(irrigatedArea(zone))} of ${c.area(zone.area_m2)}`,
+        )}
+      >
         <ZoneSwitcher />
       </ScreenHeader>
       <div className="lx-segment" role="group" aria-label={c.t("نمط الحساب", "Mode")}>
@@ -33,7 +40,10 @@ export default function IrrigationScreen() {
           </button>
         ))}
       </div>
-      {start == null ? (
+      {mode === "manual" ? (
+        // The calculator itself says what is missing, including the current moisture.
+        <ManualPanel key={zone.id} zone={zone} startVwc={start} />
+      ) : start == null ? (
         <section className="lx-card lx-empty">
           <h2>{c.t("ابدأ بقراءة واحدة", "Start with one reading")}</h2>
           <p>{c.t("نحتاج رطوبة البداية لحساب الري.", "We need a starting moisture to plan irrigation.")}</p>
@@ -41,10 +51,8 @@ export default function IrrigationScreen() {
             {c.t("تسجيل قراءة", "Record a reading")}
           </button>
         </section>
-      ) : mode === "auto" ? (
-        <AutoPanel key={zone.id} zone={zone} startVwc={start} />
       ) : (
-        <ManualPanel key={zone.id} zone={zone} startVwc={start} />
+        <AutoPanel key={zone.id} zone={zone} startVwc={start} />
       )}
       <Recommendations />
       <ReadingSheet open={reading} onClose={() => setReading(false)} zone={zone} />
@@ -55,13 +63,19 @@ export default function IrrigationScreen() {
 function useZoneModel(zone: Zone) {
   const { summaries } = useLandscape();
   const summary = summaries[zone.id] ?? null;
-  const area = summary?.profile?.area_m2 ?? zone.irrigated_area_m2 ?? zone.area_m2;
+  // The zone's own settings only; a missing value stays missing (no hidden defaults).
+  const area = irrigatedArea(zone);
   return {
     summary,
     area,
-    depth: summary?.profile?.root_depth_m ?? zone.root_depth_m ?? 0.2,
-    efficiency: summary?.profile?.efficiency ?? zone.efficiency ?? 0.8,
-    flow: flowFor(summary, area),
+    depth: zone.root_depth_m ?? null,
+    efficiency: zone.efficiency ?? null,
+    flow: flowFor(summary, area ?? zone.area_m2),
+    // The zone's allowed window, the same fallback as the Home summary (4 -> 9).
+    window:
+      zone.allowed_start_hour != null && zone.allowed_end_hour != null && zone.allowed_start_hour % 24 !== zone.allowed_end_hour % 24
+        ? { start: zone.allowed_start_hour, end: zone.allowed_end_hour % 24 }
+        : { start: 4, end: 9 },
   };
 }
 
@@ -72,7 +86,9 @@ function AutoPanel({ zone, startVwc }: { zone: Zone; startVwc: number }) {
   const [now] = useState(() => Date.now());
   const s = useMemo(
     () =>
-      autoScenario({
+      m.area == null || m.depth == null || m.efficiency == null
+        ? null
+        : autoScenario({
         startVwc,
         threshold: zone.soil.lower_vwc,
         target: zone.soil.target_vwc,
@@ -82,19 +98,30 @@ function AutoPanel({ zone, startVwc }: { zone: Zone; startVwc: number }) {
         efficiency: m.efficiency,
         litresPerHour: m.flow.litresPerHour,
         now,
+        allowedStart: m.window.start,
+        allowedEnd: m.window.end,
       }),
-    [startVwc, zone, m.summary, m.depth, m.area, m.efficiency, m.flow.litresPerHour, now],
+    [startVwc, zone, m.summary, m.depth, m.area, m.efficiency, m.flow.litresPerHour, m.window.start, m.window.end, now],
   );
-  if (!s) return null;
+  if (!s)
+    return (
+      <section className="lx-card lx-empty">
+        <p>{c.t("لا يمكن حساب السيناريو: أكمل المساحة المروية وعمق الجذور وكفاءة الري لهذه المنطقة.", "The scenario needs the zone's irrigated area, root depth and efficiency.")}</p>
+      </section>
+    );
   const pct = (v: number) => `${c.num(v * 100)}%`;
   const steps = [
     { t: s.now.t, title: c.t(`تقدير ${pct(s.now.vwc)}`, `Estimate ${pct(s.now.vwc)}`), note: c.t("الآن", "Now") },
     s.start && { t: s.start.t, title: c.t("بدء الري", "Start"), note: c.t("تحت الحد", "Below the minimum") },
-    s.stop && { t: s.stop.t, title: c.t(`إيقاف عند ${pct(s.stop.vwc)}`, `Stop at ${pct(s.stop.vwc)}`), note: c.t("بلغ الهدف", "Target reached") },
+    s.stop && {
+      t: s.stop.t,
+      title: c.t(`إيقاف عند ${pct(s.stop.vwc)}`, `Stop at ${pct(s.stop.vwc)}`),
+      note: s.stop.windowClosed ? c.t("انتهت ساعات الري المسموحة", "Allowed hours ended") : c.t("بلغ الهدف", "Target reached"),
+    },
     s.next && {
       t: s.next.t,
       title: c.t("الري القادم", "Next irrigation"),
-      note: `${c.day(s.next.t, { weekday: "long" })} · ${s.next.night ? c.t("تبخر أقل ليلًا", "less evaporation at night") : c.t("قبل بلوغ الحد", "before the minimum")}`,
+      note: `${c.day(s.next.t, { weekday: "long" })} · ${s.next.night ? c.t("تبخر أقل ليلًا", "less evaporation at night") : c.t("ضمن الساعات المسموحة", "within allowed hours")}`,
     },
   ].filter(Boolean) as { t: number; title: string; note: string }[];
   const data = s.points.map((p) => ({ t: p.t, vwc: Math.round(p.vwc * 1000) / 10 }));
@@ -106,6 +133,22 @@ function AutoPanel({ zone, startVwc }: { zone: Zone; startVwc: number }) {
           <i aria-hidden="true" />
           {c.t("تقدير سيناريو — لا يشغّل مضخة", "Scenario estimate — runs no pump")}
         </span>
+        <span className="lx-badge">
+          <i aria-hidden="true" />
+          {c.t(
+            `ساعات الري المسموحة ${String(m.window.start).padStart(2, "0")}:00–${String(m.window.end).padStart(2, "0")}:00`,
+            `Allowed hours ${String(m.window.start).padStart(2, "0")}:00–${String(m.window.end).padStart(2, "0")}:00`,
+          )}
+        </span>
+        {m.summary?.et_reference && (
+          <span className="lx-badge lx-badge-estimated">
+            <i aria-hidden="true" />
+            {c.t(
+              `ET0 شهري 2025 — Open-Meteo · ${c.mm(m.summary.et_reference.net_mm_day)}/يوم`,
+              `ET0 monthly 2025 — Open-Meteo · ${c.mm(m.summary.et_reference.net_mm_day)}/day`,
+            )}
+          </span>
+        )}
       </div>
       <ol className="lx-timeline">
         {steps.map((step, i) => (
@@ -132,36 +175,76 @@ function AutoPanel({ zone, startVwc }: { zone: Zone; startVwc: number }) {
   );
 }
 
-function verdictText(c: Copy, v: "insufficient" | "good" | "over") {
-  return {
-    insufficient: c.t("غير كافٍ — تبقى الرطوبة تحت الهدف", "Not enough — moisture stays below target"),
-    good: c.t("مناسب — يصل إلى الهدف دون زيادة", "Good — reaches the target without excess"),
-    over: c.t("ري زائد — يتجاوز الحد الأعلى", "Overwatering — goes past the upper limit"),
-  }[v];
-}
+const missingText = (c: Copy, m: ManualMissing) =>
+  ({
+    area: c.t("المساحة المروية", "irrigated area"),
+    moisture: c.t("الرطوبة الحالية", "current moisture"),
+    rootDepth: c.t("عمق الجذور", "root depth"),
+    efficiency: c.t("كفاءة الري", "irrigation efficiency"),
+  })[m];
 
-function ManualPanel({ zone, startVwc }: { zone: Zone; startVwc: number }) {
+function ManualPanel({ zone, startVwc }: { zone: Zone; startVwc: number | null }) {
   const c = useCopy();
   const m = useZoneModel(zone);
   const [value, setValue] = useState("");
-  const litres = value === "" ? NaN : Number(value);
-  const r = manualCalc({
+  const [areaText, setAreaText] = useState(m.area != null ? String(m.area) : "");
+  const litres = value === "" ? null : Number(value);
+  const area = areaText === "" ? null : clampArea(Number(areaText), zone.area_m2);
+  const plan = manualPlan({
     litres,
+    areaM2: area,
     startVwc,
-    areaM2: m.area,
     rootDepthM: m.depth,
     efficiency: m.efficiency,
     target: zone.soil.target_vwc,
     upper: zone.soil.upper_vwc,
     litresPerHour: m.flow.litresPerHour,
   });
-  const hint = manualCalc({ litres: 0, startVwc, areaM2: m.area, rootDepthM: m.depth, efficiency: m.efficiency, target: zone.soil.target_vwc, upper: zone.soil.upper_vwc, litresPerHour: m.flow.litresPerHour });
+  const r = plan.result;
+  const pct = (v: number) => `${c.num(v * 100)}%`;
+  const verdict =
+    r &&
+    plan.depthMm != null &&
+    area != null &&
+    {
+      insufficient: c.t(
+        `غير كافٍ: ${c.mm(plan.depthMm)} على ${c.area(area)} ترفع الرطوبة إلى ${pct(r.afterVwc)} (الهدف ${pct(zone.soil.target_vwc)})`,
+        `Not enough: ${c.mm(plan.depthMm)} over ${c.area(area)} raises moisture to ${pct(r.afterVwc)} (target ${pct(zone.soil.target_vwc)})`,
+      ),
+      good: c.t(
+        `مناسب: ${c.mm(plan.depthMm)} على ${c.area(area)} ترفع الرطوبة إلى ${pct(r.afterVwc)} (الهدف ${pct(zone.soil.target_vwc)})`,
+        `Good: ${c.mm(plan.depthMm)} over ${c.area(area)} raises moisture to ${pct(r.afterVwc)} (target ${pct(zone.soil.target_vwc)})`,
+      ),
+      over: c.t(
+        `ري زائد: ${c.mm(plan.depthMm)} على ${c.area(area)} ترفع الرطوبة إلى ${pct(r.afterVwc)} (الحد الأعلى ${pct(zone.soil.upper_vwc)})`,
+        `Over-watering: ${c.mm(plan.depthMm)} over ${c.area(area)} raises moisture to ${pct(r.afterVwc)} (upper limit ${pct(zone.soil.upper_vwc)})`,
+      ),
+    }[r.verdict];
   return (
     <section className="lx-card lx-manual" aria-labelledby="lx-manual-title">
       <div className="lx-card-head">
         <h2 id="lx-manual-title">{c.t("كم لترًا؟", "How many litres?")}</h2>
         <SourceBadge badge={{ kind: "estimated", simulated: false }} />
       </div>
+      <label className="lx-field-row">
+        {c.t("المساحة المروية (م²)", "Irrigated area (m²)")}
+        <input
+          type="number"
+          inputMode="decimal"
+          min={1}
+          max={zone.area_m2}
+          step={1}
+          value={areaText}
+          onChange={(e) => setAreaText(e.target.value)}
+          onBlur={() => area != null && setAreaText(String(area))}
+          dir="ltr"
+        />
+        <small>
+          {area != null && areaText !== "" && Number(areaText) !== area
+            ? c.t(`يُحسب على ${c.area(area)}: المسموح من 1 إلى ${c.area(zone.area_m2)}`, `Calculated on ${c.area(area)}: allowed 1 to ${c.area(zone.area_m2)}`)
+            : c.t(`من 1 إلى ${c.area(zone.area_m2)} (مساحة المنطقة)`, `1 to ${c.area(zone.area_m2)} (zone area)`)}
+        </small>
+      </label>
       <label className="lx-big-input">
         <span className="lx-sr">{c.t("الكمية باللتر", "Volume in litres")}</span>
         <input
@@ -171,33 +254,56 @@ function ManualPanel({ zone, startVwc }: { zone: Zone; startVwc: number }) {
           max={1_000_000}
           step={10}
           value={value}
-          placeholder={hint ? String(Math.round(hint.litresToTarget)) : "0"}
+          placeholder={plan.litresToTarget != null ? String(Math.round(plan.litresToTarget)) : "0"}
           onChange={(e) => setValue(e.target.value)}
           dir="ltr"
         />
         <span aria-hidden="true">{c.t("لتر", "L")}</span>
       </label>
       <div className="lx-manual-result" aria-live="polite">
-        {r && value !== "" ? (
-          <>
-            <div>
-              <span>{c.t("الرطوبة بعد الري", "Moisture after")}</span>
-              <strong>{c.num(r.afterVwc * 100)}%</strong>
-            </div>
-            <div>
-              <span>{c.t("المدة", "Duration")}</span>
-              <strong>{c.duration(r.minutes)}</strong>
-            </div>
-            <p className={`lx-verdict lx-verdict-${r.verdict}`}>{verdictText(c, r.verdict)}</p>
-          </>
-        ) : (
+        {plan.missing.length > 0 ? (
           <p className="lx-caption">
-            {hint
-              ? c.t(`للوصول إلى الهدف: نحو ${c.litres(hint.litresToTarget)}`, `To reach the target: about ${c.litres(hint.litresToTarget)}`)
-              : ""}
+            {c.t(
+              `لا يمكن الحكم على الكمية: ينقص ${plan.missing.map((x) => missingText(c, x)).join(c.ar ? "، " : ", ")}.`,
+              `No verdict yet: missing ${plan.missing.map((x) => missingText(c, x)).join(", ")}.`,
+            )}
           </p>
+        ) : (
+          <>
+            {r && value !== "" && (
+              <>
+                <div>
+                  <span>{c.t("العمق", "Depth")}</span>
+                  <strong>{plan.depthMm != null ? c.mm(plan.depthMm) : "—"}</strong>
+                </div>
+                <div>
+                  <span>{c.t("الرطوبة بعد الري", "Moisture after")}</span>
+                  <strong>{pct(r.afterVwc)}</strong>
+                </div>
+                <div>
+                  <span>{c.t("المدة", "Duration")}</span>
+                  <strong>{c.duration(r.minutes)}</strong>
+                </div>
+                {verdict && <p className={`lx-verdict lx-verdict-${r.verdict}`}>{verdict}</p>}
+              </>
+            )}
+            {plan.litresToTarget != null && area != null && plan.mmToTarget != null && (
+              <p className="lx-caption">
+                {c.t(
+                  `للوصول إلى الهدف على ${c.area(area)}: ${c.num(Math.round(plan.litresToTarget))} لتر (${c.mm(plan.mmToTarget)})`,
+                  `To reach the target over ${c.area(area)}: ${c.num(Math.round(plan.litresToTarget))} L (${c.mm(plan.mmToTarget)})`,
+                )}
+              </p>
+            )}
+          </>
         )}
       </div>
+      <p className="lx-caption">
+        {c.t(
+          `الحساب: الرطوبة بعد الري = الحالية + اللترات × الكفاءة ÷ (المساحة × عمق الجذور × 1000). عمق الجذور ${m.depth != null ? `${c.num(m.depth, 2)} م` : "—"}، الكفاءة ${m.efficiency != null ? pct(m.efficiency) : "—"}. 1 لتر/م² = 1 مم.`,
+          `Moisture after = current + litres × efficiency ÷ (area × root depth × 1000). Root depth ${m.depth ?? "—"} m, efficiency ${m.efficiency != null ? pct(m.efficiency) : "—"}. 1 L/m² = 1 mm.`,
+        )}
+      </p>
     </section>
   );
 }
@@ -244,10 +350,7 @@ function Recommendations() {
             <div className="lx-rec-main">
               <div>
                 <p className="lx-rec-zone">{c.show(zone.name)}</p>
-                <p className="lx-rec-amount">
-                  {litresOf(current.rec) != null ? c.litres(litresOf(current.rec)!) : c.show(current.rec.result.label)}
-                  {minutesOf(current.rec, zone) != null && <span> · {c.duration(minutesOf(current.rec, zone))}</span>}
-                </p>
+                <RecAmount rec={current.rec} zone={zone} />
                 <p className="lx-caption">{statusText(current.rec.status)}</p>
               </div>
               <SourceBadge badge={litresOf(current.rec) != null ? { kind: "estimated", simulated: zone.origin === "simulation" } : null} />
@@ -321,6 +424,31 @@ function Recommendations() {
         />
       )}
     </section>
+  );
+}
+
+// Same presentation as the Home water card: today's dose first, the full refill
+// of the stored recommendation second.
+function RecAmount({ rec, zone }: { rec: Recommendation; zone: Zone }) {
+  const c = useCopy();
+  const { summaries } = useLandscape();
+  const inputs = summaries[zone.id]?.dose_inputs;
+  const dose = inputs ? dailyDose(inputs) : null;
+  const full = rec.result.estimate?.gross_l ?? null;
+  if (!dose)
+    return <p className="lx-rec-amount">{full != null ? c.t(`${c.num(full)} لتر`, `${c.num(full)} L`) : c.show(rec.result.label)}</p>;
+  return (
+    <>
+      <DoseLines
+        c={c}
+        dose={dose}
+        method={zone.irrigation_method}
+        moisture={doseMoisture(inputs?.current_vwc, zone.soil.lower_vwc, inputs?.target_vwc ?? zone.soil.target_vwc)}
+        valueClass="lx-rec-amount" subClass="lx-caption" />
+      <p className="lx-caption">
+        {c.t(`تعويض النقص كاملًا: ${c.num(dose.full_refill_l)} لتر`, `Full refill of the deficit: ${c.num(dose.full_refill_l)} L`)}
+      </p>
+    </>
   );
 }
 

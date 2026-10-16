@@ -18,6 +18,8 @@ from .models import (
     Recommendation,
     IrrigationEvent,
     Inspection,
+    Sensor,
+    BaselineSchedule,
 )
 from .schemas import (
     ReadingInput,
@@ -35,11 +37,15 @@ from .planning import PlanInput, plan, spatial_estimate
 from .executive import executive_report, research_summary
 from .presentation import public_source, public_plant
 from .home import HomeInput, home_summary
+from .migrate import run_migrations
+from .dose import daily_dose
+from . import reference
 
 
 @asynccontextmanager
 async def lifespan(app):
     SQLModel.metadata.create_all(engine)
+    run_migrations(engine)
     app.state.auth_engine = engine
     with Session(engine) as session:
         seed_demo(session)
@@ -81,15 +87,41 @@ def zone_data(session, zone):
     return points, readings, soil
 
 
+def zone_dose(zone, soil, current_vwc):
+    """Today's dose for a zone linked to the reference database (see dose.py)."""
+    plant = getattr(zone, "reference_plant_id", None)
+    if plant is None or current_vwc is None or soil is None or not zone.irrigated_area_m2:
+        return None
+    need = reference.monthly_need(plant, datetime.now(timezone(timedelta(hours=3))).month)
+    if not need:
+        return None
+    target = reference.plant_soil_target(plant, zone.soil_class) if zone.soil_class else None
+    return daily_dose(
+        current_vwc=current_vwc,
+        target_vwc=soil.target_vwc,
+        root_depth_m=zone.root_depth_m,
+        efficiency=zone.efficiency,
+        area_m2=zone.irrigated_area_m2,
+        wetted_fraction=zone.wetted_fraction or 1.0,
+        et0_mm_day=need["et0_mm_day"],
+        kc=need["kc"],
+        raw_mm=target["raw_mm"] if target else None,
+        flow_lph=zone.flow_rate_lph,
+        vwc_min=soil.lower_vwc,
+    )
+
+
 def zone_view(session, zone):
     points, readings, soil = zone_data(session, zone)
+    decision = decide(zone, soil, points, readings)
     return {
         **zone.model_dump(),
         "plant": public_plant(session.get(Plant, zone.plant_id)),
         "soil": soil,
         "points": points,
         "measurements": readings,
-        "decision": decide(zone, soil, points, readings),
+        "decision": decision,
+        "dose": zone_dose(zone, soil, decision["mean_vwc"]),
     }
 
 
@@ -233,11 +265,16 @@ def estimate(zone_id: str, payload: EstimateInput):
         return decide(zone, soil, points, readings)
 
 
-def recommendation_view(rec):
-    return {
-        **rec.model_dump(exclude={"result_json"}),
-        "result": json.loads(rec.result_json),
-    }
+def recommendation_view(rec, session=None):
+    result = json.loads(rec.result_json)
+    view = {**rec.model_dump(exclude={"result_json"}), "result": result}
+    if session is not None:
+        # Today's dose alongside the stored full-refill estimate (same rule as Home).
+        zone = session.get(Zone, rec.zone_id)
+        soil = session.get(SoilProfile, zone.soil_id) if zone else None
+        current = (result.get("estimate") or {}).get("current_vwc", result.get("mean_vwc"))
+        view["dose"] = zone_dose(zone, soil, current) if zone else None
+    return view
 
 
 @app.post("/api/zones/{zone_id}/recommendations")
@@ -259,7 +296,7 @@ def recommend(zone_id: str):
                 and old["code"] == result["code"]
                 and old["readings_used"] == result["readings_used"]
             ):
-                return recommendation_view(rec)
+                return recommendation_view(rec, session)
         rec = Recommendation(
             id=str(uuid4()),
             zone_id=zone.id,
@@ -269,14 +306,14 @@ def recommend(zone_id: str):
         session.add(rec)
         session.commit()
         session.refresh(rec)
-        return recommendation_view(rec)
+        return recommendation_view(rec, session)
 
 
 @app.get("/api/recommendations")
 def recommendations():
     with Session(engine) as session:
         return [
-            recommendation_view(r)
+            recommendation_view(r, session)
             for r in session.exec(
                 select(Recommendation).order_by(Recommendation.created_at.desc())
             ).all()
@@ -313,7 +350,7 @@ def action(rec_id: str, payload: ActionInput, request: Request):
         session.add(rec)
         session.commit()
         session.refresh(rec)
-        return recommendation_view(rec)
+        return recommendation_view(rec, session)
 
 
 @app.post("/api/irrigation-events", status_code=201)
@@ -434,6 +471,19 @@ def inspections(zone_id: str):
         ).all()
 
 
+@app.get("/api/reference/landscape-plants")
+def reference_landscape_plants():
+    # Read-only reference database; empty list when the file is not installed.
+    return {"available": reference.available(), "source": reference.ET_SOURCE, "plants": reference.landscape_plants()}
+
+
+@app.get("/api/baseline-schedules")
+def baseline_schedules():
+    with Session(engine) as session:
+        rows = session.exec(select(BaselineSchedule)).all()
+        return [{**row.model_dump(), "months": json.loads(row.months)} for row in rows]
+
+
 @app.get("/api/plants")
 def plants():
     with Session(engine) as session:
@@ -457,6 +507,8 @@ def reset_demo():
             IrrigationEvent,
             Inspection,
             Recommendation,
+            Sensor,
+            BaselineSchedule,
             SoilMeasurement,
             MeasurementPoint,
         ]:

@@ -289,7 +289,7 @@ def test_executive_origin_totals_and_proposals(client):
     # Create an eligible recommendation only in the fixture database; it stays proposed.
     client.post("/api/zones/z3/recommendations")
     r = client.get("/api/reports/executive").json()
-    assert len(r["proposals"]) == 1 and r["proposals"][0]["gross_l"] == 13000
+    assert len(r["proposals"]) == 1 and r["proposals"][0]["gross_l"] == 21111.1
     assert r["groups"] == report["groups"]
 
 

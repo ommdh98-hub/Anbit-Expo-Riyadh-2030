@@ -16,8 +16,8 @@ export const DEMO_APPLICATION_L_PER_M2_H = 12;
 // A reading older than this is shown as stale even if the API did not flag it.
 export const STALE_AFTER_HOURS = 24;
 
-// Half a percentage point of VWC below target still counts as "good".
-export const TARGET_TOLERANCE_VWC = 0.005;
+// Floating-point rounding only: anything really below the target is "insufficient".
+export const TARGET_TOLERANCE_VWC = 1e-9;
 
 export const RIYADH_TZ = "Asia/Riyadh";
 export const RIYADH_OFFSET_HOURS = 3;

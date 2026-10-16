@@ -17,7 +17,8 @@ export type Coverage = {
   radius_m: number;
   required_fraction: number;
   uncovered_cells: { x: number; y: number }[];
-  next_point: { x: number; y: number; distance_m: number; reason: string };
+  next_point: { x: number; y: number; distance_m: number; reason: string; coverage_after?: number };
+  rejected?: { id: string; reason: string }[];
   method: string;
   caveat: string;
 };
@@ -77,6 +78,21 @@ export type Zone = {
   points: Point[];
   measurements: Reading[];
   decision: Decision;
+  soil_class?: string | null;
+  reference_plant_id?: number | null;
+  irrigation_method?: "spray" | "drip" | null;
+  flow_rate_lph?: number | null;
+  allowed_start_hour?: number | null;
+  allowed_end_hour?: number | null;
+  wetted_fraction?: number | null;
+};
+export type BaselineSchedule = {
+  id: string;
+  zone_id: string;
+  start_hour: number;
+  litres_per_m2_per_day: number;
+  months: number[];
+  label: string;
 };
 export type Recommendation = {
   id: string;

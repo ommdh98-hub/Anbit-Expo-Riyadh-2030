@@ -15,6 +15,9 @@ def client(monkeypatch):
         "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
     monkeypatch.setattr(main, "engine", engine)
+    # Explicit test scenario (dry, wet, conflicting and stale zones on the earlier,
+    # larger areas). The real demo seed is tested in test_reference_and_migrations.
+    monkeypatch.setenv("ANBIT_SEED_SCENARIO", "test")
     with TestClient(main.app) as c:
         install_account(engine, "user", "test-user-password", iterations=1000)
         install_account(engine, "survey", "test-survey-password", iterations=1000)
@@ -55,7 +58,8 @@ def test_scenarios(client):
         "conflict",
         "insufficient",
     ]
-    assert zones[2]["decision"]["estimate"]["gross_l"] == 13000
+    # z3 bougainvillea on loam (reference DB): 400 m² × 0.5 m × (0.255 − 0.16) × 1000 ÷ 0.9
+    assert zones[2]["decision"]["estimate"]["gross_l"] == 21111.1
     for z in zones:
         p = z["decision"]["coverage"]["next_point"]
         assert z["x"] <= p["x"] <= z["x"] + z["width"]
@@ -70,8 +74,9 @@ def test_measurement_journey(client):
         if z["decision"]["code"] == "review":
             break
         p = z["decision"]["coverage"]["next_point"]
+        # z1 is sand (field capacity 10%): a dry reading there is about 6%.
         result = client.post(
-            "/api/zones/z1/measurements", json=reading(x=p["x"], y=p["y"])
+            "/api/zones/z1/measurements", json=reading(x=p["x"], y=p["y"], value=6)
         )
         assert result.status_code == 201
     assert result.json()["decision"]["code"] == "review"
@@ -193,7 +198,8 @@ def test_estimator_missing_inputs(client):
             "homogeneous": True,
         },
     ).json()
-    assert r["estimate"]["gross_l"] == 5200
+    # 200 m² × 0.1 m × (0.255 − 0.16) × 1000 ÷ 0.5
+    assert r["estimate"]["gross_l"] == 3800
     r = client.post(
         "/api/zones/z3/estimate",
         json={
@@ -233,7 +239,7 @@ def test_one_additional_reading_changes_demo_decision(client):
     assert zone["decision"]["code"] == "measure"
     point = zone["decision"]["coverage"]["next_point"]
     result = client.post(
-        "/api/zones/z1/measurements", json=reading(x=point["x"], y=point["y"])
+        "/api/zones/z1/measurements", json=reading(x=point["x"], y=point["y"], value=6)
     ).json()
     assert result["decision"]["code"] == "review"
     assert (

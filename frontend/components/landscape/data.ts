@@ -10,7 +10,9 @@ import {
   type Period,
 } from "./constants";
 import type { Recommendation, WaterEvent, Zone } from "../../lib/types";
+import { inWindow } from "../../lib/twin/window";
 import type { HomeSummary } from "../../lib/home";
+import { suggestedMeasurement } from "../../lib/role-home";
 
 export type Role = "user" | "survey";
 export type Access = "checking" | "login" | "forbidden" | "allowed";
@@ -171,6 +173,58 @@ export function manualCalc(input: ManualInput): ManualResult | null {
   };
 }
 
+// Irrigated area as stored for the zone; null when it was never set.
+export const irrigatedArea = (zone: Pick<Zone, "irrigated_area_m2">) =>
+  zone.irrigated_area_m2 != null && zone.irrigated_area_m2 > 0 ? zone.irrigated_area_m2 : null;
+// Water depth over an area: 1 L/m² = 1 mm.
+export const depthMm = (litres: number, areaM2: number | null) => (areaM2 && areaM2 > 0 && litres >= 0 ? litres / areaM2 : null);
+// Editable area for the calculator, kept within 1..zone area.
+export function clampArea(value: number, zoneAreaM2: number) {
+  if (!Number.isFinite(value)) return null;
+  return Math.min(Math.max(1, zoneAreaM2), Math.max(1, value));
+}
+
+export type ManualMissing = "area" | "moisture" | "rootDepth" | "efficiency";
+export type ManualPlanInput = {
+  litres: number | null;
+  areaM2: number | null;
+  startVwc: number | null | undefined;
+  rootDepthM: number | null | undefined;
+  efficiency: number | null | undefined;
+  target: number;
+  upper: number;
+  litresPerHour: number;
+};
+export type ManualPlan = {
+  missing: ManualMissing[];
+  depthMm: number | null;
+  litresToTarget: number | null;
+  mmToTarget: number | null;
+  result: ManualResult | null;
+};
+// The calculator only gives a verdict when every input it rests on is known.
+export function manualPlan(input: ManualPlanInput): ManualPlan {
+  const missing: ManualMissing[] = [];
+  if (!(input.areaM2 != null && input.areaM2 > 0)) missing.push("area");
+  if (input.startVwc == null || !Number.isFinite(input.startVwc)) missing.push("moisture");
+  if (!(input.rootDepthM != null && input.rootDepthM > 0)) missing.push("rootDepth");
+  if (!(input.efficiency != null && input.efficiency > 0 && input.efficiency <= 1)) missing.push("efficiency");
+  const depth = input.litres != null && input.areaM2 ? depthMm(input.litres, input.areaM2) : null;
+  if (missing.length) return { missing, depthMm: depth, litresToTarget: null, mmToTarget: null, result: null };
+  const base = {
+    startVwc: input.startVwc as number,
+    areaM2: input.areaM2 as number,
+    rootDepthM: input.rootDepthM as number,
+    efficiency: input.efficiency as number,
+    target: input.target,
+    upper: input.upper,
+    litresPerHour: input.litresPerHour,
+  };
+  const toTarget = manualCalc({ ...base, litres: 0 })!.litresToTarget;
+  const result = input.litres != null && input.litres >= 0 ? manualCalc({ ...base, litres: input.litres }) : null;
+  return { missing, depthMm: depth, litresToTarget: toTarget, mmToTarget: toTarget / base.areaM2, result };
+}
+
 export function baselineLitres(areaM2: number, days: number) {
   return DEMO_BASELINE.litresPerM2PerDay * Math.max(0, areaM2) * Math.max(0, days);
 }
@@ -216,7 +270,8 @@ export type ReportModel = {
   days: number;
   baseline: number;
   anbit: number;
-  difference: number;
+  // Null when ANBIT has no irrigation records: there is nothing to compare.
+  difference: number | null;
   saving: number | null;
   events: number;
   buckets: Bucket[];
@@ -272,7 +327,7 @@ export function reportModel(
     days,
     baseline,
     anbit: a,
-    difference: baseline - a,
+    difference: used ? baseline - a : null,
     saving: used ? savingPercent(baseline, a) : null,
     events: used,
     buckets: rows,
@@ -299,13 +354,16 @@ export type AutoInput = {
   efficiency: number;
   litresPerHour: number;
   now: number;
+  // Allowed irrigation window (Riyadh hours); may cross midnight, e.g. 18 -> 8.
+  allowedStart: number;
+  allowedEnd: number;
 };
 export type AutoPoint = { t: number; vwc: number; irrigating: boolean };
 export type AutoScenario = {
   points: AutoPoint[];
   now: { t: number; vwc: number };
   start: { t: number; vwc: number } | null;
-  stop: { t: number; vwc: number; litres: number } | null;
+  stop: { t: number; vwc: number; litres: number; windowClosed: boolean } | null;
   next: { t: number; night: boolean } | null;
 };
 // Evaporation is weighted toward daytime (07:00–18:00 Riyadh) and normalised
@@ -315,17 +373,22 @@ const ET_NORMAL = Array.from({ length: 24 }, (_, h) => etWeight(h)).reduce((s, w
 const isNight = (hour: number) => hour >= 20 || hour < 6;
 
 // Scenario only: a simple hourly balance, never a schedule sent to hardware.
+// Irrigation starts and runs only inside the allowed window (the same rules as
+// the Digital Twin and the Home summary), and stops at the target or when the
+// window closes.
 export function autoScenario(input: AutoInput): AutoScenario | null {
-  const { startVwc, threshold, target, etMmDay, rootDepthM, areaM2, efficiency, litresPerHour, now } = input;
+  const { startVwc, threshold, target, etMmDay, rootDepthM, areaM2, efficiency, litresPerHour, now, allowedStart, allowedEnd } = input;
   if (
     !Number.isFinite(startVwc) ||
     !(rootDepthM > 0) ||
     !(areaM2 > 0) ||
     !(efficiency > 0) ||
     !(litresPerHour > 0) ||
-    !(threshold < target)
+    !(threshold < target) ||
+    allowedStart % 24 === allowedEnd % 24
   )
     return null;
+  const open = (t: number) => inWindow(riyadhHour(t), allowedStart, allowedEnd);
   const step = 0.25;
   const depthMm = rootDepthM * 1000;
   const gainPerStep = (litresPerHour * step * efficiency) / (areaM2 * depthMm);
@@ -340,16 +403,21 @@ export function autoScenario(input: AutoInput): AutoScenario | null {
     const t = now + i * step * HOUR;
     const hour = riyadhHour(t);
     theta = Math.max(0, theta - ((etMmDay / 24) * step * (etWeight(hour) / ET_NORMAL)) / depthMm);
-    if (!start && theta <= threshold) {
+    if (!start && theta <= threshold && open(t)) {
       irrigating = true;
-      start = { t: i === 1 && startVwc <= threshold ? now : t, vwc: theta };
+      start = { t: i === 1 && startVwc <= threshold && open(now) ? now : t, vwc: theta };
     }
     if (irrigating) {
-      theta += gainPerStep;
-      if (theta >= target) {
-        theta = target;
+      if (!open(t)) {
         irrigating = false;
-        stop = { t, vwc: theta, litres: (litresPerHour * (t - start!.t)) / HOUR };
+        stop = { t, vwc: theta, litres: (litresPerHour * (t - start!.t)) / HOUR, windowClosed: true };
+      } else {
+        theta += gainPerStep;
+        if (theta >= target) {
+          theta = target;
+          irrigating = false;
+          stop = { t, vwc: theta, litres: (litresPerHour * (t - start!.t)) / HOUR, windowClosed: false };
+        }
       }
     } else if (stop && crossing === null && theta <= threshold) crossing = t;
     if (i % (1 / step) === 0 && i * step <= 24) points.push({ t, vwc: theta, irrigating });
@@ -358,11 +426,12 @@ export function autoScenario(input: AutoInput): AutoScenario | null {
   const from = stop?.t ?? (start ? null : now);
   const until = crossing ?? (start ? null : findCrossing(points, threshold));
   if (from != null && until != null) {
-    // Prefer the latest night hour before the projected crossing: less evaporation.
-    let night: number | null = null;
-    for (let t = Math.ceil(from / HOUR) * HOUR; t <= until; t += HOUR)
-      if (isNight(riyadhHour(t))) night = t;
-    next = night != null ? { t: night, night: true } : { t: until, night: false };
+    // Latest allowed hour before the projected crossing (night preferred: less
+    // evaporation); if the window is closed until then, its first hour after.
+    let best: number | null = null;
+    for (let t = Math.ceil(from / HOUR) * HOUR; t <= until; t += HOUR) if (open(t)) best = t;
+    if (best == null) for (let t = Math.ceil(until / HOUR) * HOUR; t <= until + 48 * HOUR; t += HOUR) if (open(t)) { best = t; break; }
+    if (best != null) next = { t: best, night: isNight(riyadhHour(best)) };
   }
   return { points, now: { t: now, vwc: startVwc }, start, stop, next };
 }
@@ -390,5 +459,234 @@ export function recActions(rec: Recommendation) {
     approve: rec.status === "suggested" && rec.result.code === "review",
     defer: rec.status === "suggested" || rec.status === "approved",
     execute: rec.status === "approved",
+  };
+}
+
+export type ScheduleRow = { zone_id: string; litres_per_m2_per_day: number; months: number[] };
+const riyadhParts = (ms: number) => {
+  const d = new Date(ms + RIYADH_OFFSET_HOURS * HOUR);
+  return { day: d.toISOString().slice(0, 10), month: d.getUTCMonth() + 1 };
+};
+// Fixed-schedule depth (L/m²/day) for a zone in a month, or null when none is set.
+export function scheduleDepth(schedules: ScheduleRow[], zoneId: string, month: number) {
+  const row = schedules.find((s) => s.zone_id === zoneId && s.months.includes(month));
+  return row ? row.litres_per_m2_per_day : null;
+}
+export type ScheduleReport = ReportModel & { estimate: number; recordDays: number };
+// Comparison against baseline_schedules: the fixed schedule is counted only for
+// the days and zones where ANBIT recorded irrigation, so a saving is never shown
+// without records. `estimate` is the whole-period schedule, for information only.
+export function scheduleReport(
+  period: Period,
+  events: Pick<WaterEvent, "zone_id" | "volume_l" | "executed_at">[],
+  zones: Pick<Zone, "id" | "irrigated_area_m2">[],
+  schedules: ScheduleRow[],
+  now: number,
+): ScheduleReport {
+  const days = PERIOD_DAYS[period];
+  const count = period === "day" ? 24 : period === "year" ? 12 : days;
+  const width = (days * DAY) / count;
+  const start = now - days * DAY;
+  const area = new Map(zones.map((z) => [z.id, irrigatedArea(z)]));
+  const rows: Bucket[] = Array.from({ length: count }, (_, i) => ({ t: start + i * width, baseline: 0, anbit: 0, baselineTotal: 0, anbitTotal: 0 }));
+  const recorded = new Set<string>();
+  let used = 0;
+  for (const e of events) {
+    const at = Date.parse(e.executed_at);
+    if (!Number.isFinite(at) || at < start || at > now || !(e.volume_l >= 0) || !area.has(e.zone_id)) continue;
+    const i = Math.min(count - 1, Math.floor((at - start) / width));
+    rows[i].anbit += e.volume_l;
+    used += 1;
+    const { day, month } = riyadhParts(at);
+    const key = `${e.zone_id}|${day}`;
+    if (recorded.has(key)) continue;
+    recorded.add(key);
+    const depth = scheduleDepth(schedules, e.zone_id, month);
+    const a = area.get(e.zone_id);
+    if (depth != null && a) rows[i].baseline += depth * a;
+  }
+  let estimate = 0;
+  for (let t = start; t < now; t += DAY) {
+    const { month } = riyadhParts(t);
+    for (const z of zones) {
+      const depth = scheduleDepth(schedules, z.id, month);
+      const a = area.get(z.id);
+      if (depth != null && a) estimate += depth * a;
+    }
+  }
+  let b = 0;
+  let a = 0;
+  for (const row of rows) {
+    b += row.baseline;
+    a += row.anbit;
+    row.baselineTotal = b;
+    row.anbitTotal = a;
+  }
+  return {
+    period,
+    days,
+    baseline: b,
+    anbit: a,
+    difference: used ? b - a : null,
+    saving: used ? savingPercent(b, a) : null,
+    events: used,
+    buckets: rows,
+    baselineConfigured: true,
+    estimate,
+    recordDays: recorded.size,
+  };
+}
+
+// Water class from WUCOLS when listed; otherwise derived from summer Kc and marked as such.
+export function waterClass(p: { wucols_class: string | null; kc_summer: number }) {
+  if (p.wucols_class) return { level: p.wucols_class, derived: false };
+  const level = p.kc_summer >= 0.7 ? "high" : p.kc_summer >= 0.4 ? "moderate" : "low";
+  return { level, derived: true };
+}
+
+// Today's irrigation dose (FAO-56 high-frequency irrigation). One implementation
+// for the frontend; backend/app/dose.py is the same rule, and both are checked
+// against tests/fixtures/daily-dose.json.
+//   daily need (mm) = ET0 × Kc;  net = min(deficit to target, daily need × days to window, RAW)
+//   below vwc_min (recovery): net = min((vwc_min − current) × root zone mm + daily need, RAW)
+//   gross = net ÷ efficiency;  litres = gross × effective area (area × wetted fraction)
+export type DoseInputs = {
+  current_vwc: number | null;
+  target_vwc: number | null;
+  root_depth_m: number | null;
+  efficiency: number | null;
+  area_m2: number | null;
+  wetted_fraction: number | null;
+  et0_mm_day: number | null;
+  kc: number | null;
+  raw_mm: number | null;
+  flow_lph?: number | null;
+  days_to_window?: number;
+  vwc_min?: number | null;
+};
+export type DailyDose = {
+  deficit_mm: number;
+  daily_need_mm: number;
+  net_mm: number;
+  gross_mm: number;
+  effective_area_m2: number;
+  litres: number;
+  litres_per_m2: number;
+  minutes: number | null;
+  refill_days: number | null;
+  recovery: boolean;
+  recovery_events: number | null;
+  full_refill_l: number;
+};
+const roundTo = (value: number, digits: number) => Math.round(value * 10 ** digits) / 10 ** digits;
+export function dailyDose(i: DoseInputs): DailyDose | null {
+  const { current_vwc, target_vwc, root_depth_m, efficiency, area_m2, et0_mm_day, kc } = i;
+  if (
+    current_vwc == null ||
+    target_vwc == null ||
+    root_depth_m == null ||
+    efficiency == null ||
+    area_m2 == null ||
+    et0_mm_day == null ||
+    kc == null ||
+    !(root_depth_m > 0) ||
+    !(efficiency > 0 && efficiency <= 1) ||
+    !(area_m2 > 0)
+  )
+    return null;
+  const fw = i.wetted_fraction && i.wetted_fraction > 0 && i.wetted_fraction <= 1 ? i.wetted_fraction : 1;
+  const effectiveArea = area_m2 * fw;
+  const deficit = Math.max(0, target_vwc - current_vwc) * root_depth_m * 1000;
+  const daily = et0_mm_day * kc;
+  const rawCap = i.raw_mm != null && i.raw_mm > 0 ? i.raw_mm : null;
+  const recovery = i.vwc_min != null && current_vwc < i.vwc_min;
+  let net: number;
+  let recoveryEvents: number | null = null;
+  if (recovery) {
+    const need = ((i.vwc_min as number) - current_vwc) * root_depth_m * 1000 + daily;
+    net = rawCap != null ? Math.min(need, rawCap) : need;
+    recoveryEvents = net >= need - 1e-9 ? 1 : Math.ceil(need / net - 1e-9);
+  } else {
+    const caps = [deficit, daily * Math.max(1, i.days_to_window ?? 1)];
+    if (rawCap != null) caps.push(rawCap);
+    net = Math.max(0, Math.min(...caps));
+  }
+  const gross = net / efficiency;
+  const litres = gross * effectiveArea;
+  return {
+    deficit_mm: roundTo(deficit, 3),
+    daily_need_mm: roundTo(daily, 3),
+    net_mm: roundTo(net, 3),
+    gross_mm: roundTo(gross, 3),
+    effective_area_m2: roundTo(effectiveArea, 2),
+    litres: roundTo(litres, 1),
+    litres_per_m2: roundTo(gross, 2),
+    minutes: i.flow_lph ? Math.round((litres / i.flow_lph) * 60) : null,
+    refill_days: net > 0 && deficit > net + 1e-9 ? Math.ceil(deficit / net - 1e-9) : null,
+    recovery,
+    recovery_events: recoveryEvents,
+    full_refill_l: roundTo((deficit / efficiency) * effectiveArea, 1),
+  };
+}
+
+// Zone map (Home): the zone rectangle, its sensor points coloured by their last
+// reading, the coverage radius around valid points and the suggested next point.
+// Coverage numbers come from the backend (engine.coverage); nothing is recomputed here.
+export type PointState = "below" | "inRange" | "above" | "none";
+export function pointState(vwc: number | null | undefined, vwcMin: number, target: number): PointState {
+  if (vwc == null || !Number.isFinite(vwc)) return "none";
+  if (vwc < vwcMin) return "below";
+  if (vwc > target) return "above";
+  return "inRange";
+}
+export type MapPoint = {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  vwc: number | null;
+  measuredAt: string | null;
+  origin: string | null;
+  valid: boolean;
+  state: PointState;
+};
+export type ZoneMapModel = {
+  rect: { x: number; y: number; width: number; height: number };
+  radius: number;
+  points: MapPoint[];
+  next: { x: number; y: number } | null;
+  before: number;
+  after: number | null;
+};
+const readingVwc = (r: { value: number; unit: string }) =>
+  r.unit === "vwc_percent" ? r.value / 100 : r.unit === "vwc_fraction" ? r.value : null;
+export function zoneMapModel(zone: Zone): ZoneMapModel {
+  const cov = zone.decision.coverage;
+  const rejected = new Set((cov.rejected ?? []).map((r) => r.id));
+  const points = zone.points.map((p) => {
+    const latest = zone.measurements
+      .filter((m) => m.point_id === p.id)
+      .reduce<Zone["measurements"][number] | null>((a, m) => (!a || m.measured_at > a.measured_at ? m : a), null);
+    const vwc = latest ? readingVwc(latest) : null;
+    return {
+      id: p.id,
+      name: p.name,
+      x: p.x,
+      y: p.y,
+      vwc,
+      measuredAt: latest?.measured_at ?? null,
+      origin: latest?.origin ?? null,
+      valid: !!latest && !rejected.has(latest.id) && vwc != null,
+      state: pointState(vwc, zone.soil.lower_vwc, zone.soil.target_vwc),
+    };
+  });
+  const next = suggestedMeasurement(zone);
+  return {
+    rect: { x: zone.x, y: zone.y, width: zone.width, height: zone.height },
+    radius: cov.radius_m,
+    points,
+    next: next ? { x: next.x, y: next.y } : null,
+    before: cov.fraction,
+    after: next && cov.next_point.coverage_after != null ? cov.next_point.coverage_after : null,
   };
 }

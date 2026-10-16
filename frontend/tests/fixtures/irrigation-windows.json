@@ -1,0 +1,278 @@
+{
+ "note": "Shared by backend and frontend tests: Home, Irrigation and the Digital Twin must agree.",
+ "cases": [
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 0,
+   "inWindow": true,
+   "hoursToEnd": 8
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 3,
+   "inWindow": true,
+   "hoursToEnd": 5
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 4,
+   "inWindow": true,
+   "hoursToEnd": 4
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 5,
+   "inWindow": true,
+   "hoursToEnd": 3
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 7.75,
+   "inWindow": true,
+   "hoursToEnd": 0.25
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 8,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 9,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 12,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 17.99,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 18,
+   "inWindow": true,
+   "hoursToEnd": 14
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 21,
+   "inWindow": true,
+   "hoursToEnd": 11
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 22,
+   "inWindow": true,
+   "hoursToEnd": 10
+  },
+  {
+   "start": 18,
+   "end": 8,
+   "hour": 23.5,
+   "inWindow": true,
+   "hoursToEnd": 8.5
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 0,
+   "inWindow": true,
+   "hoursToEnd": 4
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 3,
+   "inWindow": true,
+   "hoursToEnd": 1
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 4,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 5,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 7.75,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 8,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 9,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 12,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 17.99,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 18,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 21,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 22,
+   "inWindow": true,
+   "hoursToEnd": 6
+  },
+  {
+   "start": 22,
+   "end": 4,
+   "hour": 23.5,
+   "inWindow": true,
+   "hoursToEnd": 4.5
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 0,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 3,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 4,
+   "inWindow": true,
+   "hoursToEnd": 5
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 5,
+   "inWindow": true,
+   "hoursToEnd": 4
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 7.75,
+   "inWindow": true,
+   "hoursToEnd": 1.25
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 8,
+   "inWindow": true,
+   "hoursToEnd": 1
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 9,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 12,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 17.99,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 18,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 21,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 22,
+   "inWindow": false,
+   "hoursToEnd": 0
+  },
+  {
+   "start": 4,
+   "end": 9,
+   "hour": 23.5,
+   "inWindow": false,
+   "hoursToEnd": 0
+  }
+ ]
+}
