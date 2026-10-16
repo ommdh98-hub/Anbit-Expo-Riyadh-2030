@@ -1205,6 +1205,304 @@
   max-width: 760px;
 }
 
+/* Home: compact zone map in the hero. */
+.lx .lx-map {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  width: 260px;
+  max-width: 100%;
+}
+/* The hero stays light in dark mode; the map inside it follows the hero. */
+[data-theme="dark"] .lx .lx-hero .lx-map {
+  --lx-surface: #ffffff;
+  --lx-baseline: #a3aba3;
+  --lx-dry: var(--lx-warn);
+  --lx-wet: var(--lx-water);
+}
+.lx .lx-map-open {
+  position: relative;
+  cursor: zoom-in;
+  line-height: 0;
+  border-radius: 14px;
+}
+.lx .lx-map-svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.lx .lx-map-zone {
+  fill: color-mix(in srgb, var(--lx-surface) 70%, transparent);
+}
+.lx .lx-map-outline {
+  fill: none;
+  stroke: var(--lx-primary);
+  opacity: 0.55;
+}
+.lx .lx-map-cover {
+  fill: color-mix(in srgb, var(--lx-primary) 14%, transparent);
+}
+.lx .lx-map-pt {
+  fill: var(--lx-baseline);
+  stroke: var(--lx-surface);
+  cursor: pointer;
+}
+.lx .lx-map-pt.is-below {
+  fill: var(--lx-dry);
+}
+.lx .lx-map-pt.is-inRange {
+  fill: var(--lx-good);
+}
+.lx .lx-map-pt.is-above {
+  fill: var(--lx-wet);
+}
+.lx .lx-map-pt.is-stale {
+  fill: var(--lx-surface);
+  stroke: var(--lx-baseline);
+}
+.lx .lx-map-pt.is-selected {
+  stroke: var(--lx-ink);
+}
+.lx .lx-map-pt:focus-visible {
+  outline: none;
+  stroke: var(--lx-focus);
+}
+.lx .lx-map-next-ring,
+.lx .lx-map-pulse {
+  fill: none;
+  stroke: var(--lx-water);
+}
+.lx .lx-map-next-dot {
+  fill: var(--lx-water);
+}
+.lx .lx-map-next {
+  opacity: 0.7;
+}
+.lx .lx-map-next.is-on {
+  opacity: 1;
+}
+.lx .lx-map-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lx-map-pulse 1.6s ease-out infinite;
+}
+@keyframes lx-map-pulse {
+  from {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lx .lx-map-pulse {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+.lx .lx-map-zoom {
+  position: absolute;
+  inset-block-start: 4px;
+  inset-inline-end: 4px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--lx-surface) 85%, transparent);
+  color: var(--lx-muted);
+  cursor: pointer;
+}
+.lx .lx-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  margin: 0;
+  color: var(--lx-muted);
+  font-size: 12px;
+}
+.lx .lx-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.lx .lx-map-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.lx .lx-map-legend .k-measured {
+  background: var(--lx-good);
+}
+.lx .lx-map-legend .k-estimated {
+  background: color-mix(in srgb, var(--lx-primary) 22%, transparent);
+  border-radius: 3px;
+}
+.lx .lx-map-legend .k-suggested {
+  border: 2px solid var(--lx-water);
+}
+.lx .lx-map-info {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--lx-ink);
+  text-align: center;
+  max-width: 260px;
+}
+.lx .lx-map-line {
+  color: var(--lx-water);
+  font-weight: 600;
+}
+.lx .lx-map-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 45%);
+}
+.lx .lx-map-panel {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  width: min(760px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 16px 20px 20px;
+  border-radius: var(--lx-radius);
+  background: var(--lx-surface);
+  color: var(--lx-ink);
+  box-shadow: var(--lx-shadow);
+}
+.lx .lx-map-panel header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.lx .lx-map-panel .lx-map-svg {
+  width: 100%;
+}
+.lx .lx-map-panel .lx-map-info {
+  max-width: none;
+}
+@media (min-width: 720px) {
+  .lx .lx-hero:has(.lx-map) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 32px;
+  }
+}
+
+/* Reports: Digital Twin results, kept apart from the operational report. */
+.lx .lx-twin-report {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--lx-line);
+}
+.lx .lx-twin-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.lx .lx-twin-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.lx .lx-sim-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lx-warn) 14%, transparent);
+  color: var(--lx-warn);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.lx .lx-sim-badge i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.lx .lx-twin-part {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+.lx .lx-twin-part > * {
+  margin: 0;
+}
+.lx .lx-twin-part h3 {
+  font-size: 16px;
+}
+.lx .lx-twin-line {
+  font-weight: 600;
+}
+.lx .lx-twin-metrics {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+@media (min-width: 900px) {
+  .lx .lx-twin-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.lx .lx-twin-metric {
+  margin: 0;
+  min-width: 0;
+}
+.lx .lx-twin-metric figcaption {
+  font-size: 14px;
+  color: var(--lx-muted);
+  margin-bottom: 8px;
+}
+.lx .lx-twin-metric ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.lx .lx-twin-row {
+  display: grid;
+  grid-template-columns: minmax(84px, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.lx .lx-twin-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--lx-soft);
+  overflow: hidden;
+}
+.lx .lx-twin-bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--lx-baseline);
+}
+.lx .lx-twin-row.is-anbit .lx-twin-bar {
+  background: var(--lx-primary);
+}
+.lx .lx-twin-row.is-sensor .lx-twin-bar {
+  background: var(--lx-water);
+}
+.lx .lx-twin-value {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Plants: the existing explorer below this module's header. */
 .lx .lx-plants-body {
   min-width: 0;
@@ -1418,4 +1716,84 @@
   .lx .lx-blob {
     display: none;
   }
+}
+
+/* Irrigated area: zone pills and the calculator's area field */
+.lx .lx-pill-area {
+  color: var(--lx-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.lx .lx-field-row {
+  display: grid;
+  gap: 6px;
+  max-width: 260px;
+  margin: 0 0 14px;
+  color: var(--lx-muted);
+  font-size: 14px;
+}
+.lx .lx-field-row input {
+  min-height: 48px;
+  padding: 8px 14px;
+  border: 1px solid var(--lx-line);
+  border-radius: 14px;
+  background: var(--lx-bg);
+  color: var(--lx-ink);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 600;
+}
+.lx .lx-field-row small {
+  font-size: 12px;
+}
+.lx .lx-manual-result {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 480px) {
+  .lx .lx-manual-result {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Reports: water by zone */
+.lx .lx-zone-table {
+  overflow-x: auto;
+}
+.lx .lx-zone-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.lx .lx-zone-table caption {
+  text-align: start;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.lx .lx-zone-table :is(th, td) {
+  padding: 10px 8px;
+  text-align: start;
+  border-bottom: 1px solid var(--lx-line);
+  font-size: 15px;
+  white-space: nowrap;
+}
+.lx .lx-zone-table thead th {
+  color: var(--lx-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.lx .lx-zone-table tbody th {
+  font-weight: 600;
+}
+.lx .lx-zone-table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+.lx .lx-cell-note {
+  color: var(--lx-muted);
+  font-size: 12px;
+}
+.lx .lx-details .lx-detail-wide {
+  grid-column: 1 / -1;
+}
+.lx .lx-details .lx-detail-wide dd {
+  font-weight: 500;
 }

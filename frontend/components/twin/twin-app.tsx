@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { defaultConfig, type SimConfig } from "../../lib/twin/engine";
 import ControlRoom from "./control-room";
 import Results from "./results";
+import { saveLastRun } from "./last-run";
 import Setup from "./setup";
 import { useTwinSim } from "./use-twin-sim";
 
@@ -12,13 +13,17 @@ type Stage = "setup" | "run" | "results";
 export default function TwinApp() {
   const sim = useTwinSim();
   const [stage, setStage] = useState<Stage>("setup");
-  // Setup defaults: Riyadh, spring, 28 days.
-  const [config, setConfig] = useState<SimConfig>(() => defaultConfig({ city: "riyadh", season: "spring", days: 28 }));
+  // Setup defaults: Riyadh, spring, 28 days, actual 2025 weather.
+  const [config, setConfig] = useState<SimConfig>(() => defaultConfig({ city: "riyadh", season: "spring", days: 28, weather: "real2025" }));
   const start = (next: SimConfig) => {
     setConfig(next);
     setStage("run");
     sim.start(next);
   };
+  // A finished run is summarised for the Reports page (this browser only).
+  useEffect(() => {
+    if (sim.res) saveLastRun(sim.res);
+  }, [sim.res]);
   // Results replace the control room automatically when the run ends.
   const shown: Stage = stage === "run" && sim.res ? "results" : stage;
   return (

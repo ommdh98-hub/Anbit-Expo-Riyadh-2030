@@ -142,8 +142,8 @@ export default function AuthGate() {
         aria-label={t("تسجيل الدخول إلى أنبت", "Sign in to ANBIT")}
       >
         <PreferencesControls />
-        <span className="reference-eyebrow">WELCOME TO ANBIT</span>
-        <h2>{t("أهلاً بحديقتك 🌿", "Welcome to your garden 🌿")}</h2>
+        {language === "en" && <span className="reference-eyebrow">WELCOME TO ANBIT</span>}
+        <h2>{t("أهلاً بحديقتك", "Welcome to your garden")}</h2>
         <p>
           {t("دع أنبت يعتني بالتفاصيل.", "Let ANBIT take care of the details.")}
         </p>
