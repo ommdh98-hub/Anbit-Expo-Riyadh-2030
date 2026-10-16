@@ -31,6 +31,8 @@ import {
   type SoilKind,
 } from "./constants";
 import { TWIN_MODEL, predictNeed, toSensorIndex, type TwinModel } from "./model";
+import weather2025 from "./weather2025.json";
+import { hoursToWindowEnd, inWindow, windowLength } from "./window";
 
 export type SimConfig = {
   seed: number;
@@ -43,7 +45,29 @@ export type SimConfig = {
   city: City;
   // Margin k for virtual sections (see constants.ts); 0 acts on the raw estimate.
   virtualMarginK?: number;
+  // "generated" (default, audited) or "real2025": daily ET0, temperature, humidity
+  // and rain from Open-Meteo 2025 for cities in weather2025.json.
+  weather?: WeatherSource;
+  // Research only (sensor-count audit): ids of the sections with a real (LoRa)
+  // sensor. Omitted, each section keeps its template default (today's layout).
+  realSensors?: string[];
 };
+export type WeatherSource = "generated" | "real2025";
+type RealCity = { first: string; et0: number[]; tmax: number[]; tmin: number[]; rh: number[]; rain: number[]; et0_monthly?: number[] };
+const REAL = weather2025 as unknown as { available: boolean; year: number; source: string; cities: Partial<Record<City, RealCity>> };
+export const realWeatherAvailable = (city: City) => Boolean(REAL.available && REAL.cities[city]);
+export const REAL_WEATHER_SOURCE = REAL.source;
+// Calendar months of each season, for showing the 2025 monthly ET0 range.
+export const SEASON_MONTHS: Record<Season, number[]> = { summer: [6, 7, 8, 9], winter: [12, 1, 2], spring: [3, 4, 5] };
+// Lowest and highest 2025 monthly mean ET0 (mm/day) for a city in a season, or null.
+export function seasonEt0Range(city: City, season: Season) {
+  const monthly = REAL.cities[city]?.et0_monthly;
+  if (!monthly || monthly.length !== 12) return null;
+  const values = SEASON_MONTHS[season].map((m) => monthly[m - 1]);
+  return { min: Math.min(...values), max: Math.max(...values) };
+}
+// Reference ET of the generated weather (season preset scaled by the city).
+export const generatedEtMmDay = (city: City, season: Season) => (SEASONS[season].etMmDay * CITIES[city].etRefMmDay) / RIYADH_ET_REF;
 export const defaultConfig = (over: Partial<SimConfig> = {}): SimConfig => ({
   seed: 2030,
   days: 7,
@@ -53,6 +77,7 @@ export const defaultConfig = (over: Partial<SimConfig> = {}): SimConfig => ({
   allowedStart: DEFAULT_ALLOWED.start,
   allowedEnd: DEFAULT_ALLOWED.end,
   city: "riyadh",
+  weather: "generated",
   ...over,
 });
 
@@ -96,6 +121,8 @@ export function weatherFor(config: SimConfig): WeatherStep[] {
   };
   const r = rng(config.seed ^ 0x9e3779b9);
   const out: WeatherStep[] = [];
+  const real = config.weather === "real2025" ? REAL.cities[config.city ?? "riyadh"] : undefined;
+  if (real) return realWeather(config, real, season.start, r);
   for (let d = 0; d < config.days; d++) {
     const factor = 0.85 + r() * 0.3;
     const tShift = (r() - 0.5) * 3;
@@ -113,6 +140,46 @@ export function weatherFor(config: SimConfig): WeatherStep[] {
         tempC: (s.tMin + s.tMax) / 2 + tShift + ((s.tMax - s.tMin) / 2) * swing - (raining ? 3 : 0),
         rh: Math.min(98, (s.rhMin + s.rhMax) / 2 - ((s.rhMax - s.rhMin) / 2) * swing + (raining ? 30 : 0)),
         light: Math.round(10 + 85 * sun * (raining ? 0.5 : 1)),
+        etMm: (etDay * etWeight(hour)) / WEIGHT_SUM * (raining ? 0.3 : 1),
+        rainMm: raining ? rainTotal / rainSteps : 0,
+        etDayMm: etDay,
+      });
+    }
+  }
+  return out;
+}
+
+// Same day of the year in 2025 as the season's start date (e.g. 1 July).
+function startIndex(start: string) {
+  const month = Number(start.slice(5, 7));
+  const day = Number(start.slice(8, 10));
+  return Math.round((Date.UTC(2025, month - 1, day) - Date.UTC(2025, 0, 1)) / 86_400_000);
+}
+
+// Daily 2025 values with the same diurnal shapes as the generated weather. Only
+// the hour a rain event starts and its length come from the seed.
+function realWeather(config: SimConfig, real: RealCity, start: string, r: () => number): WeatherStep[] {
+  const out: WeatherStep[] = [];
+  const first = startIndex(start);
+  for (let d = 0; d < config.days; d++) {
+    const k = (first + d) % real.et0.length;
+    const etDay = real.et0[k];
+    const tMin = real.tmin[k];
+    const tMax = real.tmax[k];
+    const rainTotal = config.rain ? real.rain[k] : 0;
+    const rainy = rainTotal > 0;
+    const rainStart = Math.floor(r() * STEPS_PER_DAY);
+    const rainSteps = 4 + Math.floor(r() * 8);
+    for (let i = 0; i < STEPS_PER_DAY; i++) {
+      const hour = (i * STEP_MINUTES) / 60;
+      const swing = Math.cos((2 * Math.PI * (hour - 15)) / 24);
+      const raining = rainy && i >= rainStart && i < rainStart + rainSteps;
+      const sun = Math.max(0, Math.sin((Math.PI * (hour - 6)) / 12));
+      out.push({
+        tempC: (tMin + tMax) / 2 + ((tMax - tMin) / 2) * swing - (raining ? 3 : 0),
+        rh: Math.max(5, Math.min(98, real.rh[k] - 10 * swing + (raining ? 30 : 0))),
+        light: Math.round(10 + 85 * sun * (raining ? 0.5 : 1)),
+        // The daily total equals the reference ET0 (rain-hour damping aside).
         etMm: (etDay * etWeight(hour)) / WEIGHT_SUM * (raining ? 0.3 : 1),
         rainMm: raining ? rainTotal / rainSteps : 0,
         etDayMm: etDay,
@@ -161,7 +228,7 @@ export function sectionsFor(config: SimConfig): Section[] {
       plant: t.plant,
       soil: t.soil,
       areaM2: t.areaM2,
-      lora: t.lora,
+      lora: config.realSensors ? config.realSensors.includes(t.id) : t.lora,
       rootDepthM: plant.rootDepthM,
       kc: plant.kc,
       wp: soil.wp,
@@ -203,15 +270,7 @@ function loss(s: Section, m: number, etMm: number, spread: number) {
 const gainFor = (s: Section, litres: number) => (litres * s.efficiency) / (s.areaM2 * s.rootDepthM * 1000);
 export const litresToTarget = (s: Section, m: number) => Math.max(0, ((s.target - m) * s.rootDepthM * 1000 * s.areaM2) / s.efficiency);
 
-export function inWindow(hour: number, start: number, end: number) {
-  return start < end ? hour >= start && hour < end : hour >= start || hour < end;
-}
-// Hours from `hour` until the current allowed window closes.
-export function hoursToWindowEnd(hour: number, start: number, end: number) {
-  if (!inWindow(hour, start, end)) return 0;
-  return (end - hour + 24) % 24 || 24;
-}
-const windowLength = (start: number, end: number) => (end - start + 24) % 24 || 24;
+export { inWindow, hoursToWindowEnd } from "./window";
 
 export type Bed = {
   m: number;

@@ -2,7 +2,7 @@
 // (transpiled in memory) over seasons × seeds and prints JSON.
 //
 // Usage (from the repository root):
-//   node research/simulation/audit_twin.mjs [engineDir] [seeds] [days] [city]
+//   node research/simulation/audit_twin.mjs [engineDir] [seeds] [days] [city] [weather]
 // engineDir defaults to frontend/lib/twin; seeds to 5; days to 28; city to riyadh.
 import { readFileSync, existsSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -16,6 +16,8 @@ const engineDir = resolve(repo, process.argv[2] || "frontend/lib/twin");
 const seeds = Number(process.argv[3] || 5);
 const days = Number(process.argv[4] || 28);
 const city = process.argv[5] || "riyadh";
+// "generated" (default) or "real2025" (Open-Meteo 2025 daily weather).
+const weather = process.argv[6] || "generated";
 
 const cache = new Map();
 function load(path) {
@@ -47,7 +49,8 @@ const perRun = {};
 const overshoot = { sum: 0, n: 0 };
 for (const season of ["summer", "winter", "spring"]) {
   for (let seed = 1; seed <= seeds; seed++) {
-    const config = e.defaultConfig({ season, seed, days, ...(city !== "riyadh" ? { city } : {}) });
+    // City and weather are always passed explicitly, so the UI defaults never change an audit.
+    const config = e.defaultConfig({ season, seed, days, city, weather });
     const s = e.createSim(config);
     const aw = s.sections.map((x) => x.fc - x.wp);
     const runSigned = {};
@@ -100,6 +103,7 @@ console.log(
     {
       engine: engineDir.replace(repo + "/", ""),
       city,
+      weather,
       seeds,
       days,
       bySeason,

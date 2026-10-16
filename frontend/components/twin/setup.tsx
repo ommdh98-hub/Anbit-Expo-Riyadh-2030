@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { ChevronDown, Play } from "lucide-react";
-import { CITIES, DEFAULT_ALLOWED, DEFAULT_SEED, DURATIONS, type City, type Season } from "../../lib/twin/constants";
-import { defaultConfig, type SimConfig } from "../../lib/twin/engine";
+import { DEFAULT_ALLOWED, DEFAULT_SEED, DURATIONS, type City, type Season } from "../../lib/twin/constants";
+import { defaultConfig, generatedEtMmDay, realWeatherAvailable, seasonEt0Range, type SimConfig } from "../../lib/twin/engine";
 import { useCopy } from "../landscape/copy";
 
 type Length = "hours" | "days" | "weeks" | "custom";
@@ -20,6 +20,12 @@ export default function Setup({ initial, onStart }: { initial?: SimConfig; onSta
   const [start, setStart] = useState(base.allowedStart);
   const [end, setEnd] = useState(base.allowedEnd);
   const [seed, setSeed] = useState(String(base.seed));
+  // Actual 2025 weather is the default; the generated weather stays one click away.
+  const [realWeather, setRealWeather] = useState(base.weather !== "generated");
+  const realOk = realWeatherAvailable(city);
+  const range = seasonEt0Range(city, season);
+  // Always one decimal (3.0, not 3), with the shared Western-digit locale.
+  const one = (n: number) => new Intl.NumberFormat(c.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(n);
   const days = length === "custom" ? Math.max(1, Math.min(60, Math.round(Number(custom) || 1))) : DURATIONS[length];
   const lengths: { id: Length; ar: string; en: string }[] = [
     { id: "hours", ar: "ساعات · 24 س", en: "Hours · 24 h" },
@@ -40,6 +46,8 @@ export default function Setup({ initial, onStart }: { initial?: SimConfig; onSta
     { id: "tabuk", ar: "تبوك", en: "Tabuk" },
     { id: "abha", ar: "أبها", en: "Abha" },
   ];
+  // Only cities with 2025 weather are offered.
+  const shownCities = cities.filter((x) => realWeatherAvailable(x.id));
   const hours = Array.from({ length: 24 }, (_, h) => h);
   const hourLabel = (h: number) => `${String(h).padStart(2, "0")}:00`;
   return (
@@ -68,17 +76,22 @@ export default function Setup({ initial, onStart }: { initial?: SimConfig; onSta
       <fieldset>
         <legend>{c.t("المدينة", "City")}</legend>
         <div className="tw-seg">
-          {cities.map((x) => (
+          {shownCities.map((x) => (
             <button key={x.id} type="button" aria-pressed={city === x.id} onClick={() => setCity(x.id)}>
               {c.t(x.ar, x.en)}
             </button>
           ))}
         </div>
         <p className="tw-caption">
-          {c.t(
-            `تبخر مرجعي ${c.num(CITIES[city].etRefMmDay, 1)} مم/يوم (${CITIES[city].etSource === "ENBT" ? "متوسط سنوي من قاعدة ENBT" : "افتراض بلا قيمة في ENBT"})، مطبّق كنسبة إلى الرياض فوق الموسم.`,
-            `Reference ET ${CITIES[city].etRefMmDay} mm/day (${CITIES[city].etSource === "ENBT" ? "annual average from the ENBT database" : "assumption, no ENBT value"}), applied as a ratio to Riyadh on top of the season.`,
-          )}
+          {realWeather && realOk && range
+            ? c.t(
+                `تبخر مرجعي ${one(range.min)}–${one(range.max)} مم/يوم — طقس 2025 الفعلي (Open-Meteo)`,
+                `Reference ET ${one(range.min)}–${one(range.max)} mm/day — actual 2025 weather (Open-Meteo)`,
+              )
+            : c.t(
+                `تبخر مرجعي ${one(generatedEtMmDay(city, season))} مم/يوم — طقس مولّد (افتراض موسمي)`,
+                `Reference ET ${one(generatedEtMmDay(city, season))} mm/day — generated weather (seasonal assumption)`,
+              )}
         </p>
       </fieldset>
 
@@ -90,6 +103,18 @@ export default function Setup({ initial, onStart }: { initial?: SimConfig; onSta
               {c.t(s.ar, s.en)}
             </button>
           ))}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>{c.t("الطقس", "Weather")}</legend>
+        <div className="tw-seg">
+          <button type="button" aria-pressed={realWeather && realOk} disabled={!realOk} onClick={() => setRealWeather(true)}>
+            {c.t("طقس 2025 الفعلي", "Actual 2025 weather")}
+          </button>
+          <button type="button" aria-pressed={!realWeather || !realOk} onClick={() => setRealWeather(false)}>
+            {c.t("طقس مولّد", "Generated weather")}
+          </button>
         </div>
       </fieldset>
 
@@ -166,6 +191,8 @@ export default function Setup({ initial, onStart }: { initial?: SimConfig; onSta
             allowedStart: start,
             allowedEnd: end,
             city,
+            // Default stays the generated weather, so audited numbers do not change.
+            weather: realWeather && realOk ? "real2025" : "generated",
           })
         }
       >

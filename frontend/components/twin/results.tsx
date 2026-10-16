@@ -49,7 +49,7 @@ export default function Results({
     const text =
       Math.round(v * 10) === 0
         ? c.num(0)
-        : new Intl.NumberFormat(c.ar ? "ar-SA" : "en-US", {
+        : new Intl.NumberFormat(c.locale, {
             minimumFractionDigits: 1,
             maximumFractionDigits: 1,
           }).format(v);
@@ -137,8 +137,12 @@ export default function Results({
                   )
                 : hero.kind === "stress"
                   ? c.t(
-                      `استخدم أنبت ${c.num(hero.extraWaterPct)}% ماء أكثر لأن الجدول الثابت لا يكفي النباتات في هذا السيناريو.`,
-                      `ANBIT used ${c.num(hero.extraWaterPct)}% more water because the fixed schedule is not enough for the plants in this scenario.`,
+                      r.config.weather === "real2025"
+                        ? `استهلك أنبت ${c.num(hero.extraWaterPct)}% مياهًا أكثر من الجدول الثابت المفترض، لأن الجدول لا يغطي احتياج النباتات في طقس 2025 الفعلي.`
+                        : `استخدم أنبت ${c.num(hero.extraWaterPct)}% ماء أكثر لأن الجدول الثابت لا يكفي النباتات في هذا السيناريو.`,
+                      r.config.weather === "real2025"
+                        ? `ANBIT used ${c.num(hero.extraWaterPct)}% more water than the assumed fixed schedule, because the schedule does not cover the plants' need in the actual 2025 weather.`
+                        : `ANBIT used ${c.num(hero.extraWaterPct)}% more water because the fixed schedule is not enough for the plants in this scenario.`,
                     )
                   : c.t(
                       "في هذا السيناريو استخدم أنبت ماءً أكثر من الجدول الثابت دون أن يقلّ الإجهاد.",
@@ -533,8 +537,8 @@ export default function Results({
 
       <p className="tw-honest">
         {c.t(
-          `نتائج محاكاة بافتراضات معلنة: طقس ${seasonName} مولَّد من البذرة ${r.config.seed} (تبخر المدينة ${CITIES[r.config.city ?? "riyadh"].etSource === "ENBT" ? "من قاعدة ENBT" : "افتراضي"})، تربة ونباتات افتراضية، وجدول ثابت موسمي (افتراض): ${fixedDepth} لتر/م² يوميًا في هذا الموسم عند ${FIXED_SCHEDULE.startHour}:00 (صيف 8، ربيع 6، شتاء 3). الطرق الثلاث على الطقس نفسه. ليست قياسًا ميدانيًا.`,
-          `Simulation results with stated assumptions: ${seasonName} weather generated from seed ${r.config.seed} (city ET ${CITIES[r.config.city ?? "riyadh"].etSource === "ENBT" ? "from the ENBT database" : "assumed"}), assumed soils and plants, and a seasonal fixed schedule (assumption) of ${fixedDepth} L/m² a day this season at ${FIXED_SCHEDULE.startHour}:00 (summer 8, spring 6, winter 3). All three strategies share the same weather. Not a field measurement.`,
+          `نتائج محاكاة بافتراضات معلنة: ${r.config.weather === "real2025" ? `طقس ${seasonName} الفعلي لعام 2025 من Open-Meteo (إعادة تحليل ERA5، وليس قياس محطة في الموقع)، والبذرة ${r.config.seed} تحدد توقيت المطر داخل اليوم فقط` : `طقس ${seasonName} مولَّد من البذرة ${r.config.seed} (تبخر المدينة ${CITIES[r.config.city ?? "riyadh"].etSource === "ENBT" ? "متوسط سنوي مرجعي" : "افتراضي"})`}، تربة ونباتات افتراضية، وجدول ثابت موسمي (افتراض): ${fixedDepth} لتر/م² يوميًا في هذا الموسم عند ${FIXED_SCHEDULE.startHour}:00 (صيف 8، ربيع 6، شتاء 3). الطرق الثلاث على الطقس نفسه. ليست قياسًا ميدانيًا.`,
+          `Simulation results with stated assumptions: ${r.config.weather === "real2025" ? `actual 2025 ${seasonName} weather from Open-Meteo (ERA5 reanalysis, not an on-site station); seed ${r.config.seed} only sets when rain falls within a day` : `${seasonName} weather generated from seed ${r.config.seed} (city ET ${CITIES[r.config.city ?? "riyadh"].etSource === "ENBT" ? "reference annual average" : "assumed"})`}, assumed soils and plants, and a seasonal fixed schedule (assumption) of ${fixedDepth} L/m² a day this season at ${FIXED_SCHEDULE.startHour}:00 (summer 8, spring 6, winter 3). All three strategies share the same weather. Not a field measurement.`,
         )}{" "}
         {decisions > 0 &&
           c.t(

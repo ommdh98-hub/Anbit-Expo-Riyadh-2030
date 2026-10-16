@@ -347,8 +347,8 @@ test("highlight pills appear only when true", () => {
   assert.deepEqual(plain(headline.highlights({ anbit: summaryOf({ wastedL: 0, inRangePct: 50 }), fixed: summaryOf({ inRangePct: 0, overEvents: 0 }) }).map((p) => p.kind)), ["zeroWaste", "noOver"]);
 });
 
-test("setup starts on Riyadh, spring, 28 days", () => {
-  assert.match(readFileSync(at("components/twin/twin-app.tsx"), "utf8"), /defaultConfig\(\{ city: "riyadh", season: "spring", days: 28 \}\)/);
+test("setup starts on Riyadh, spring, 28 days, actual 2025 weather", () => {
+  assert.match(readFileSync(at("components/twin/twin-app.tsx"), "utf8"), /defaultConfig\(\{ city: "riyadh", season: "spring", days: 28, weather: "real2025" \}\)/);
 });
 
 test("hero: zero irrigation reads 'rain was enough' with the volume saved, never 100%", () => {
@@ -402,4 +402,176 @@ test("the fixed schedule is seasonal: 8 / 6 / 3 L/m² a day at 05:00", () => {
     const r = engine.results(engine.runAll(cfg({ season, days: 3 })));
     assert.equal(r.fixed.waterL, depth * area * 3);
   }
+});
+
+test("actual 2025 weather: an optional switch, daily ET0 from the bundled file, default unchanged", () => {
+  const real = JSON.parse(readFileSync(at("lib/twin/weather2025.json"), "utf8"));
+  assert.deepEqual(Object.keys(real.cities).sort(), ["abha", "medina", "riyadh", "tabuk"]);
+  assert.equal(engine.realWeatherAvailable("riyadh"), true);
+  assert.equal(engine.realWeatherAvailable("jeddah"), false);
+  assert.equal(engine.defaultConfig().weather, "generated");
+  const steps = engine.weatherFor(cfg({ weather: "real2025", city: "riyadh", season: "summer", days: 3, rain: false }));
+  // Summer starts on 1 July: day of year 181 (0-based) in 2025.
+  for (let d = 0; d < 3; d++) {
+    const day = steps.slice(d * C.STEPS_PER_DAY, (d + 1) * C.STEPS_PER_DAY);
+    assert.ok(Math.abs(day.reduce((t, s) => t + s.etMm, 0) - real.cities.riyadh.et0[181 + d]) < 1e-9);
+    assert.equal(day[0].etDayMm, real.cities.riyadh.et0[181 + d]);
+  }
+  // The generated default is untouched by the new option.
+  assert.deepEqual(plain(engine.weatherFor(cfg({ seed: 4 }))), plain(engine.weatherFor(cfg({ seed: 4, weather: "generated" }))));
+  const a = engine.results(engine.runAll(cfg({ weather: "real2025", seed: 4 })));
+  const b = engine.results(engine.runAll(cfg({ weather: "real2025", seed: 4 })));
+  assert.deepEqual(plain(a), plain(b));
+});
+
+test("allowed window: the twin, Home and Irrigation share one case table", () => {
+  const window = load(at("lib/twin/window.ts"));
+  const { cases } = JSON.parse(readFileSync(at("tests/fixtures/irrigation-windows.json"), "utf8"));
+  assert.ok(cases.length >= 30);
+  for (const c of cases) {
+    assert.equal(window.inWindow(c.hour, c.start, c.end), c.inWindow, JSON.stringify(c));
+    assert.ok(Math.abs(window.hoursToWindowEnd(c.hour, c.start, c.end) - c.hoursToEnd) < 1e-9, JSON.stringify(c));
+    // The engine re-exports the same functions.
+    assert.equal(engine.inWindow(c.hour, c.start, c.end), c.inWindow);
+  }
+  // backend/app/window.py is checked against the same file.
+  assert.match(readFileSync(at("../backend/tests/test_windows.py"), "utf8"), /irrigation-windows\.json/);
+});
+
+test("hero wording with actual 2025 weather: stress reduction first, honest water line", () => {
+  // A real-weather run where ANBIT uses more water but cuts stress hours.
+  const r = engine.results(engine.runAll(cfg({ weather: "real2025", season: "spring", seed: 1, days: 28 })));
+  assert.ok(r.saving < 0 && r.anbit.stressHours < r.fixed.stressHours);
+  assert.equal(headline.heroHeadline(r).kind, "stress");
+  const page = readFileSync(at("components/twin/results.tsx"), "utf8");
+  assert.match(page, /استهلك أنبت \$\{c\.num\(hero\.extraWaterPct\)\}% مياهًا أكثر من الجدول الثابت المفترض، لأن الجدول لا يغطي احتياج النباتات في طقس 2025 الفعلي\./);
+  assert.match(page, /r\.config\.weather === "real2025"/);
+});
+
+test("twin setup: 2025 monthly ET0 range per season, actual weather by default, cities with 2025 weather only", () => {
+  const real = JSON.parse(readFileSync(at("lib/twin/weather2025.json"), "utf8"));
+  const months = { summer: [6, 7, 8, 9], winter: [12, 1, 2], spring: [3, 4, 5] };
+  for (const [season, list] of Object.entries(months)) {
+    const values = list.map((m) => real.cities.riyadh.et0_monthly[m - 1]);
+    assert.deepEqual(plain(engine.seasonEt0Range("riyadh", season)), { min: Math.min(...values), max: Math.max(...values) });
+  }
+  assert.equal(engine.seasonEt0Range("jeddah", "summer"), null);
+  const setup = readFileSync(at("components/twin/setup.tsx"), "utf8");
+  assert.match(setup, /shownCities = cities\.filter\(\(x\) => realWeatherAvailable\(x\.id\)\)/);
+  assert.match(setup, /طقس 2025 الفعلي/);
+  assert.match(setup, /طقس مولّد/);
+  assert.match(readFileSync(at("components/twin/twin-app.tsx"), "utf8"), /weather: "real2025"/);
+  // The audit always passes its weather mode, so the UI default never changes audit numbers.
+  assert.match(readFileSync(at("../research/simulation/audit_twin.mjs"), "utf8"), /defaultConfig\(\{ season, seed, days, city, weather \}\)/);
+});
+
+// Sensor-count experiment (research/simulation/audit_sensor_count.mjs).
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+const run = promisify(execFile);
+const repoRoot = resolve(root, "..");
+const sensorCount = () => JSON.parse(readFileSync(resolve(repoRoot, "research/simulation/audit_sensor_count.json"), "utf8"));
+
+test("sensor option: omitted keeps today's layout; the existing audits stay byte-identical", async () => {
+  const ids = C.SECTION_TEMPLATES.map((t) => t.id);
+  const defaults = C.SECTION_TEMPLATES.filter((t) => t.lora).map((t) => t.id);
+  const cfg = { season: "summer", seed: 3, days: 3, city: "riyadh", weather: "real2025" };
+  const a = engine.runAll(engine.defaultConfig(cfg));
+  const b = engine.runAll(engine.defaultConfig({ ...cfg, realSensors: defaults }));
+  assert.deepEqual(JSON.parse(JSON.stringify(a.anbit)), JSON.parse(JSON.stringify(b.anbit)));
+  assert.equal(engine.defaultConfig().realSensors, undefined);
+  const none = engine.sectionsFor(engine.defaultConfig({ realSensors: [] }));
+  assert.ok(none.every((s) => !s.lora));
+  const all = engine.sectionsFor(engine.defaultConfig({ realSensors: ids }));
+  assert.ok(all.every((s) => s.lora && s.neighbours.length === 0));
+  // The two existing audits, rerun with the default engine, match their files byte for byte.
+  const audits = await Promise.all(
+    ["generated", "real2025"].map((w) =>
+      run("node", [resolve(repoRoot, "research/simulation/audit_twin.mjs"), "frontend/lib/twin", "5", "28", "riyadh", w], { cwd: repoRoot, maxBuffer: 1 << 24 }),
+    ),
+  );
+  assert.equal(audits[0].stdout, readFileSync(resolve(repoRoot, "research/simulation/audit_weather_generated.json"), "utf8"));
+  assert.equal(audits[1].stdout, readFileSync(resolve(repoRoot, "research/simulation/audit_weather_real2025.json"), "utf8"));
+});
+
+test("sensor count: same weather, seeds and days as the real2025 audit; the default layout reproduces it", () => {
+  const sc = sensorCount();
+  const audit = JSON.parse(readFileSync(resolve(repoRoot, "research/simulation/audit_weather_real2025.json"), "utf8"));
+  assert.deepEqual([sc.city, sc.weather, sc.seeds, sc.days], [audit.city, audit.weather, audit.seeds, audit.days]);
+  assert.deepEqual(sc.counts, [12, 8, 6, 4, 3, 2, 0]);
+  // Today's twin has 7 real sensors; that layout gives exactly the audited ANBIT numbers.
+  assert.deepEqual(sc.default.ids, [...C.SECTION_TEMPLATES.filter((t) => t.lora).map((t) => t.id)]);
+  for (const season of sc.seasons)
+    for (const m of ["waterM3", "inRangePct", "stressH", "overEvents"])
+      assert.equal(sc.default.bySeason[season][m], audit.bySeason[season].anbit[m], `${season} ${m}`);
+  // N = 12: every section real; the change against itself is zero.
+  assert.deepEqual(sc.chosen["12"].ids, [...C.SECTION_TEMPLATES.map((t) => t.id)]);
+  for (const season of sc.seasons) assert.equal(sc.chosen["12"].vsN12[season].stressH.abs, 0);
+  // N = 0 reads no soil sensor at all; N = 12 reads all twelve every step.
+  assert.deepEqual(sc.chosen["0"].ids, []);
+  assert.equal(sc.chosen["0"].soilReadings, 0);
+  assert.equal(sc.chosen["12"].soilReadings, 12 * sc.seeds * sc.days * 96 * sc.seasons.length);
+  // The reported smallest N follows from the table.
+  const ref = sc.chosen["12"].bySeason;
+  const ok = (n) => sc.seasons.every((s) => sc.chosen[n].bySeason[s].stressH <= ref[s].stressH * 1.1 + 1e-9);
+  const expected = sc.counts.filter((n) => ok(String(n)));
+  assert.equal(sc.smallestChosenNWithin, expected.length ? Math.min(...expected) : null);
+});
+
+test("sensor count: greedy placement is deterministic and random placements repeat by seed", async () => {
+  const sc = sensorCount();
+  const ids = [...C.SECTION_TEMPLATES.map((t) => t.id)];
+  const spec = JSON.stringify({ ids, cols: 4, rows: 3 });
+  const py = (await Promise.all([1, 2].map(() =>
+    run(resolve(repoRoot, ".venv/bin/python"), [resolve(repoRoot, "research/simulation/sensor_placement.py"), spec], { cwd: repoRoot, env: { ...process.env, PYTHONPATH: resolve(repoRoot, "backend") } }),
+  ))).map((r) => JSON.parse(r.stdout));
+  assert.deepEqual(py[0], py[1]);
+  assert.deepEqual(py[0].order, sc.placement.order);
+  // Each greedy step never lowers coverage, and the first N of the order is the placement for N.
+  for (let k = 1; k < py[0].steps.length; k++) assert.ok(py[0].steps[k].coverage >= py[0].steps[k - 1].coverage);
+  for (const n of sc.counts) assert.deepEqual([...sc.chosen[n].ids].sort(), [...sc.placement.order.slice(0, n)].sort(), `N=${n}`);
+  // Two quick runs give the same random placements as the full experiment (placement does not depend on runs).
+  const quick = (await Promise.all([1, 2].map(() =>
+    run("node", [resolve(repoRoot, "research/simulation/audit_sensor_count.mjs"), "--quick"], { cwd: repoRoot, maxBuffer: 1 << 24 }),
+  ))).map((r) => JSON.parse(r.stdout));
+  for (const n of Object.keys(sc.random)) {
+    const full = sc.random[n].runs.map((r) => [r.rngSeed, r.ids]);
+    assert.deepEqual(quick[0].random[n].runs.map((r) => [r.rngSeed, r.ids]), full, `N=${n}`);
+    assert.deepEqual(quick[1].random[n].runs.map((r) => [r.rngSeed, r.ids]), full, `N=${n}`);
+    assert.ok(full.every(([, list]) => list.length === Number(n) && new Set(list).size === Number(n)));
+  }
+});
+
+test("sensor count: soil and plant placement is deterministic, covers every soil kind from N = 3, and leaves the default engine alone", async () => {
+  const { soilPlantOrder } = await import(resolve(repoRoot, "research/simulation/soil_placement.mjs"));
+  const templates = C.SECTION_TEMPLATES;
+  const byId = Object.fromEntries(templates.map((t) => [t.id, t]));
+  const order = soilPlantOrder(templates);
+  assert.deepEqual(soilPlantOrder(templates), order);
+  assert.deepEqual([...order].sort(), [...templates.map((t) => t.id)].sort());
+  const soils = new Set(templates.map((t) => t.soil));
+  const plants = new Set(templates.map((t) => t.plant));
+  for (let n = 1; n <= order.length; n++) {
+    const pick = order.slice(0, n).map((id) => byId[id]);
+    const counts = [...soils].map((s) => pick.filter((t) => t.soil === s).length);
+    // No soil kind gets a second sensor before every soil kind has one.
+    if (Math.min(...counts) === 0) assert.ok(Math.max(...counts) <= 1, `N=${n}`);
+    if (n >= soils.size) assert.equal(new Set(pick.map((t) => t.soil)).size, soils.size, `N=${n}`);
+  }
+  // On this site the soil rule still leaves room to cover every plant kind by N = 6.
+  assert.equal(new Set(order.slice(0, plants.size).map((id) => byId[id].plant)).size, plants.size);
+  // Ties go to the larger area, then the lower index: the first pick is the largest section.
+  assert.equal(order[0], [...templates].sort((a, b) => b.areaM2 - a.areaM2)[0].id);
+  // The experiment used exactly this order, through the optional realSensors parameter only.
+  const sc = sensorCount();
+  assert.deepEqual(sc.placement.soil.order, order);
+  assert.deepEqual(sc.placement.soil.counts, [8, 6, 4, 3, 2]);
+  for (const n of sc.placement.soil.counts) {
+    assert.deepEqual([...sc.soil[n].ids].sort(), order.slice(0, n).sort(), `N=${n}`);
+    assert.equal(sc.soil[n].soilReadings, n * sc.seeds * sc.days * 96 * sc.seasons.length, `N=${n}`);
+  }
+  // Default engine: no realSensors key, and the same seven LoRa sections as before.
+  const cfg = engine.defaultConfig();
+  assert.equal("realSensors" in cfg, false);
+  assert.deepEqual([...engine.sectionsFor(cfg).filter((s) => s.lora).map((s) => s.id)], [...templates.filter((t) => t.lora).map((t) => t.id)]);
 });
