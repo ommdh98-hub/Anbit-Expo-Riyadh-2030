@@ -44,30 +44,41 @@ def usable_readings(zone, readings, now):
     return usable, rejected
 
 
+def _grid(zone, active):
+    """Cell centres of a 20x20 grid inside the rectangular zone, with each
+    centre's distance to the nearest point in `active` (objects or (x, y))."""
+    cells = [
+        (zone.x + (i + 0.5) * zone.width / 20, zone.y + (j + 0.5) * zone.height / 20)
+        for i in range(20)
+        for j in range(20)
+    ]
+    xy = [(p.x, p.y) if hasattr(p, "x") else p for p in active]
+    distances = [
+        min(
+            (hypot(x - px, y - py) for px, py in xy),
+            default=hypot(zone.width, zone.height),
+        )
+        for x, y in cells
+    ]
+    return cells, distances
+
+
 def coverage(zone, points, readings, now=None):
     now = now or datetime.now(timezone.utc)
     valid, rejected = usable_readings(zone, readings, now)
     valid_ids = {r.point_id for r in valid}
     active = [p for p in points if p.id in valid_ids]
     # Cell-centre quadrature on a 20x20 grid inside a rectangular zone.
-    cells = [
-        (zone.x + (i + 0.5) * zone.width / 20, zone.y + (j + 0.5) * zone.height / 20)
-        for i in range(20)
-        for j in range(20)
-    ]
-    distances = [
-        min(
-            (hypot(x - p.x, y - p.y) for p in active),
-            default=hypot(zone.width, zone.height),
-        )
-        for x, y in cells
-    ]
+    cells, distances = _grid(zone, active)
     covered = sum(d <= zone.coverage_radius_m for d in distances) / len(cells)
     # With no usable points, start at the centre (including stale-point regions).
     index = max(range(len(cells)), key=lambda i: distances[i])
     x, y = (
         cells[index] if active else (zone.x + zone.width / 2, zone.y + zone.height / 2)
     )
+    # The same grid with one valid reading added at the suggested point.
+    _, after = _grid(zone, [*active, (x, y)])
+    covered_after = sum(d <= zone.coverage_radius_m for d in after) / len(cells)
     return {
         "fraction": covered,
         "active_points": len(active),
@@ -83,6 +94,7 @@ def coverage(zone, points, readings, now=None):
             "x": round(x, 2),
             "y": round(y, 2),
             "distance_m": round(distances[index], 2),
+            "coverage_after": covered_after,
             "reason": (
                 "توجد مساحة بعيدة عن نقاط القياس الصالحة؛ يُقترح فحصها قبل اعتماد قرار الري."
                 if active and covered < zone.min_coverage

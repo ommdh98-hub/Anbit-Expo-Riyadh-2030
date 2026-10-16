@@ -5,15 +5,17 @@ import type { Badge, Freshness, RingModel } from "./data";
 import { useCopy } from "./copy";
 
 // Soft, blurred color fields and one leaf / drop silhouette. Decorative only.
-export function OrganicField({ tone = "calm" }: { tone?: "calm" | "water" }) {
+export function OrganicField({ tone = "calm", leaf = true }: { tone?: "calm" | "water"; leaf?: boolean }) {
   return (
     <div className={`lx-field lx-field-${tone}`} aria-hidden="true">
       <span className="lx-blob lx-blob-a" />
       <span className="lx-blob lx-blob-b" />
-      <svg className="lx-leaf" viewBox="0 0 200 200">
-        <path d="M100 18C150 52 172 98 156 140c-12 32-44 46-56 44C88 186 56 172 44 140 28 98 50 52 100 18Z" />
-        <path className="lx-leaf-vein" d="M100 40v140" />
-      </svg>
+      {leaf && (
+        <svg className="lx-leaf" viewBox="0 0 200 200">
+          <path d="M100 18C150 52 172 98 156 140c-12 32-44 46-56 44C88 186 56 172 44 140 28 98 50 52 100 18Z" />
+          <path className="lx-leaf-vein" d="M100 40v140" />
+        </svg>
+      )}
     </div>
   );
 }
