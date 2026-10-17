@@ -601,6 +601,7 @@ test("twin report: operational cards and totals stay operational, with zero reco
 
 // Zone map on Home (shapes and coverage from the backend via the demo-seed fixture).
 const mapCopy = {
+  ar: true,
   t: (ar) => ar,
   num: (n, d = 0) => String(Math.round(n * 10 ** d) / 10 ** d),
   day: () => "16 أكتوبر",
@@ -612,29 +613,70 @@ const zoneMap = () => load(at("components/landscape/zone-map.tsx"));
 const renderMap = (zone, highlight = false) =>
   renderToStaticMarkup(React.createElement(zoneMap().default, { c: mapCopy, zone, highlight }));
 
-test("zone map: renders each demo zone with its shape, sensor points and suggested point", () => {
+test("zone map: renders each demo zone at real scale with circles, uncovered cells and the next point", () => {
   const zones = mapZones();
   assert.deepEqual(zones.map((z) => z.width * z.height), [150, 120, 80, 200, 100]);
   for (const z of zones) {
     const html = renderMap(z);
+    const m = data.zoneMapModel(z);
     assert.match(html, new RegExp(`data-zone="${z.id}"`));
     assert.match(html, new RegExp(`class="lx-map-outline" x="${z.x}" y="${z.y}" width="${z.width}" height="${z.height}"`));
     assert.equal((html.match(/class="lx-map-pt /g) || []).length, z.points.length, z.id);
-    assert.match(html, /مقاس[\s\S]*تقديري[\s\S]*مقترح/);
     for (const p of z.points) assert.ok(p.x >= z.x && p.x <= z.x + z.width && p.y >= z.y && p.y <= z.y + z.height, p.id);
-    // Suggested point inside the shape.
-    const m = html.match(/class="lx-map-next" data-x="([\d.]+)" data-y="([\d.]+)"/);
-    assert.ok(m, z.id);
-    const [x, y] = [Number(m[1]), Number(m[2])];
+    // One representation circle per sensor, radius from the backend (4 m); stale ones dashed.
+    const circles = [...html.matchAll(/class="lx-map-cover( is-stale)?"[^>]*r="([\d.]+)"/g)];
+    assert.equal(circles.length, z.points.length, z.id);
+    assert.ok(circles.every((c) => Number(c[2]) === 4), z.id);
+    assert.equal(circles.filter((c) => c[1]).length, m.points.filter((p) => !p.valid).length, z.id);
+    assert.match(html, /نصف قطر تمثيل الحساس 4 م \(افتراض\)/);
+    // Uncovered area: one shape (the zone in the uncovered colour) with the valid
+    // sensors' circles on top, clipped to the zone; no grid cells are drawn.
+    assert.equal((html.match(/class="lx-map-zone lx-map-gap"/g) || []).length, 1, z.id);
+    assert.doesNotMatch(html, /<rect[^>]*class="lx-map-gap"/);
+    const covered = [...html.matchAll(/class="lx-map-covered"[^>]*r="([\d.]+)"/g)];
+    assert.equal(covered.length, m.points.filter((p) => p.valid).length, z.id);
+    assert.ok(covered.every((c) => Number(c[1]) === 4), z.id);
+    assert.match(html, /<g clip-path="url\(#[^)]+\)"><circle class="lx-map-covered"|<g clip-path="url\(#[^)]+\)"><circle class="lx-map-cover/);
+    // Suggested point: inside the shape, with its own marker and label.
+    const next = html.match(/class="lx-map-next" data-x="([\d.]+)" data-y="([\d.]+)"/);
+    assert.ok(next, z.id);
+    const [x, y] = [Number(next[1]), Number(next[2])];
     assert.ok(x >= z.x && x <= z.x + z.width && y >= z.y && y <= z.y + z.height, `${z.id} ${x},${y}`);
-    // Coverage shading only around valid points (z5 readings are stale).
-    const valid = data.zoneMapModel(z).points.filter((p) => p.valid).length;
-    assert.equal((html.match(/class="lx-map-cover"/g) || []).length, valid, z.id);
+    assert.match(html, /class="lx-map-next-mark"/);
+    assert.match(html, />القياس التالي</);
+    // Scale bar: a round length in metres; the label holds the number and the unit
+    // in one text run (no-break space), centred under the bar.
+    const bar = html.match(/class="lx-map-scale" data-metres="(\d+)"[\s\S]*?<text([^>]*)>([^<]*)<\/text>/);
+    assert.ok(bar, z.id);
+    assert.equal(bar[3], `${bar[1]}\u00A0م`, `${z.id} scale label: ${JSON.stringify(bar[3])}`);
+    assert.match(bar[2], /text-anchor="middle"/);
+    assert.match(bar[2], /direction="rtl"/);
+    assert.equal(Number(bar[1]), z.width >= 12 ? 5 : 2);
+    assert.match(html, /مقاس[\s\S]*تقديري[\s\S]*مقترح[\s\S]*غير مغطى/);
   }
   assert.equal(data.zoneMapModel(zones[4]).points.filter((p) => p.valid).length, 0);
 });
 
-test("zone map: «أين أقيس؟» pulses the suggested point and shows coverage before and after", () => {
+test("zone map: same metres-per-pixel on both axes, labels and scale bar inside the view", () => {
+  const { ZoneMapSvg, scaleMetres } = zoneMap();
+  for (const z of mapZones()) {
+    for (const [w, h] of [[300, 150], [720, 400]]) {
+      const html = renderToStaticMarkup(React.createElement(ZoneMapSvg, { c: mapCopy, model: data.zoneMapModel(z), width: w, height: h, highlight: false, selected: null }));
+      const [vx, vy, vw, vh] = html.match(/viewBox="([^"]+)"/)[1].split(" ").map(Number);
+      assert.ok(Math.abs(w / vw - h / vh) < 1e-6, `${z.id} ${w}x${h}: one scale`);
+      const scale = w / vw;
+      // The zone keeps at least 12 px on the sides, 20 px above (label) and 26 px below (scale bar).
+      assert.ok((z.x - vx) * scale >= 11.9 && (vx + vw - z.x - z.width) * scale >= 11.9, z.id);
+      assert.ok((z.y - vy) * scale >= 19.9 && (vy + vh - z.y - z.height) * scale >= 25.9, z.id);
+      // The scale label carries its number in both sizes.
+      assert.match(html, /<text[^>]*>[25]\u00A0م<\/text>/, `${z.id} ${w}x${h}`);
+      // A 150 m² zone still reads as 15 × 10 m: the 5 m bar is a third of its width.
+      if (z.id === "z1") assert.equal(scaleMetres(z.width) / z.width, 1 / 3);
+    }
+  }
+});
+
+test("zone map: the coverage line under the map, and «أين أقيس؟» pulses the next point", () => {
   const zones = mapZones();
   const lines = {
     z1: "القراءة هنا ترفع التغطية من 76.5% إلى 86.75%",
@@ -648,11 +690,12 @@ test("zone map: «أين أقيس؟» pulses the suggested point and shows cover
     if (m.before < 1) assert.ok(m.after > m.before, z.id);
     else assert.equal(m.after, m.before);
     const off = renderMap(z, false);
-    assert.doesNotMatch(off, /lx-map-pulse|ترفع التغطية/);
+    assert.doesNotMatch(off, /lx-map-pulse/);
+    assert.ok(off.includes(lines[z.id]), `${z.id}: ${off.match(/lx-map-line[^>]*>([^<]*)/)?.[1]}`);
     const on = renderMap(z, true);
     assert.match(on, /class="lx-map-next is-on"/);
     assert.match(on, /class="lx-map-pulse"/);
-    assert.ok(on.includes(lines[z.id]), `${z.id}: ${on.match(/lx-map-line[^>]*>([^<]*)/)?.[1]}`);
+    assert.match(on, /class="lx-map-info lx-map-line is-on"/);
   }
   const home = readFileSync(at("components/landscape/home-screen.tsx"), "utf8");
   assert.match(home, /<ZoneMap key=\{zone\.id\} c=\{c\} zone=\{zone\} highlight=\{whereFor === zone\.id\} \/>/);
@@ -661,7 +704,7 @@ test("zone map: «أين أقيس؟» pulses the suggested point and shows cover
   assert.match(home, /leaf=\{false\}/);
 });
 
-test("zone map: sensor colours follow the zone thresholds", () => {
+test("zone map: fill shows measured or estimated, the ring shows the thresholds", () => {
   assert.equal(data.pointState(0.069, 0.07, 0.094), "below");
   assert.equal(data.pointState(0.07, 0.07, 0.094), "inRange");
   assert.equal(data.pointState(0.094, 0.07, 0.094), "inRange");
@@ -674,17 +717,31 @@ test("zone map: sensor colours follow the zone thresholds", () => {
   latest("z1-p2").value = 8;
   latest("z1-p3").value = 9.8;
   const html = renderMap(z1);
-  const states = [...html.matchAll(/class="lx-map-pt is-(\w+)/g)].map((m) => m[1]);
-  assert.deepEqual(states, ["below", "inRange", "above"]);
-  // Stale points are drawn hollow, not coloured as a measurement.
+  const pts = [...html.matchAll(/class="lx-map-pt is-(\w+) ring-(\w+)/g)].map((m) => [m[1], m[2]]);
+  assert.deepEqual(pts, [["measured", "below"], ["measured", "inRange"], ["measured", "above"]]);
+  // Stale readings: grey filled (estimated) with their own ring; never hollow.
   const z5 = renderMap(mapZones()[4]);
-  assert.deepEqual([...new Set([...z5.matchAll(/data-state="(\w+)"/g)].map((m) => m[1]))], ["stale"]);
+  assert.deepEqual([...new Set([...z5.matchAll(/data-state="(\w+)"/g)].map((m) => m[1]))], ["estimated"]);
+  assert.deepEqual([...new Set([...z5.matchAll(/data-ring="(\w+)"/g)].map((m) => m[1]))], ["inRange"]);
+  // Legend shows only the rings present; colours match the legend swatches.
+  assert.match(html, /أقل من الحد[\s\S]*ضمن النطاق[\s\S]*أعلى من الهدف/);
+  assert.doesNotMatch(renderMap(mapZones()[2]), /أقل من الحد|أعلى من الهدف/);
   const css = readFileSync(at("components/landscape/landscape.css"), "utf8");
-  for (const [cls, token] of [["is-below", "--lx-dry"], ["is-inRange", "--lx-good"], ["is-above", "--lx-wet"]])
-    assert.match(css, new RegExp(`\\.lx-map-pt\\.${cls} \\{\\s*fill: var\\(${token}\\)`));
+  for (const [rule, decl] of [
+    [".lx-map-pt.is-measured", "fill: var(--lx-good)"],
+    [".lx-map-pt.is-estimated", "fill: var(--lx-baseline)"],
+    [".lx-map-pt.ring-below", "stroke: var(--lx-dry)"],
+    [".lx-map-pt.ring-inRange", "stroke: var(--lx-primary)"],
+    [".lx-map-pt.ring-above", "stroke: var(--lx-wet)"],
+    [".lx-map-legend .k-measured", "background: var(--lx-good)"],
+    [".lx-map-legend .k-estimated", "background: var(--lx-baseline)"],
+    [".lx-map-legend .k-ring-below", "border-color: var(--lx-dry)"],
+    [".lx-map-legend .k-ring-inRange", "border-color: var(--lx-primary)"],
+  ])
+    assert.ok(css.includes(`.lx ${rule} {\n  ${decl};`), `${rule} → ${decl}`);
 });
 
-test("zone map: a sensor shows its last reading, time and origin; switching zone switches the map", () => {
+test("zone map: hover or click a sensor for its reading, time and origin; switching zone switches the map", () => {
   const { pointLine } = zoneMap();
   const z1 = mapZones()[0];
   const p = data.zoneMapModel(z1).points[0];
@@ -692,14 +749,19 @@ test("zone map: a sensor shows its last reading, time and origin; switching zone
   assert.match(pointLine(mapCopy, { ...p, origin: "field" }), /· مقاس$/);
   assert.match(pointLine(mapCopy, { ...p, vwc: null, measuredAt: null }), /لا قراءة بعد/);
   const stale = data.zoneMapModel(mapZones()[4]).points[0];
-  assert.match(pointLine(mapCopy, stale), /غير محتسبة في التغطية/);
+  assert.match(pointLine(mapCopy, stale), /قديمة؛ غير محتسبة في التغطية/);
+  // Each sensor carries the same text as a native tooltip.
+  const html = renderMap(z1);
+  assert.equal((html.match(/<title>نقطة \d · /g) || []).length, z1.points.length);
   // Two zones render two different maps.
   const [a, b] = [renderMap(mapZones()[1]), renderMap(mapZones()[4])];
   assert.match(a, /data-zone="z2"/);
   assert.match(b, /data-zone="z5"/);
   assert.notEqual(a.match(/class="lx-map-outline"[^>]*/)[0], b.match(/class="lx-map-outline"[^>]*/)[0]);
-  // Overlay: Esc closes, rendered inside the module root.
+  // Point details float over the map (Home keeps its height); Esc closes the overlay.
   const src = readFileSync(at("components/landscape/zone-map.tsx"), "utf8");
+  assert.match(src, /onMouseEnter=\{\(\) => onHover\?\.\(p\.id\)\}/);
+  assert.match(src, /pointInfo\("lx-map-tip"\)/);
   assert.match(src, /e\.key === "Escape" && setLarge\(false\)/);
   assert.match(src, /document\.querySelector\("\.lx"\)/);
   assert.doesNotMatch(src, /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u);

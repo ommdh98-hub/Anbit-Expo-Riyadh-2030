@@ -1211,7 +1211,7 @@
   display: grid;
   gap: 6px;
   justify-items: center;
-  width: 260px;
+  width: 300px;
   max-width: 100%;
 }
 /* The hero stays light in dark mode; the map inside it follows the hero. */
@@ -1234,51 +1234,81 @@
   overflow: visible;
 }
 .lx .lx-map-zone {
-  fill: color-mix(in srgb, var(--lx-surface) 70%, transparent);
+  fill: color-mix(in srgb, var(--lx-surface) 80%, transparent);
 }
 .lx .lx-map-outline {
   fill: none;
   stroke: var(--lx-primary);
-  opacity: 0.55;
+  opacity: 0.6;
 }
+/* Display only: the zone in the "uncovered" colour, then each valid sensor's
+   circle in the covered colour (opaque, so overlaps do not darken). */
+.lx .lx-map-zone.lx-map-gap {
+  fill: color-mix(in srgb, var(--lx-warn) 16%, var(--lx-surface));
+}
+.lx .lx-map-covered {
+  fill: color-mix(in srgb, var(--lx-good) 16%, var(--lx-surface));
+}
+/* Circle outlines over the fills; stale sensors dashed and not counted. */
 .lx .lx-map-cover {
-  fill: color-mix(in srgb, var(--lx-primary) 14%, transparent);
+  fill: none;
+  stroke: color-mix(in srgb, var(--lx-good) 55%, transparent);
 }
-.lx .lx-map-pt {
-  fill: var(--lx-baseline);
-  stroke: var(--lx-surface);
-  cursor: pointer;
-}
-.lx .lx-map-pt.is-below {
-  fill: var(--lx-dry);
-}
-.lx .lx-map-pt.is-inRange {
-  fill: var(--lx-good);
-}
-.lx .lx-map-pt.is-above {
-  fill: var(--lx-wet);
-}
-.lx .lx-map-pt.is-stale {
-  fill: var(--lx-surface);
+.lx .lx-map-cover.is-stale {
+  fill: none;
   stroke: var(--lx-baseline);
 }
+/* Sensors: fill = measured (fresh) or estimated (stale); ring = against the thresholds. */
+.lx .lx-map-pt {
+  cursor: pointer;
+}
+.lx .lx-map-pt.is-measured {
+  fill: var(--lx-good);
+}
+.lx .lx-map-pt.is-estimated {
+  fill: var(--lx-baseline);
+}
+.lx .lx-map-pt.ring-below {
+  stroke: var(--lx-dry);
+}
+.lx .lx-map-pt.ring-inRange {
+  stroke: var(--lx-primary);
+}
+.lx .lx-map-pt.ring-above {
+  stroke: var(--lx-wet);
+}
+.lx .lx-map-pt.ring-none {
+  stroke: var(--lx-surface);
+}
 .lx .lx-map-pt.is-selected {
-  stroke: var(--lx-ink);
+  filter: drop-shadow(0 0 2px var(--lx-ink));
 }
 .lx .lx-map-pt:focus-visible {
   outline: none;
-  stroke: var(--lx-focus);
+  filter: drop-shadow(0 0 3px var(--lx-focus));
 }
-.lx .lx-map-next-ring,
+.lx .lx-map-next-mark {
+  fill: var(--lx-water);
+  stroke: var(--lx-surface);
+}
+.lx .lx-map-next-leader {
+  fill: none;
+  stroke: var(--lx-water);
+  opacity: 0.7;
+}
+.lx .lx-map-next-label {
+  fill: var(--lx-water);
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--lx-surface);
+  stroke-linejoin: round;
+}
 .lx .lx-map-pulse {
   fill: none;
   stroke: var(--lx-water);
 }
-.lx .lx-map-next-dot {
-  fill: var(--lx-water);
-}
 .lx .lx-map-next {
-  opacity: 0.7;
+  opacity: 0.85;
 }
 .lx .lx-map-next.is-on {
   opacity: 1;
@@ -1303,6 +1333,28 @@
     animation: none;
     opacity: 0.6;
   }
+}
+.lx .lx-map-scale path {
+  fill: none;
+  stroke: var(--lx-ink);
+}
+.lx .lx-map-scale text {
+  fill: var(--lx-muted);
+}
+.lx .lx-map-tip {
+  position: absolute;
+  inset-inline: 6px;
+  inset-block-end: 4px;
+  margin: 0;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--lx-surface) 92%, transparent);
+  box-shadow: var(--lx-shadow);
+  color: var(--lx-ink);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  pointer-events: none;
 }
 .lx .lx-map-zoom {
   position: absolute;
@@ -1341,11 +1393,35 @@
   background: var(--lx-good);
 }
 .lx .lx-map-legend .k-estimated {
-  background: color-mix(in srgb, var(--lx-primary) 22%, transparent);
-  border-radius: 3px;
+  background: var(--lx-baseline);
+}
+.lx .lx-map-legend :is(.k-ring-below, .k-ring-inRange, .k-ring-above) {
+  background: transparent;
+  border: 2.5px solid;
+}
+.lx .lx-map-legend .k-ring-below {
+  border-color: var(--lx-dry);
+}
+.lx .lx-map-legend .k-ring-inRange {
+  border-color: var(--lx-primary);
+}
+.lx .lx-map-legend .k-ring-above {
+  border-color: var(--lx-wet);
 }
 .lx .lx-map-legend .k-suggested {
-  border: 2px solid var(--lx-water);
+  background: var(--lx-water);
+  border-radius: 2px;
+  transform: rotate(45deg) scale(0.85);
+}
+.lx .lx-map-legend .k-gap {
+  background: color-mix(in srgb, var(--lx-warn) 16%, var(--lx-surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lx-warn) 35%, transparent);
+  border-radius: 2px;
+}
+.lx .lx-map-radius {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--lx-muted);
 }
 .lx .lx-map-info {
   margin: 0;
@@ -1356,7 +1432,9 @@
 }
 .lx .lx-map-line {
   color: var(--lx-water);
-  font-weight: 600;
+}
+.lx .lx-map-line.is-on {
+  font-weight: 700;
 }
 .lx .lx-map-overlay {
   position: fixed;
