@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import SQLModel, Session, select, delete
-from .database import engine
+from .database import engine, is_demo_database
 from .models import (
     Site,
     Zone,
@@ -30,7 +30,7 @@ from .schemas import (
     SimulationInput,
 )
 from .engine import decide, coverage
-from .seed import seed_demo
+from .seed import refresh_demo_readings, seed_demo
 from .simulation import water_balance
 from .auth import router as auth_router, auth_middleware
 from .planning import PlanInput, plan, spatial_estimate
@@ -49,6 +49,9 @@ async def lifespan(app):
     app.state.auth_engine = engine
     with Session(engine) as session:
         seed_demo(session)
+        # Demo database only: simulated readings keep their seeded age.
+        if is_demo_database(engine):
+            refresh_demo_readings(session)
     yield
 
 

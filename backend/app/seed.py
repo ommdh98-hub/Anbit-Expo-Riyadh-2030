@@ -170,7 +170,7 @@ def seed_demo(session: Session):
                 value = round((target["vwc_min"] + 0.1 * band) * 100, 2)
                 step = round(0.04 * band * 100, 2)
             for history in [2, 1, 0]:
-                timestamp = datetime.now(timezone.utc) - timedelta(hours=(72 if i == 5 else 1) + history * 8)
+                timestamp = datetime.now(timezone.utc) - timedelta(hours=demo_reading_age_hours(zone.id) + history * 8)
                 session.add(
                     SoilMeasurement(
                         id=f"{pid}-m{history}",
@@ -186,6 +186,48 @@ def seed_demo(session: Session):
                     )
                 )
     session.commit()
+
+
+# Age of each demo zone's latest simulated reading (hours): fresh readings, except
+# الممر الأخضر, whose readings are stale on purpose (an estimated, stressed zone).
+DEMO_READING_AGE_HOURS = {"z5": 72}
+
+
+def demo_reading_age_hours(zone_id):
+    return DEMO_READING_AGE_HOURS.get(zone_id, 1)
+
+
+def refresh_demo_readings(session: Session, now=None):
+    """Keep the demo site's simulated readings as old as on the day they were
+    seeded, so Home shows the same values on any later day.
+
+    Only readings with origin "simulation" in the demo site's simulation zones
+    move; every reading of a zone moves by the same amount (spacing and values
+    unchanged) so its latest reading is demo_reading_age_hours old. Readings
+    never move backwards, and a zone irrigated after its latest reading is left
+    as it is (moving would make old readings look newer than the irrigation).
+    Called at startup for the demo database only; returns {zone_id: hours moved}."""
+    now = now or datetime.now(timezone.utc)
+    moved = {}
+    zones = session.exec(select(Zone).where(Zone.site_id == "demo", Zone.origin == "simulation")).all()
+    for zone in zones:
+        readings = session.exec(
+            select(SoilMeasurement).where(SoilMeasurement.zone_id == zone.id, SoilMeasurement.origin == "simulation")
+        ).all()
+        if not readings:
+            continue
+        latest = max(datetime.fromisoformat(r.measured_at) for r in readings)
+        if zone.last_irrigated_at and datetime.fromisoformat(zone.last_irrigated_at) > latest:
+            continue
+        shift = now - timedelta(hours=demo_reading_age_hours(zone.id)) - latest
+        if shift <= timedelta(0):
+            continue
+        for r in readings:
+            r.measured_at = (datetime.fromisoformat(r.measured_at) + shift).isoformat()
+            session.add(r)
+        moved[zone.id] = round(shift.total_seconds() / 3600, 2)
+    session.commit()
+    return moved
 
 
 # Demo zones: reference plant id, soil class, method and application rate (mm/h),
